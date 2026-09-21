@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AppMobileBenefit;
+use App\Models\AppMobileClient;
 use App\Models\AppMobileFaq;
-use App\Models\AppMobilePage;
-use App\Models\AppMobileProcessStep;
-use App\Models\AppMobileService;
-use App\Models\AppMobileStat;
-use App\Models\AppMobileTechBadge;
 use App\Models\Certificate;
-use App\Models\Portfolio;
+use App\Models\AppMobilePage;
+use App\Models\AppMobilePortfolio;
 use App\Models\Service;
 use App\Models\Setting;
 
@@ -21,30 +18,30 @@ class AppMobileController extends Controller
         $setting = Setting::current();
         $page = AppMobilePage::current();
 
-        // Beberapa portofolio ditampilkan sebagai contoh hasil kerja.
-        // Kalau kategori "Aplikasi" / "App" ada, prioritaskan itu; kalau
-        // tidak ada, tetap tampilkan portofolio apa saja yang aktif.
-        $portfolios = Portfolio::active()->ordered()->get();
-        $appPortfolios = $portfolios
-            ->filter(fn ($p) => $p->category && str_contains(strtolower($p->category), 'app'))
-            ->values();
-        $showcasePortfolios = ($appPortfolios->count() ? $appPortfolios : $portfolios)->take(4);
-
         // Dibutuhkan supaya footer di halaman ini sama persis dengan footer landing page.
         $services = Service::active()->ordered()->get();
         $certificates = Certificate::active()->ordered()->get();
 
-        // Konten dinamis khusus halaman ini, bisa diedit lewat halaman admin.
-        $stats = AppMobileStat::active()->ordered()->get();
+        // Poin "Keunggulan" khusus halaman App Mobile, dikelola dari
+        // Admin > Solusi > App Mobile > Keunggulan.
         $benefits = AppMobileBenefit::active()->ordered()->get();
-        $appServices = AppMobileService::active()->ordered()->get();
-        $processSteps = AppMobileProcessStep::active()->ordered()->get();
-        $techBadges = AppMobileTechBadge::active()->ordered()->get();
-        $appFaqs = AppMobileFaq::active()->ordered()->get();
+
+        // Logo klien khusus halaman App Mobile, dikelola dari
+        // Admin > Solusi > App Mobile > Klien (terpisah dari menu Partner di beranda).
+        $clients = AppMobileClient::active()->ordered()->get();
+
+        // Portofolio khusus halaman App Mobile, dikelola dari
+        // Admin > Solusi > App Mobile > Portofolio (tabel sendiri, terpisah dari
+        // Portofolio global di beranda/halaman /portfolio dan dari punya
+        // Website/Sistem Kustom — tidak lagi bergantung pada string kategori).
+        $portfolios = AppMobilePortfolio::active()->ordered()->take(3)->get();
+
+        // FAQ khusus halaman App Mobile, dikelola dari
+        // Admin > Solusi > App Mobile > FAQ.
+        $faqs = AppMobileFaq::active()->ordered()->get();
 
         return view('solusi.app-mobile', compact(
-            'setting', 'page', 'showcasePortfolios', 'services', 'certificates',
-            'stats', 'benefits', 'appServices', 'processSteps', 'techBadges', 'appFaqs'
+            'setting', 'page', 'services', 'certificates', 'benefits', 'clients', 'portfolios', 'faqs'
         ));
     }
 }

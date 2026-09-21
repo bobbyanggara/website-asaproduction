@@ -275,6 +275,55 @@
   .dropdown-menu a:hover{ color: #fff; background: rgba(255,255,255,.1); }
   .dropdown-menu a:active{ background: rgba(255,255,255,.18); }
   .has-dropdown:hover .dropdown-menu, .has-dropdown.is-open .dropdown-menu{ opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0) scale(1); }
+  {{-- Dropdown "Layanan" — tiap item punya ikon bulat + judul + subtitle
+       (2 baris), jadi butuh lebar & layout flex sendiri (a::flex, bukan
+       block seperti dropdown "Info" yang tetap 1 baris polos). --}}
+  .dropdown-menu--services{ min-width: 300px; padding: 8px; }
+  .dropdown-menu--services li + li{ margin-top: 4px; }
+  .dropdown-menu--services a{
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    white-space: normal;
+  }
+  .dropdown-menu--services .dropdown-menu_icon{
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(46,139,255,.28), rgba(46,139,255,.1));
+    border: 1px solid rgba(255,255,255,.16);
+    color: var(--brand-accent, #2E8BFF);
+    font-size: 15px;
+    transition: background .18s ease, color .18s ease;
+  }
+  .dropdown-menu--services a:hover .dropdown-menu_icon{
+    background: linear-gradient(180deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+    color: #fff;
+  }
+  .dropdown-menu--services .dropdown-menu_text{ min-width: 0; }
+  .dropdown-menu--services .dropdown-menu_title{
+    display: block;
+    color: rgba(255,255,255,.94);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    transition: color .18s ease;
+  }
+  .dropdown-menu--services a:hover .dropdown-menu_title{ color: #fff; }
+  .dropdown-menu--services .dropdown-menu_subtitle{
+    display: block;
+    margin-top: 2px;
+    color: rgba(255,255,255,.55);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    white-space: normal;
+  }
   .site-nav_utility{ display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
   .site-nav_lang{ position: relative; }
   .lang-toggle{
@@ -389,6 +438,12 @@
       padding: 4px;
     }
     .dropdown-menu a{ padding: 11px 14px 11px 26px; font-size: 13.5px; border-radius: 10px; }
+    {{-- Versi mobile dropdown "Layanan": ikon lebih kecil, subtitle tetap
+         ikut turun ke baris baru, indent kiri disamakan dengan item lain. --}}
+    .dropdown-menu--services a{ padding: 10px 14px 10px 16px; gap: 10px; }
+    .dropdown-menu--services .dropdown-menu_icon{ width: 30px; height: 30px; font-size: 13px; border-radius: 8px; }
+    .dropdown-menu--services .dropdown-menu_title{ font-size: 13.5px; }
+    .dropdown-menu--services .dropdown-menu_subtitle{ font-size: 11.5px; }
     .site-nav_utility{ gap: 10px; margin-left: auto; }
     .lang-toggle{ padding: 5px 8px; }
     .lang-flag-icon{ width: 20px; height: 14px; }
@@ -439,10 +494,34 @@
       <li><a href="{{ route('home') }}" data-i18n="nav.home">Home</a></li>
       <li class="has-dropdown">
         <button type="button" class="dropdown-toggle"><span data-i18n="nav.servicesToggle">Layanan</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
-        <ul class="dropdown-menu">
-          <li><a href="{{ route('solusi.website') }}" data-i18n="nav.servicesWebsite">Jasa Pembuatan Website</a></li>
-          <li><a href="{{ route('solusi.app-mobile') }}" data-i18n="nav.servicesAppMobile">Jasa Pembuatan App Mobile</a></li>
-          <li><a href="{{ route('solusi.custom-system') }}" data-i18n="nav.servicesCustomSystem">Jasa Pembuatan Sistem Kustom</a></li>
+        <ul class="dropdown-menu dropdown-menu--services">
+          <li>
+            <a href="{{ route('solusi.website') }}">
+              <span class="dropdown-menu_icon"><i class="fa fa-desktop" aria-hidden="true"></i></span>
+              <span class="dropdown-menu_text">
+                <span class="dropdown-menu_title" data-i18n="nav.servicesWebsite">Jasa Pembuatan Website</span>
+                <span class="dropdown-menu_subtitle" data-i18n="nav.servicesWebsiteDesc">Website profesional & responsif sesuai kebutuhan bisnis Anda</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('solusi.app-mobile') }}">
+              <span class="dropdown-menu_icon"><i class="fa fa-mobile" aria-hidden="true"></i></span>
+              <span class="dropdown-menu_text">
+                <span class="dropdown-menu_title" data-i18n="nav.servicesAppMobile">Jasa Pembuatan App Mobile</span>
+                <span class="dropdown-menu_subtitle" data-i18n="nav.servicesAppMobileDesc">Aplikasi Android & iOS yang disesuaikan dengan kebutuhan bisnis</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="{{ route('solusi.custom-system') }}">
+              <span class="dropdown-menu_icon"><i class="fa fa-cogs" aria-hidden="true"></i></span>
+              <span class="dropdown-menu_text">
+                <span class="dropdown-menu_title" data-i18n="nav.servicesCustomSystem">Jasa Pembuatan Sistem Kustom</span>
+                <span class="dropdown-menu_subtitle" data-i18n="nav.servicesCustomSystemDesc">Sistem/software kustom untuk mengotomasi proses bisnis Anda</span>
+              </span>
+            </a>
+          </li>
         </ul>
       </li>
       <li class="has-dropdown">

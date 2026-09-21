@@ -19,6 +19,32 @@
   <link rel="stylesheet" href="{{ asset('css/site-nav-shared.css') }}">
   <link rel="stylesheet" href="{{ asset('css/blog-theme.css') }}">
   <link rel="stylesheet" href="{{ asset('css/portfolio-theme.css') }}">
+
+  {{--
+    Animasi load-in untuk masthead — pola & keyframe disamakan persis
+    dengan hero di home.blade.php (.hero-fade-in_item / @keyframes
+    hero-fade-in-up), supaya kesannya konsisten dengan halaman utama.
+    Untuk kartu di grid portofolio dipakai "wow fadeInUp" (scroll-in),
+    sama seperti pola grid_4/kartu di halaman lain — jadi wow.js perlu
+    dimuat di halaman ini (lihat script di akhir body).
+  --}}
+  <style>
+    .hero-fade-in_item{
+      opacity: 0;
+      transform: translateY(22px);
+      animation: hero-fade-in-up .9s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    .hero-fade-in_item:nth-child(1){ animation-delay: .15s; }
+    .hero-fade-in_item:nth-child(2){ animation-delay: .32s; }
+    .hero-fade-in_item:nth-child(3){ animation-delay: .5s; }
+    @keyframes hero-fade-in-up{
+      to{ opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .hero-fade-in_item{ animation: none; opacity: 1; transform: none; }
+      .wow{ animation: none !important; opacity: 1 !important; }
+    }
+  </style>
 </head>
 <body class="blog-body">
 
@@ -31,9 +57,9 @@
   {{-- ======================== MASTHEAD ======================== --}}
   <div class="portfolio-masthead">
     <div class="container">
-      <span class="eyebrow" data-i18n="portfolioPage.eyebrow">Portofolio</span>
-      <h1 data-i18n="portfolioPage.mastheadTitle">Temukan Inspirasimu</h1>
-      <p data-i18n="portfolioPage.mastheadDesc" data-i18n-var-site="{{ $setting->site_title ?? 'Asa Production' }}">Kumpulan proyek website, aplikasi, dan sistem custom yang telah dikerjakan tim {{ $setting->site_title ?? 'Asa Production' }} untuk berbagai klien.</p>
+      <span class="eyebrow hero-fade-in_item" data-i18n="portfolioPage.eyebrow">Portofolio</span>
+      <h1 class="hero-fade-in_item" data-i18n="portfolioPage.mastheadTitle">Temukan Inspirasimu</h1>
+      <p class="hero-fade-in_item" data-i18n="portfolioPage.mastheadDesc" data-i18n-var-site="{{ $setting->site_title ?? 'Asa Production' }}">Kumpulan proyek website, aplikasi, dan sistem custom yang telah dikerjakan tim {{ $setting->site_title ?? 'Asa Production' }} untuk berbagai klien.</p>
     </div>
   </div>
 
@@ -57,7 +83,7 @@
       @if($portfolios->count())
       <div class="portfolio-grid" id="portfolioGrid">
         @foreach($portfolios as $item)
-        <div class="portfolio-card" data-category="{{ $item->category ?: 'all' }}">
+        <div class="portfolio-card wow fadeInUp" data-wow-delay="{{ 0.08 * ($loop->index % 6) }}s" data-wow-duration="0.7s" data-category="{{ $item->category ?: 'all' }}">
           <button type="button" class="portfolio-card_thumb" data-full="{{ asset('storage/'.$item->image) }}" data-title="{{ $item->title }}" aria-label="{{ $item->title ?: 'Lihat detail proyek' }}" @unless($item->title) data-i18n-aria-label="portfolioPage.viewDetail" @endunless>
             <img src="{{ asset('storage/'.$item->thumbnail) }}" alt="{{ $item->title }}" loading="lazy"/>
           </button>
@@ -108,6 +134,19 @@
   <script src="{{ asset('js/site-nav.js') }}"></script>
   <script src="{{ asset('js/portfolio-lightbox.js') }}"></script>
   <script src="{{ asset('js/portfolio-filter.js') }}"></script>
+  {{--
+    wow.js dimuat manual di sini (bukan lewat js/script.js seperti
+    home.blade.php) karena halaman ini sengaja tidak memuat jQuery
+    (site-nav.js & portfolio-filter.js di sini vanilla JS). wow.js
+    sendiri tidak butuh jQuery, jadi cukup load + init langsung supaya
+    "wow fadeInUp" pada kartu-kartu portofolio jalan.
+  --}}
+  <script src="{{ asset('js/wow.js') }}"></script>
+  <script>
+    if (typeof WOW === 'function') {
+      new WOW().init();
+    }
+  </script>
   <script>
     {{-- site-nav.js sudah memanggil I18n.init & bindLangSwitcher;
          di sini cukup expose helper yang dipakai chatbot widget --}}

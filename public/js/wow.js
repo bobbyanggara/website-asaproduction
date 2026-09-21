@@ -90,7 +90,17 @@
       this.scrollCallback = __bind(this.scrollCallback, this);
       this.scrollHandler = __bind(this.scrollHandler, this);
       this.start = __bind(this.start, this);
-      this.scrolled = true;
+      /* Diubah dari `true` -> `false`: bawaan wow.js langsung menganggap
+         "sudah discroll" sejak awal, jadi box yang KEBETULAN sudah
+         kelihatan pas halaman baru dimuat (mis. section Keunggulan yang
+         nempel persis di bawah hero, atau baris pertama kartu
+         portofolio) ikut animasi seketika bersamaan dengan hero — bukan
+         nunggu user beneran scroll. Dengan false, animasi box manapun
+         baru dicek/dipicu setelah ada event scroll/resize sungguhan
+         (lihat scrollHandler di bawah). Section hero tidak kepengaruh
+         sama sekali karena animasinya pakai mekanisme CSS terpisah
+         (.hero-fade-in_item), bukan class "wow". */
+      this.scrolled = false;
       this.config = this.util().extend(options, this.defaults);
       this.animationNameCache = new WeakMap();
     }

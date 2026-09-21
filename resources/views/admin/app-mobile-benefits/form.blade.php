@@ -2,7 +2,7 @@
 @section('title', $item->exists ? 'Edit Poin Keunggulan' : 'Tambah Poin Keunggulan')
 
 @section('content')
-<form method="POST" action="{{ $item->exists ? route('admin.app-mobile-benefits.update', $item) : route('admin.app-mobile-benefits.store') }}">
+<form method="POST" action="{{ $item->exists ? route('admin.app-mobile-benefits.update', $item) : route('admin.app-mobile-benefits.store') }}" enctype="multipart/form-data">
   @csrf
   @if($item->exists) @method('PUT') @endif
 
@@ -13,9 +13,15 @@
         <input type="text" name="title" class="form-control" value="{{ old('title', $item->title) }}" required>
       </div>
       <div class="col-md-6">
-        <label class="form-label">Ikon (kelas CSS font-awesome)</label>
-        <input type="text" name="icon" class="form-control" value="{{ old('icon', $item->icon) }}" placeholder="fa-users">
+        <label class="form-label">Ikon (kelas CSS font-awesome, opsional)</label>
+        <input type="text" name="icon" class="form-control" value="{{ old('icon', str_contains((string) $item->icon, '/') ? '' : $item->icon) }}" placeholder="fa-users">
         <div class="form-text">Lihat daftar ikon di <a href="https://fontawesome.com/v4/icons/" target="_blank" rel="noopener">fontawesome.com/v4/icons</a>, salin nama kelasnya (mis. fa-users).</div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Atau upload gambar/icon sendiri</label>
+        @if($item->icon && str_contains($item->icon, '/'))<div class="mb-2"><img src="{{ asset('storage/'.$item->icon) }}" class="thumb-preview"></div>@endif
+        <input type="file" name="icon_file" class="form-control" accept="image/*">
+        <div class="form-text">Kalau upload gambar di sini, field kelas font-awesome di atas diabaikan (gambar yang dipakai).</div>
       </div>
       <div class="col-12">
         <label class="form-label">Deskripsi</label>

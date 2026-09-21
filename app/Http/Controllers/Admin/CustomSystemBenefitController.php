@@ -22,7 +22,13 @@ class CustomSystemBenefitController extends Controller
 
     public function store(Request $request)
     {
-        CustomSystemBenefit::create($this->validated($request));
+        $data = $this->validated($request);
+
+        if ($request->hasFile('icon_file')) {
+            $data['icon'] = $request->file('icon_file')->store('custom-system-benefits', 'public');
+        }
+
+        CustomSystemBenefit::create($data);
 
         return redirect()->route('admin.custom-system-benefits.index')->with('success', 'Poin keunggulan berhasil ditambahkan.');
     }
@@ -34,7 +40,15 @@ class CustomSystemBenefitController extends Controller
 
     public function update(Request $request, CustomSystemBenefit $customSystemBenefit)
     {
-        $customSystemBenefit->update($this->validated($request));
+        $data = $this->validated($request);
+
+        if ($request->hasFile('icon_file')) {
+            $data['icon'] = $request->file('icon_file')->store('custom-system-benefits', 'public');
+        } elseif ($data['icon'] === null || $data['icon'] === '') {
+            unset($data['icon']);
+        }
+
+        $customSystemBenefit->update($data);
 
         return redirect()->route('admin.custom-system-benefits.index')->with('success', 'Poin keunggulan berhasil diperbarui.');
     }
@@ -50,6 +64,7 @@ class CustomSystemBenefitController extends Controller
     {
         $data = $request->validate([
             'icon' => ['nullable', 'string', 'max:255'],
+            'icon_file' => ['nullable', 'image', 'max:1024'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'order_index' => ['nullable', 'integer'],
@@ -57,6 +72,7 @@ class CustomSystemBenefitController extends Controller
         ]);
 
         $data['is_active'] = $request->boolean('is_active');
+        unset($data['icon_file']);
 
         return $data;
     }

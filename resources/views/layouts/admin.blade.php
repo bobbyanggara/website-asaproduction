@@ -4,7 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@yield('title', 'Dashboard') - Admin Asa Production</title>
-  @php($__favicon = \App\Models\Setting::current()->favicon ?? null)
+  @php
+    $__favicon = \App\Models\Setting::current()->favicon ?? null;
+    $solusiGroups = [
+      'app-mobile' => ['label' => 'Jasa App Mobile', 'icon' => 'bi-phone-fill'],
+      'website' => ['label' => 'Jasa Website', 'icon' => 'bi-globe2'],
+      'custom-system' => ['label' => 'Jasa Sistem Kustom', 'icon' => 'bi-diagram-3'],
+    ];
+  @endphp
   <link rel="icon" href="{{ $__favicon ? asset('storage/'.$__favicon) : asset('images/favicon.ico') }}" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -106,6 +113,38 @@
       color: #6f88b8;
       font-weight: 700;
       padding: .9rem .6rem .4rem;
+    }
+
+    {{-- Grup collapsible untuk tiap halaman Solusi (App Mobile/Website/Sistem
+         Kustom) — dipakai supaya sub-menu (Konten, Keunggulan, Klien, Layanan,
+         Statistik, Proses, Badge Teknologi, FAQ) tidak numpuk flat di sidebar
+         dan bikin bingung; ringkas jadi 1 baris per halaman, expand saat perlu. --}}
+    .nav-group_toggle {
+      cursor: pointer;
+      user-select: none;
+    }
+    .nav-group_toggle .bi-chevron-down {
+      margin-left: auto;
+      font-size: .7rem;
+      transition: transform .2s ease;
+      flex-shrink: 0;
+    }
+    .nav-group_toggle[aria-expanded="true"] .bi-chevron-down {
+      transform: rotate(180deg);
+    }
+    .nav-group_sub {
+      padding-left: .55rem;
+      border-left: 2px solid rgba(255,255,255,.08);
+      margin-left: 1.35rem;
+      margin-bottom: .15rem;
+    }
+    .nav-group_sub .nav-link-item {
+      font-size: .82rem;
+      padding: .48rem .65rem;
+    }
+    .nav-group_sub .nav-link-item i {
+      font-size: .85rem;
+      width: 16px;
     }
 
     .sidebar a.nav-link-item {
@@ -354,15 +393,38 @@
       <a href="{{ route('admin.faqs.index') }}" class="nav-link-item {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">
         <i class="bi bi-question-circle-fill"></i> FAQ
       </a>
-      <a href="{{ route('admin.app-mobile.edit') }}" class="nav-link-item {{ request()->routeIs('admin.app-mobile*') ? 'active' : '' }}">
-        <i class="bi bi-phone-fill"></i> Jasa App Mobile
-      </a>
-      <a href="{{ route('admin.website.edit') }}" class="nav-link-item {{ request()->routeIs('admin.website*') ? 'active' : '' }}">
-        <i class="bi bi-globe2"></i> Jasa Website
-      </a>
-      <a href="{{ route('admin.custom-system.edit') }}" class="nav-link-item {{ request()->routeIs('admin.custom-system*') ? 'active' : '' }}">
-        <i class="bi bi-diagram-3"></i> Jasa Sistem Kustom
-      </a>
+
+      <div class="nav-section-label">Halaman Solusi</div>
+
+      @foreach($solusiGroups as $prefix => $group)
+        @php
+          $groupActive = request()->routeIs("admin.$prefix.*") || request()->routeIs("admin.$prefix") || request()->routeIs("admin.$prefix-*");
+          $collapseId = 'nav-solusi-'.$prefix;
+        @endphp
+        <a href="#{{ $collapseId }}" class="nav-link-item nav-group_toggle {{ $groupActive ? 'active' : '' }}"
+           data-bs-toggle="collapse" role="button"
+           aria-expanded="{{ $groupActive ? 'true' : 'false' }}" aria-controls="{{ $collapseId }}">
+          <i class="bi {{ $group['icon'] }}"></i> {{ $group['label'] }}
+          <i class="bi bi-chevron-down"></i>
+        </a>
+        <div class="collapse nav-group_sub {{ $groupActive ? 'show' : '' }}" id="{{ $collapseId }}">
+          <a href="{{ route("admin.$prefix.edit") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix.edit") || request()->routeIs("admin.$prefix.update") ? 'active' : '' }}">
+            <i class="bi bi-file-earmark-text-fill"></i> Konten Halaman
+          </a>
+          <a href="{{ route("admin.$prefix-benefits.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-benefits.*") ? 'active' : '' }}">
+            <i class="bi bi-award-fill"></i> Keunggulan
+          </a>
+          <a href="{{ route("admin.$prefix-clients.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-clients.*") ? 'active' : '' }}">
+            <i class="bi bi-diagram-3-fill"></i> Klien
+          </a>
+          <a href="{{ route("admin.$prefix-portfolios.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-portfolios.*") ? 'active' : '' }}">
+            <i class="bi bi-images"></i> Portofolio
+          </a>
+          <a href="{{ route("admin.$prefix-faqs.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-faqs.*") ? 'active' : '' }}">
+            <i class="bi bi-question-circle-fill"></i> FAQ
+          </a>
+        </div>
+      @endforeach
 
       <div class="nav-section-label">Pesan Masuk</div>
       <a href="{{ route('admin.contact-messages.index') }}" class="nav-link-item {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">

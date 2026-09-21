@@ -12,188 +12,69 @@
   @method('PUT')
 
   <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">Masthead (Bagian Atas)</div>
+    <div class="card-header fw-semibold">Hero</div>
     <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="hero_eyebrow" class="form-control" value="{{ old('hero_eyebrow', $page->hero_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Utama</label>
-        <input type="text" name="hero_title" class="form-control" value="{{ old('hero_title', $page->hero_title) }}" required>
+      <div class="col-12">
+        <label class="form-label">Judul Hero</label>
+        <input type="text" name="hero_title" class="form-control" value="{{ old('hero_title', $page->hero_title) }}" placeholder="Asa Production, Solusi Tepat untuk Pengembangan Aplikasi Android & iOS yang Mudah dan Efektif">
       </div>
       <div class="col-12">
-        <label class="form-label">Deskripsi</label>
-        <textarea name="hero_description" class="form-control" rows="3">{{ old('hero_description', $page->hero_description) }}</textarea>
+        <label class="form-label">Subjudul / deskripsi singkat</label>
+        <textarea name="hero_subtitle" class="form-control" rows="3">{{ old('hero_subtitle', $page->hero_subtitle) }}</textarea>
       </div>
       <div class="col-md-6">
-        <label class="form-label">Gambar Background Hero</label>
-        <div class="mb-2">
-          <img src="{{ $page->hero_background ? asset('storage/'.$page->hero_background) : asset('images/parallax2.jpg') }}" class="thumb-preview">
-        </div>
-        <input type="file" name="hero_background" class="form-control" accept="image/*">
-        <div class="form-text">Jika belum pernah diganti, halaman memakai gambar default. Ukuran maksimal 4MB, disarankan gambar landscape lebar.</div>
+        <label class="form-label">Gambar/ilustrasi hero (opsional)</label>
+        @if($page->hero_image)<div class="mb-2"><img src="{{ asset('storage/'.$page->hero_image) }}" class="thumb-preview"></div>@endif
+        <input type="file" name="hero_image" class="form-control" accept="image/*">
+        <div class="form-text">Kalau dikosongkan, hero tampil teks saja (tanpa gambar di sisi kanan).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-semibold">Preview Solusi</div>
+    <div class="card-body row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Judul section</label>
+        <input type="text" name="preview_title" class="form-control" value="{{ old('preview_title', $page->preview_title ?? 'Preview Solusi') }}">
       </div>
       <div class="col-md-6">
-        <label class="form-label">Pesan Default WhatsApp</label>
-        <input type="text" name="whatsapp_message" class="form-control" value="{{ old('whatsapp_message', $page->whatsapp_message) }}" required>
-        <div class="form-text">Terisi otomatis saat pengunjung klik tombol "Konsultasi Gratis" / "Chat via WhatsApp". Nomor WhatsApp tujuan diatur di menu Pengaturan Situs.</div>
+        <label class="form-label">Media (gambar, GIF, atau video MP4/WebM)</label>
+        @if($page->preview_media)
+          <div class="mb-2">
+            @if(\Illuminate\Support\Str::endsWith(strtolower($page->preview_media), ['.mp4', '.webm']))
+              <video src="{{ asset('storage/'.$page->preview_media) }}" class="thumb-preview" controls muted></video>
+            @else
+              <img src="{{ asset('storage/'.$page->preview_media) }}" class="thumb-preview">
+            @endif
+          </div>
+        @endif
+        <input type="file" name="preview_media" class="form-control" accept="image/*,video/mp4,video/webm">
+        <div class="form-text">Boleh foto/JPG/PNG, GIF animasi, atau video MP4/WebM pendek — semuanya otomatis ditampilkan dengan cara yang sesuai di halaman publik.</div>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Keterangan singkat di bawah media (opsional)</label>
+        <textarea name="preview_caption" class="form-control" rows="2">{{ old('preview_caption', $page->preview_caption) }}</textarea>
       </div>
     </div>
   </div>
 
   <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
-      <span>Statistik (Strip Angka)</span>
-      <a href="{{ route('admin.app-mobile-stats.index') }}" class="btn btn-sm btn-dark">Kelola Statistik ({{ $counts['stats'] }})</a>
-    </div>
-    <div class="card-body text-muted small">Contoh: "50+ Proyek Selesai". Dikelola terpisah karena jumlahnya bisa ditambah/dikurangi.</div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">Kenapa Pilih Kami</div>
-    <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="why_us_eyebrow" class="form-control" value="{{ old('why_us_eyebrow', $page->why_us_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Section</label>
-        <input type="text" name="why_us_title" class="form-control" value="{{ old('why_us_title', $page->why_us_title) }}" required>
-      </div>
-      <div class="col-12">
-        <label class="form-label">Deskripsi Section</label>
-        <textarea name="why_us_description" class="form-control" rows="2">{{ old('why_us_description', $page->why_us_description) }}</textarea>
-      </div>
-      <div class="col-12">
-        <a href="{{ route('admin.app-mobile-benefits.index') }}" class="btn btn-sm btn-dark">Kelola Poin Keunggulan ({{ $counts['benefits'] }})</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">Layanan yang Kami Tawarkan</div>
-    <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="services_eyebrow" class="form-control" value="{{ old('services_eyebrow', $page->services_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Section</label>
-        <input type="text" name="services_title" class="form-control" value="{{ old('services_title', $page->services_title) }}" required>
-      </div>
-      <div class="col-12">
-        <label class="form-label">Deskripsi Section</label>
-        <textarea name="services_description" class="form-control" rows="2">{{ old('services_description', $page->services_description) }}</textarea>
-      </div>
-      <div class="col-12">
-        <a href="{{ route('admin.app-mobile-services.index') }}" class="btn btn-sm btn-dark">Kelola Daftar Layanan ({{ $counts['services'] }})</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">Proses Pengembangan</div>
-    <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="process_eyebrow" class="form-control" value="{{ old('process_eyebrow', $page->process_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Section</label>
-        <input type="text" name="process_title" class="form-control" value="{{ old('process_title', $page->process_title) }}" required>
-      </div>
-      <div class="col-12">
-        <label class="form-label">Deskripsi Section</label>
-        <textarea name="process_description" class="form-control" rows="2">{{ old('process_description', $page->process_description) }}</textarea>
-      </div>
-      <div class="col-12">
-        <a href="{{ route('admin.app-mobile-process-steps.index') }}" class="btn btn-sm btn-dark">Kelola Langkah Proses ({{ $counts['process_steps'] }})</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">Teknologi</div>
-    <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="tech_eyebrow" class="form-control" value="{{ old('tech_eyebrow', $page->tech_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Section</label>
-        <input type="text" name="tech_title" class="form-control" value="{{ old('tech_title', $page->tech_title) }}" required>
-      </div>
-      <div class="col-12">
-        <a href="{{ route('admin.app-mobile-tech-badges.index') }}" class="btn btn-sm btn-dark">Kelola Badge Teknologi ({{ $counts['tech_badges'] }})</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">Portofolio Preview</div>
-    <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="portfolio_eyebrow" class="form-control" value="{{ old('portfolio_eyebrow', $page->portfolio_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Section</label>
-        <input type="text" name="portfolio_title" class="form-control" value="{{ old('portfolio_title', $page->portfolio_title) }}" required>
-      </div>
-      <div class="col-12">
-        <label class="form-label">Deskripsi Section</label>
-        <textarea name="portfolio_description" class="form-control" rows="2">{{ old('portfolio_description', $page->portfolio_description) }}</textarea>
-      </div>
-      <div class="col-12">
-        <div class="form-text">Contoh aplikasi yang ditampilkan diambil otomatis dari menu <a href="{{ route('admin.portfolio.index') }}">Portofolio</a> (kategori yang mengandung kata "app" diprioritaskan).</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">FAQ</div>
-    <div class="card-body row g-3">
-      <div class="col-md-4">
-        <label class="form-label">Label Kecil (Eyebrow)</label>
-        <input type="text" name="faq_eyebrow" class="form-control" value="{{ old('faq_eyebrow', $page->faq_eyebrow) }}" required>
-      </div>
-      <div class="col-md-8">
-        <label class="form-label">Judul Section</label>
-        <input type="text" name="faq_title" class="form-control" value="{{ old('faq_title', $page->faq_title) }}" required>
-      </div>
-      <div class="col-12">
-        <a href="{{ route('admin.app-mobile-faqs.index') }}" class="btn btn-sm btn-dark">Kelola Daftar FAQ ({{ $counts['faqs'] }})</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">CTA Banner (Bagian Bawah)</div>
+    <div class="card-header fw-semibold">SEO</div>
     <div class="card-body row g-3">
       <div class="col-12">
-        <label class="form-label">Judul CTA</label>
-        <input type="text" name="cta_title" class="form-control" value="{{ old('cta_title', $page->cta_title) }}" required>
-      </div>
-      <div class="col-12">
-        <label class="form-label">Deskripsi CTA</label>
-        <textarea name="cta_description" class="form-control" rows="2">{{ old('cta_description', $page->cta_description) }}</textarea>
+        <label class="form-label">Meta description</label>
+        <input type="text" name="meta_description" class="form-control" value="{{ old('meta_description', $page->meta_description) }}" maxlength="255">
       </div>
     </div>
   </div>
 
-  <div class="card shadow-sm mb-3">
-    <div class="card-header bg-white fw-semibold">SEO</div>
-    <div class="card-body row g-3">
-      <div class="col-12">
-        <label class="form-label">Meta Description</label>
-        <textarea name="meta_description" class="form-control" rows="2" maxlength="500">{{ old('meta_description', $page->meta_description) }}</textarea>
-      </div>
-    </div>
+  <div class="alert alert-info">
+    Poin "Keunggulan" dikelola terpisah di menu <a href="{{ route('admin.app-mobile-benefits.index') }}">Keunggulan App Mobile</a>. Portofolio yang tampil di halaman ini otomatis diambil dari menu Portofolio dengan kategori <strong>"Jasa Pembuatan Aplikasi"</strong>. Logo klien dikelola sendiri di menu <a href="{{ route('admin.app-mobile-clients.index') }}">Klien App Mobile</a> (tidak diambil dari menu Partner di beranda).
   </div>
 
   <div class="mt-3">
-    <button type="submit" class="btn btn-dark">Simpan Perubahan</button>
+    <button type="submit" class="btn btn-dark">Simpan</button>
   </div>
 </form>
 @endsection

@@ -182,7 +182,7 @@
     background: #fff;
     border: 1px solid #e9ecf2;
     border-radius: 14px;
-    padding: 34px 26px;
+    padding: 40px 28px;
     text-align: center;
     transition: background .35s ease, box-shadow .35s ease, transform .35s ease, border-color .35s ease;
   }
@@ -193,9 +193,9 @@
     box-shadow: 0 20px 40px -22px rgba(0,34,76,.35);
   }
   .solusi-benefit-card_icon{
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 18px;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 24px;
     border-radius: 50%;
     background: #eaf2ff;
     display: flex;
@@ -207,8 +207,8 @@
     background: rgba(255,255,255,.16);
   }
   .solusi-benefit-card_icon img{
-    width: 34px;
-    height: 34px;
+    width: 52px;
+    height: 52px;
     object-fit: contain;
     transition: filter .35s ease;
   }
@@ -216,7 +216,7 @@
     filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,.15));
   }
   .solusi-benefit-card_icon i{
-    font-size: 26px;
+    font-size: 42px;
     color: var(--brand-light);
     transition: color .35s ease;
   }
@@ -224,8 +224,8 @@
     color: #fff;
   }
   .solusi-benefit-card h3{
-    margin: 0 0 10px;
-    font-size: 18px;
+    margin: 0 0 12px;
+    font-size: 19px;
     font-weight: 700;
     color: var(--brand-dark);
     transition: color .35s ease;
@@ -240,6 +240,23 @@
   .solusi-benefit-card:hover h3,
   .solusi-benefit-card:hover p{
     color: #fff;
+  }
+
+  {{--
+    Jarak judul section ke garis bawahnya (h2 + hr). Global style.css memberi
+    h2 line-height 50px + `* + hr{margin-top:28px}`, jadi ada ~40px+ ruang
+    kosong antara teks dan garis. Diperkecil khusus section /solusi/*
+    (Preview, Keunggulan, Portofolio) supaya garis terasa "menempel" ke judul.
+  --}}
+  .solusi-preview h2,
+  .solusi-benefits h2,
+  .solusi-portfolio h2{
+    line-height: 1.25;
+  }
+  .solusi-preview h2 + hr,
+  .solusi-benefits h2 + hr,
+  .solusi-portfolio h2 + hr{
+    margin-top: 12px;
   }
 
   /* ===== PORTOFOLIO (Temukan inspirasimu) ===== */

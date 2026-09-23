@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\PicksFromGlobalPortfolio;
 use App\Http\Controllers\Controller;
 use App\Models\AppMobilePortfolio;
 use Illuminate\Http\Request;
 
 class AppMobilePortfolioController extends Controller
 {
+    use PicksFromGlobalPortfolio;
+
     public function index()
     {
         $items = AppMobilePortfolio::ordered()->get();
@@ -17,11 +20,21 @@ class AppMobilePortfolioController extends Controller
 
     public function create()
     {
-        return view('admin.app-mobile-portfolios.form', ['item' => new AppMobilePortfolio()]);
+        return view('admin.app-mobile-portfolios.form', ['item' => new AppMobilePortfolio()] + $this->pickerData(AppMobilePortfolio::class));
     }
 
     public function store(Request $request)
     {
+        // Mode "pilih dari Portofolio": salin item global, tanpa upload.
+        if ($request->filled('portfolio_ids')) {
+            $count = $this->importGlobalPortfolios(AppMobilePortfolio::class, $request);
+
+            return redirect()->route('admin.app-mobile-portfolios.index')->with(
+                'success',
+                $count ? "$count portofolio berhasil ditambahkan dari Portofolio." : 'Item yang dipilih sudah ada di halaman ini.'
+            );
+        }
+
         $data = $this->validated($request, true);
 
         $data['thumbnail'] = $request->file('thumbnail')->store('app-mobile-portfolios', 'public');

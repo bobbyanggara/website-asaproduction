@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\PicksFromGlobalPortfolio;
 use App\Http\Controllers\Controller;
 use App\Models\WebsitePortfolio;
 use Illuminate\Http\Request;
 
 class WebsitePortfolioController extends Controller
 {
+    use PicksFromGlobalPortfolio;
+
     public function index()
     {
         $items = WebsitePortfolio::ordered()->get();
@@ -17,11 +20,21 @@ class WebsitePortfolioController extends Controller
 
     public function create()
     {
-        return view('admin.website-portfolios.form', ['item' => new WebsitePortfolio()]);
+        return view('admin.website-portfolios.form', ['item' => new WebsitePortfolio()] + $this->pickerData(WebsitePortfolio::class));
     }
 
     public function store(Request $request)
     {
+        // Mode "pilih dari Portofolio": salin item global, tanpa upload.
+        if ($request->filled('portfolio_ids')) {
+            $count = $this->importGlobalPortfolios(WebsitePortfolio::class, $request);
+
+            return redirect()->route('admin.website-portfolios.index')->with(
+                'success',
+                $count ? "$count portofolio berhasil ditambahkan dari Portofolio." : 'Item yang dipilih sudah ada di halaman ini.'
+            );
+        }
+
         $data = $this->validated($request, true);
 
         $data['thumbnail'] = $request->file('thumbnail')->store('website-portfolios', 'public');

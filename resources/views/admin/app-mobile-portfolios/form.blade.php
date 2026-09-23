@@ -6,6 +6,12 @@
   @csrf
   @if($item->exists) @method('PUT') @endif
 
+  @unless($item->exists)
+    @include('admin.partials.portfolio-picker')
+    <details class="mb-3" {{ $errors->any() && !old('portfolio_ids') ? 'open' : '' }}>
+      <summary class="text-muted mb-2" style="cursor:pointer;">Atau upload gambar baru secara manual</summary>
+  @endunless
+
   <div class="card shadow-sm">
     <div class="card-body row g-3">
       <div class="col-md-8">
@@ -17,9 +23,9 @@
         <input type="url" name="link" class="form-control" value="{{ old('link', $item->link) }}" placeholder="https://...">
       </div>
       <div class="col-md-6">
-        <label class="form-label">Thumbnail (tampil di grid "Temukan inspirasimu") {{ $item->exists ? '' : '*' }}</label>
+        <label class="form-label">Thumbnail (tampil di grid "Temukan inspirasimu") </label>
         @if($item->thumbnail)<div class="mb-2"><img src="{{ asset('storage/'.$item->thumbnail) }}" class="thumb-preview"></div>@endif
-        <input type="file" name="thumbnail" class="form-control" accept="image/*" {{ $item->exists ? '' : 'required' }}>
+        <input type="file" name="thumbnail" class="form-control" accept="image/*" >
       </div>
       <div class="col-md-6">
         <label class="form-label">Gambar Full-size (opsional — default pakai thumbnail)</label>
@@ -42,6 +48,10 @@
       </div>
     </div>
   </div>
+
+  @unless($item->exists)
+    </details>
+  @endunless
 
   <div class="mt-3">
     <button type="submit" class="btn btn-dark">Simpan</button>

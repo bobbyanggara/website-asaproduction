@@ -276,8 +276,12 @@
   position: absolute;
   top: 24px;
   right: 24px;
-  background: rgba(255,255,255,.08);
-  border: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.02) 45%, rgba(255,255,255,.05) 100%) no-repeat,
+    rgba(255,255,255,.04);
+  -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+  backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+  border: 1px solid rgba(255,255,255,.22);
   color: #fff;
   width: 44px;
   height: 44px;
@@ -286,18 +290,25 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background .2s ease;
-  z-index: 3;
+  box-shadow: 0 8px 20px -8px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.12);
+  transition: background .25s ease, box-shadow .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
 }
 .portfolio-lightbox_close:hover{
-  background: rgba(255,255,255,.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.03) 45%, rgba(255,255,255,.07) 100%) no-repeat,
+    rgba(255,255,255,.08);
+  transform: scale(1.06);
 }
 .portfolio-lightbox_nav{
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255,255,255,.08);
-  border: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.02) 45%, rgba(255,255,255,.05) 100%) no-repeat,
+    rgba(255,255,255,.04);
+  -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+  backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+  border: 1px solid rgba(255,255,255,.22);
   color: #fff;
   width: 48px;
   height: 48px;
@@ -306,11 +317,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background .2s ease;
-  z-index: 3;
+  box-shadow: 0 8px 20px -8px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.12);
+  transition: background .25s ease, box-shadow .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
 }
 .portfolio-lightbox_nav:hover{
-  background: rgba(255,255,255,.18);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.03) 45%, rgba(255,255,255,.07) 100%) no-repeat,
+    rgba(255,255,255,.08);
+  transform: translateY(-50%) scale(1.08);
 }
 .portfolio-lightbox_nav svg{
   pointer-events: none;

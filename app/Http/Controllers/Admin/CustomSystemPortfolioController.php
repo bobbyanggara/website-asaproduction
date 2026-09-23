@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\PicksFromGlobalPortfolio;
 use App\Http\Controllers\Controller;
 use App\Models\CustomSystemPortfolio;
 use Illuminate\Http\Request;
 
 class CustomSystemPortfolioController extends Controller
 {
+    use PicksFromGlobalPortfolio;
+
     public function index()
     {
         $items = CustomSystemPortfolio::ordered()->get();
@@ -17,11 +20,21 @@ class CustomSystemPortfolioController extends Controller
 
     public function create()
     {
-        return view('admin.custom-system-portfolios.form', ['item' => new CustomSystemPortfolio()]);
+        return view('admin.custom-system-portfolios.form', ['item' => new CustomSystemPortfolio()] + $this->pickerData(CustomSystemPortfolio::class));
     }
 
     public function store(Request $request)
     {
+        // Mode "pilih dari Portofolio": salin item global, tanpa upload.
+        if ($request->filled('portfolio_ids')) {
+            $count = $this->importGlobalPortfolios(CustomSystemPortfolio::class, $request);
+
+            return redirect()->route('admin.custom-system-portfolios.index')->with(
+                'success',
+                $count ? "$count portofolio berhasil ditambahkan dari Portofolio." : 'Item yang dipilih sudah ada di halaman ini.'
+            );
+        }
+
         $data = $this->validated($request, true);
 
         $data['thumbnail'] = $request->file('thumbnail')->store('custom-system-portfolios', 'public');

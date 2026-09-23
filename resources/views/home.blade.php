@@ -95,6 +95,135 @@
       .hero-fade-in_item{ animation: none; opacity: 1; transform: none; }
     }
 
+    /* ===== Roket mengorbit logo hero — efek 3D sungguhan =====
+       Ini BUKAN sekadar rotate() datar (yang cuma muter di satu bidang
+       rata, tidak terasa 3D). Di sini orbitnya berbentuk elips (Rx=100,
+       Ry=34) untuk mensimulasikan lingkaran yang dilihat miring/perspektif,
+       DAN setiap titik jalur punya scale() + z-index sendiri berdasarkan
+       posisi vertikal: separuh bawah elips (y positif) = "lebih dekat ke
+       kamera" → roket membesar & z-index di ATAS logo; separuh atas elips
+       (y negatif) = "lebih jauh" → roket mengecil & z-index di BAWAH logo,
+       jadi benar-benar lewat DI BELAKANG logo — itulah yang memberi
+       ilusi 3D, bukan cuma 2D muter di tempat.
+       Semua angka translate/scale di keyframe ini dihitung dari rumus
+       parametrik elips x=Rx·cosθ, y=Ry·sinθ (θ=0..360°, tiap 30°). Arah
+       hidung roket dihitung dari turunan (tangen) rumus itu sendiri —
+       φ=atan2(-Rx·sinθ, -Ry·cosθ) — bukan pendekatan "θ+180°" (yang cuma
+       pas untuk lingkaran sempurna, meleset sampai ±30° di elips lonjong
+       begini). Nilainya juga dibiarkan naik terus tanpa di-mod ke 0–360°
+       supaya putarannya mulus satu arah, tidak "loncat balik" di
+       tengah siklus. */
+    .brand_logo-wrap{
+      position: relative;
+      width: 140px;
+      height: 140px;
+      max-width: 100%;
+      margin: 0 0 6px 0;
+    }
+    .brand_logo-wrap img,
+    .brand_logo-wrap video{
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      margin: 0;
+      position: relative;
+      z-index: 2;
+    }
+    /* Garis jalur orbit sengaja TIDAK dipakai (dihapus atas permintaan) —
+       roket & jejaknya sudah cukup menunjukkan jalur tanpa perlu garis
+       statis di belakangnya. */
+    .brand_logo-rocket{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 26px;
+      height: 26px;
+      margin: -13px 0 0 -13px;
+      pointer-events: none;
+      transform-origin: center center;
+      filter: drop-shadow(0 0 6px rgba(46,139,255,.6)) drop-shadow(0 2px 4px rgba(0,0,0,.45));
+      animation: brand-rocket-orbit-3d 7s linear infinite;
+    }
+    .brand_logo-rocket svg{
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    /* Nyala mesin: elemen TERPISAH dari SVG roket (bukan path statis di
+       dalam svg) supaya bisa punya animasi sendiri (flicker cepat, tidak
+       terikat siklus 7 detik orbit) — menempel di ekor roket dan ikut
+       terbawa/berotasi karena ia child dari .brand_logo-rocket yang
+       sedang dianimasikan induknya. */
+    .brand_logo-rocket_flame{
+      position: absolute;
+      top: 19px;
+      left: 50%;
+      width: 7px;
+      height: 11px;
+      margin-left: -3.5px;
+      border-radius: 50% 50% 45% 45%;
+      background: linear-gradient(180deg, #fff6b0 0%, #ff9d3d 45%, #ff5a1f 100%);
+      filter: drop-shadow(0 0 4px rgba(255,140,40,.85));
+      transform-origin: top center;
+      animation: brand-flame-flicker .18s ease-in-out infinite alternate;
+    }
+    @keyframes brand-flame-flicker{
+      0%   { transform: scaleY(.7) scaleX(.85);  opacity: .8; }
+      50%  { transform: scaleY(1.2) scaleX(1.05); opacity: 1;  }
+      100% { transform: scaleY(.9) scaleX(.95);  opacity: .9; }
+    }
+    /* Jejak percikan di belakang roket: 3 titik kecil yang memakai
+       animasi orbit PERSIS SAMA (brand-rocket-orbit-3d) tapi dengan
+       animation-delay negatif, sehingga posisinya "ketinggalan" di
+       titik yang lebih awal pada siklus yang sama persis — otomatis
+       selalu pas di belakang roket di sepanjang jalur, termasuk ikut
+       membesar/mengecil & tampil di depan/belakang logo secara
+       konsisten dengan roket utamanya (karena rumus & durasinya sama). */
+    .brand_logo-trail{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(140,195,255,.9) 0%, rgba(140,195,255,0) 72%);
+      animation-name: brand-rocket-orbit-3d;
+      animation-duration: 7s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    .brand_logo-trail:nth-child(2){ width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; opacity: .55; animation-delay: -.12s; }
+    .brand_logo-trail:nth-child(3){ width: 6px; height: 6px; margin: -3px 0 0 -3px; opacity: .35; animation-delay: -.28s; }
+    .brand_logo-trail:nth-child(4){ width: 4px; height: 4px; margin: -2px 0 0 -2px; opacity: .18; animation-delay: -.48s; }
+    /* Rotasi hidung roket dihitung PRESISI dari turunan (tangen) jalur
+       elips x=Rx·cosθ, y=Ry·sinθ — bukan pendekatan kasar "θ+180°" yang
+       hanya akurat untuk lingkaran sempurna. Untuk elips (Rx≠Ry) arah
+       tangennya beda dari itu; rumus eksaknya: φ = atan2(-Rx·sinθ, -Ry·cosθ)
+       Nilainya sengaja TIDAK di-mod ke 0–360° tapi dibiarkan naik terus
+       (180°→540°) supaya interpolasi antar-keyframe muter satu arah mulus
+       tanpa "loncat balik" — totalnya persis 360° dalam satu putaran
+       penuh, sesuai fisika: hidung roket menghadap jalur di titik manapun. */
+    @keyframes brand-rocket-orbit-3d{
+      0%    { transform: translate(100px, 0px)    rotate(180deg)   scale(1);    z-index: 3; }
+      8.33% { transform: translate(86.6px, 17px)   rotate(239.53deg) scale(1.18); z-index: 3; }
+      16.67%{ transform: translate(50px, 29.4px)   rotate(258.93deg) scale(1.3);  z-index: 3; }
+      25%   { transform: translate(0px, 34px)      rotate(270deg)   scale(1.35); z-index: 3; }
+      33.33%{ transform: translate(-50px, 29.4px)  rotate(281.07deg) scale(1.3);  z-index: 3; }
+      41.67%{ transform: translate(-86.6px, 17px)  rotate(300.47deg) scale(1.18); z-index: 3; }
+      50%   { transform: translate(-100px, 0px)    rotate(360deg)   scale(1);    z-index: 1; }
+      58.33%{ transform: translate(-86.6px, -17px) rotate(419.53deg) scale(0.83); z-index: 1; }
+      66.67%{ transform: translate(-50px, -29.4px) rotate(438.93deg) scale(0.7);  z-index: 1; }
+      75%   { transform: translate(0px, -34px)     rotate(450deg)   scale(0.65); z-index: 1; }
+      83.33%{ transform: translate(50px, -29.4px)  rotate(461.07deg) scale(0.7);  z-index: 1; }
+      91.67%{ transform: translate(86.6px, -17px)  rotate(480.47deg) scale(0.83); z-index: 1; }
+      100%  { transform: translate(100px, 0px)     rotate(540deg)   scale(1);    z-index: 3; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .brand_logo-rocket{ animation: none; opacity: 0; }
+      .brand_logo-rocket_flame{ animation: none; }
+      .brand_logo-trail{ animation: none; opacity: 0; }
+    }
+
     /* ======================================================================
        LIQUID GLASS NAVBAR (khas iOS) — dirombak total: tampilan & logic.
        Di hero (belum discroll): navbar polos, transparan, menempel penuh
@@ -1272,11 +1401,25 @@
       </div>
 
       <div class="brand hero-fade-in_item" style="flex:0 1 280px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;align-self:center;animation-delay:.5s;">
-        @if($setting->logo && \Illuminate\Support\Str::endsWith($setting->logo, ['.mp4', '.webm']))
-          <video src="{{ asset('storage/'.$setting->logo) }}" class="brand_logo-video" style="width:140px;height:140px;max-width:100%;object-fit:contain;margin:0 0 6px 0;" autoplay muted loop playsinline></video>
-        @else
-          <img src="{{ $setting->logo ? asset('storage/'.$setting->logo) : asset('images/logo.png') }}" alt="{{ $setting->site_title }}" style="width:140px;height:140px;max-width:100%;object-fit:contain;margin:0 0 6px 0;"/>
-        @endif
+        <div class="brand_logo-wrap">
+          @if($setting->logo && \Illuminate\Support\Str::endsWith($setting->logo, ['.mp4', '.webm']))
+            <video src="{{ asset('storage/'.$setting->logo) }}" class="brand_logo-video" autoplay muted loop playsinline></video>
+          @else
+            <img src="{{ $setting->logo ? asset('storage/'.$setting->logo) : asset('images/logo.png') }}" alt="{{ $setting->site_title }}"/>
+          @endif
+          <span class="brand_logo-trail" aria-hidden="true"></span>
+          <span class="brand_logo-trail" aria-hidden="true"></span>
+          <span class="brand_logo-trail" aria-hidden="true"></span>
+          <span class="brand_logo-rocket" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="12" cy="11" rx="4" ry="8" fill="#ffffff"/>
+              <circle cx="12" cy="9" r="2" fill="var(--brand-accent, #2E8BFF)"/>
+              <path d="M8 14 L4 19 L8 17 Z" fill="var(--brand-accent, #2E8BFF)"/>
+              <path d="M16 14 L20 19 L16 17 Z" fill="var(--brand-accent, #2E8BFF)"/>
+            </svg>
+            <span class="brand_logo-rocket_flame"></span>
+          </span>
+        </div>
         <h1 class="brand_name" style="margin:0 0 6px 0;font-family:'League Spartan', sans-serif;">
           <a href="./" style="font-family:'League Spartan', sans-serif;">{{ $setting->site_title }}</a>
         </h1>

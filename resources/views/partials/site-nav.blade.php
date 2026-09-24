@@ -97,7 +97,8 @@
   .site-nav_brand:active{ transform: scale(.96); }
   .site-nav_brand img{ height: 32px; width: auto; display: block; transition: height .4s cubic-bezier(.22,1,.36,1); }
   .site-nav.is-scrolled .site-nav_brand img{ height: 28px; }
-  .site-nav_brand span{ font-family: 'League Spartan', sans-serif; color: #fff; font-size: 16px; line-height: 1; font-weight: 800; letter-spacing: .01em; white-space: nowrap; }
+  .site-nav_brand span{ font-family: 'League Spartan', sans-serif; color: #fff; font-size: 16px; line-height: 1; font-weight: 800; letter-spacing: .01em; white-space: nowrap; transition: color .2s ease; }
+  .site-nav_brand:hover span{ color: var(--brand-accent, #2E8BFF); }
   {{-- Menu sekarang flex:1 1 auto (bukan 0 0 auto) + justify-content:center
        Diubah (permintaan user): menu sekarang flex:0 0 auto supaya nempel
        rapat di sebelah kiri grup kanan (bahasa + tombol WhatsApp), bukan

@@ -385,7 +385,9 @@
       font-weight: 800;
       letter-spacing: .01em;
       white-space: nowrap;
+      transition: color .2s ease;
     }
+    .site-nav_brand:hover span{ color: var(--brand-accent, #2E8BFF); }
 
     {{-- Menu diubah dari flex:1 1 auto ke flex:0 0 auto (permintaan user):
          supaya menu (Beranda/Layanan/Info) nggak ikut "menggelembung"

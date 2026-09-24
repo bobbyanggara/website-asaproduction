@@ -9,7 +9,7 @@ window.SITE_I18N = {
   id: {
     // ---- Navbar (shared across all pages) ----
     'nav.home': 'Beranda',
-    'nav.servicesToggle': 'Layanan',
+    'nav.servicesToggle': 'Solusi',
     'nav.about': 'Tentang Kami',
     'nav.servicesItem': 'Layanan',
     'nav.portfolio': 'Portofolio',
@@ -24,6 +24,11 @@ window.SITE_I18N = {
     'nav.servicesAppMobileDesc': 'Aplikasi Android & iOS yang disesuaikan dengan kebutuhan bisnis',
     'nav.servicesCustomSystem': 'Jasa Pembuatan Sistem Kustom',
     'nav.servicesCustomSystemDesc': 'Sistem/software kustom untuk mengotomasi proses bisnis Anda',
+    'nav.produkToggle': 'Produk',
+    'nav.produkAbsenAsa': 'Absen ASA',
+    'nav.produkAbsenAsaDesc': 'Aplikasi absensi karyawan berbasis GPS & selfie',
+    'nav.produkKlinikAsa': 'Klinik ASA',
+    'nav.produkKlinikAsaDesc': 'Sistem manajemen klinik terintegrasi',
     'nav.whatsappCta': 'WhatsApp Kami',
     'nav.langChangeLabel': 'Ganti bahasa',
     'nav.langChooseLabel': 'Pilih bahasa',
@@ -150,13 +155,24 @@ window.SITE_I18N = {
     'solusi.ctaViewPortfolio': 'Lihat Portofolio',
     'solusi.ctaViewAllPortfolio': 'Lihat Semua Portofolio',
     'solusi.ctaWhatsapp': 'Chat via WhatsApp',
-    'solusi.ctaContactForm': 'Isi Form Kontak'
+    'solusi.ctaContactForm': 'Isi Form Kontak',
+    'solusi.previewDefault': 'Preview Solusi',
+    'solusi.benefitsTitle': 'Keunggulan',
+    'solusi.portfolioTitle': 'Temukan inspirasimu',
+    'product.eyebrowDefault': 'Produk {name}',
+    'product.previewDefault': 'Preview {name}',
+    'solusiWebsite.heroTitle': 'Asa Production, Solusi Tepat untuk Pembuatan Website yang Cepat, Rapi, dan Profesional',
+    'solusiWebsite.heroDesc': '{site} membantu bisnis Anda tampil profesional di internet lewat website yang cepat, aman, dan mudah dikelola sendiri. Cocok untuk company profile, toko online, landing page promosi, hingga sistem berbasis web.',
+    'solusiAppMobile.heroTitle': 'Asa Production, Solusi Tepat untuk Pengembangan Aplikasi Android & iOS yang Mudah dan Efektif',
+    'solusiAppMobile.heroDesc': '{site} siap membantu Anda mengembangkan aplikasi Android & iOS dengan mudah dan efektif. Dengan tim ahli dan teknologi terkini, kami menghadirkan solusi aplikasi yang responsif, user-friendly, dan sesuai dengan kebutuhan bisnis Anda.',
+    'solusiCustomSystem.heroTitle': 'Asa Production, Solusi Tepat untuk Pengembangan Sistem Kustom Sesuai Kebutuhan Bisnis Anda',
+    'solusiCustomSystem.heroDesc': '{site} merancang dan membangun sistem/software kustom untuk mengotomasi proses bisnis Anda — mulai dari sistem absensi, manajemen inventori, hingga aplikasi internal khusus yang dirancang sesuai alur kerja perusahaan Anda.'
   },
 
   en: {
     // ---- Navbar (shared across all pages) ----
     'nav.home': 'Home',
-    'nav.servicesToggle': 'Services',
+    'nav.servicesToggle': 'Solutions',
     'nav.about': 'About Us',
     'nav.servicesItem': 'Services',
     'nav.portfolio': 'Portfolio',
@@ -171,6 +187,11 @@ window.SITE_I18N = {
     'nav.servicesAppMobileDesc': 'Android & iOS apps built around your business needs',
     'nav.servicesCustomSystem': 'Custom System Development Services',
     'nav.servicesCustomSystemDesc': 'Custom software to automate your business processes',
+    'nav.produkToggle': 'Products',
+    'nav.produkAbsenAsa': 'Absen ASA',
+    'nav.produkAbsenAsaDesc': 'Employee attendance app with GPS & selfie verification',
+    'nav.produkKlinikAsa': 'Klinik ASA',
+    'nav.produkKlinikAsaDesc': 'Integrated clinic management system',
     'nav.whatsappCta': 'WhatsApp Us',
     'nav.langChangeLabel': 'Change language',
     'nav.langChooseLabel': 'Choose language',
@@ -297,6 +318,17 @@ window.SITE_I18N = {
     'solusi.ctaViewPortfolio': 'View Portfolio',
     'solusi.ctaViewAllPortfolio': 'View All Portfolio',
     'solusi.ctaWhatsapp': 'Chat via WhatsApp',
-    'solusi.ctaContactForm': 'Fill Contact Form'
+    'solusi.ctaContactForm': 'Fill Contact Form',
+    'solusi.previewDefault': 'Solution Preview',
+    'solusi.benefitsTitle': 'Advantages',
+    'solusi.portfolioTitle': 'Find your inspiration',
+    'product.eyebrowDefault': '{name} Product',
+    'product.previewDefault': '{name} Preview',
+    'solusiWebsite.heroTitle': 'Asa Production: The Right Solution for Fast, Clean, and Professional Website Development',
+    'solusiWebsite.heroDesc': '{site} helps your business look professional online with websites that are fast, secure, and easy to manage yourself. Ideal for company profiles, online stores, promotional landing pages, and web-based systems.',
+    'solusiAppMobile.heroTitle': 'Asa Production: The Right Solution for Easy and Effective Android & iOS App Development',
+    'solusiAppMobile.heroDesc': '{site} is ready to help you develop Android & iOS apps easily and effectively. With an expert team and the latest technology, we deliver responsive, user-friendly app solutions tailored to your business needs.',
+    'solusiCustomSystem.heroTitle': 'Asa Production: The Right Solution for Custom Systems Built Around Your Business Needs',
+    'solusiCustomSystem.heroDesc': '{site} designs and builds custom systems and software to automate your business processes — from attendance systems and inventory management to tailor-made internal apps designed around your company\'s workflow.'
   }
 };

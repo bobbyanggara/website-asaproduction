@@ -73,6 +73,8 @@
     Poin "Keunggulan" dikelola terpisah di menu <a href="{{ route('admin.custom-system-benefits.index') }}">Keunggulan Sistem Kustom</a>. Portofolio yang tampil di halaman ini otomatis diambil dari menu Portofolio dengan kategori <strong>"Jasa Sistem Custom"</strong>. Logo klien dikelola sendiri di menu <a href="{{ route('admin.custom-system-clients.index') }}">Klien Sistem Kustom</a> (tidak diambil dari menu Partner di beranda).
   </div>
 
+  @include('admin.partials.en-fields', ['item' => $page])
+
   <div class="mt-3">
     <button type="submit" class="btn btn-dark">Simpan</button>
   </div>

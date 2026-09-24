@@ -202,6 +202,12 @@ class DatabaseSeeder extends Seeder
 
         // 10. Blog (3 artikel contoh)
         $this->call(PostSeeder::class);
+
+        // 11. Konten placeholder untuk dua produk bawaan (Absen ASA & Klinik ASA,
+        //     tabel products): hero, Keunggulan, FAQ, dan logo klien contoh —
+        //     silakan diedit lewat Admin > Semua Produk. Produk lain ditambah
+        //     langsung dari panel admin, tanpa seeder.
+        $this->call(ProdukPagesContentSeeder::class);
     }
 
     /**

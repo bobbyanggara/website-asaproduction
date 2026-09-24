@@ -5,7 +5,7 @@
 --}}
 <section class="well solusi-portfolio center" id="portofolio">
   <div class="container">
-    <h2>Temukan inspirasimu</h2>
+    <h2 data-i18n="solusi.portfolioTitle">Temukan inspirasimu</h2>
     <hr/>
     @if($portfolios->count())
       <div class="solusi-portfolio_grid">
@@ -33,7 +33,7 @@
       <div class="blog-empty" data-i18n="solusiPortfolio.empty">Belum ada portofolio yang dipublikasikan untuk layanan ini.</div>
     @endif
     <div class="center" style="margin-top:36px;">
-      <a href="{{ route('portfolio.index') }}" class="btn btn-sm">Lihat Semua Portofolio</a>
+      <a href="{{ route('portfolio.index') }}" class="btn btn-sm" data-i18n="solusi.ctaViewAllPortfolio">Lihat Semua Portofolio</a>
     </div>
   </div>
 </section>

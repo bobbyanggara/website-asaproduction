@@ -44,14 +44,14 @@
     <section class="solusi-hero">
       <div class="container solusi-hero_inner">
         <div class="solusi-hero_text">
-          <span class="solusi-eyebrow hero-fade-in_item"><i class="fa fa-rocket" aria-hidden="true"></i> Jasa Pembuatan App Mobile</span>
-          <h1 class="hero-fade-in_item">{{ $page->hero_title ?: 'Asa Production, Solusi Tepat untuk Pengembangan Aplikasi Android & iOS yang Mudah dan Efektif' }}</h1>
-          <p class="hero-fade-in_item">{{ $page->hero_subtitle ?: ($setting->site_title ?? 'Kami').' siap membantu Anda mengembangkan aplikasi Android & iOS dengan mudah dan efektif. Dengan tim ahli dan teknologi terkini, kami menghadirkan solusi aplikasi yang responsif, user-friendly, dan sesuai dengan kebutuhan bisnis Anda.' }}</p>
+          <span class="solusi-eyebrow hero-fade-in_item"><i class="fa fa-rocket" aria-hidden="true"></i> <span data-i18n="nav.servicesAppMobile">Jasa Pembuatan App Mobile</span></span>
+          <h1 class="hero-fade-in_item">@if($page->hero_title)@bi($page, 'hero_title')@else<span data-i18n="solusiAppMobile.heroTitle">Asa Production, Solusi Tepat untuk Pengembangan Aplikasi Android & iOS yang Mudah dan Efektif</span>@endif</h1>
+          <p class="hero-fade-in_item">@if($page->hero_subtitle)@bi($page, 'hero_subtitle', ['nl2br' => true])@else<span data-i18n="solusiAppMobile.heroDesc" data-i18n-var-site="{{ $setting->site_title ?? 'Kami' }}">{{ $setting->site_title ?? 'Kami' }} siap membantu Anda mengembangkan aplikasi Android & iOS dengan mudah dan efektif. Dengan tim ahli dan teknologi terkini, kami menghadirkan solusi aplikasi yang responsif, user-friendly, dan sesuai dengan kebutuhan bisnis Anda.</span>@endif</p>
           <a href="https://wa.me/{{ $setting->whatsapp_number }}?text={{ urlencode($setting->whatsapp_message) }}" target="_blank" rel="noopener" class="btn btn-whatsapp solusi-hero_cta hero-fade-in_item">
             <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" style="vertical-align:middle;flex-shrink:0;">
               <path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.7 4.607 1.906 6.475L4 29l7.72-1.867A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818a9.77 9.77 0 0 1-4.98-1.363l-.357-.212-4.583 1.108 1.127-4.47-.233-.367A9.78 9.78 0 0 1 6.182 15c0-5.415 4.404-9.818 9.819-9.818S25.818 9.585 25.818 15 21.415 24.818 16.001 24.818zm5.396-7.34c-.296-.148-1.75-.864-2.021-.963-.271-.099-.469-.148-.667.148-.198.296-.766.963-.939 1.161-.173.198-.346.222-.642.074-.296-.148-1.249-.46-2.379-1.467-.879-.784-1.472-1.753-1.645-2.049-.173-.296-.018-.456.13-.604.134-.133.296-.346.444-.519.148-.173.198-.297.296-.494.099-.198.05-.371-.025-.519-.074-.148-.667-1.607-.914-2.202-.24-.577-.485-.499-.667-.508l-.568-.01c-.198 0-.519.074-.79.371-.271.297-1.037 1.014-1.037 2.472s1.062 2.868 1.21 3.066c.148.198 2.089 3.19 5.062 4.474.707.305 1.259.487 1.689.623.71.226 1.355.194 1.866.118.569-.085 1.75-.716 1.997-1.407.247-.692.247-1.284.173-1.407-.074-.123-.271-.198-.568-.346z"/>
             </svg>
-            <span>Whatsapp Kami</span>
+            <span data-i18n="nav.whatsappCta">WhatsApp Kami</span>
           </a>
         </div>
         @if($page->hero_image)
@@ -68,7 +68,7 @@
     @if($page->preview_media)
     <section class="well solusi-preview center">
       <div class="container">
-        <h2>{{ $page->preview_title ?: 'Preview Solusi' }}</h2>
+        <h2>@if($page->preview_title)@bi($page, 'preview_title')@else<span data-i18n="solusi.previewDefault">Preview Solusi</span>@endif</h2>
         <hr/>
         <div class="solusi-preview_media">
           @if(\Illuminate\Support\Str::endsWith(strtolower($page->preview_media), ['.mp4', '.webm']))
@@ -78,7 +78,7 @@
           @endif
         </div>
         @if($page->preview_caption)
-        <p class="solusi-preview_caption">{{ $page->preview_caption }}</p>
+        <p class="solusi-preview_caption">@bi($page, 'preview_caption', ['nl2br' => true])</p>
         @endif
       </div>
     </section>
@@ -88,7 +88,7 @@
     @if($benefits->count())
     <section class="well solusi-benefits center" id="keunggulan">
       <div class="container">
-        <h2>Keunggulan</h2>
+        <h2 data-i18n="solusi.benefitsTitle">Keunggulan</h2>
         <hr/>
         <div class="row">
           @foreach($benefits as $benefit)
@@ -101,8 +101,8 @@
                   <i class="fa {{ $benefit->icon ?: 'fa-star' }}" aria-hidden="true"></i>
                 @endif
               </div>
-              <h3>{{ $benefit->title }}</h3>
-              <p>{{ $benefit->description }}</p>
+              <h3>@bi($benefit, 'title')</h3>
+              <p>@bi($benefit, 'description', ['nl2br' => true])</p>
             </div>
           </div>
           @endforeach

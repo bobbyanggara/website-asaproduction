@@ -23,9 +23,9 @@
     <div class="well4">
       <div class="container center">
         <hr/>
-        <h2>{{ $setting->footer_title }}</h2>
-        <h3>{{ $setting->footer_subtitle }}</h3>
-        <a class="btn" href="{{ $setting->footer_cta_link ?: 'https://wa.me/'.$setting->whatsapp_number }}">{{ $setting->footer_cta_text }}</a>
+        <h2>@bi($setting, 'footer_title')</h2>
+        <h3>@bi($setting, 'footer_subtitle')</h3>
+        <a class="btn" href="{{ $setting->footer_cta_link ?: 'https://wa.me/'.$setting->whatsapp_number }}">@bi($setting, 'footer_cta_text')</a>
       </div>
     </div>
   </div>

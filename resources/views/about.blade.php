@@ -69,10 +69,10 @@
         <div class="team-card_body">
           <p class="team-card_name">{{ $member->name }}</p>
           @if($member->role)
-          <p class="team-card_role">{{ $member->role }}</p>
+          <p class="team-card_role">@bi($member, 'role')</p>
           @endif
           @if($member->description)
-          <p class="team-card_quote">&ldquo;{{ $member->description }}&rdquo;</p>
+          <p class="team-card_quote">&ldquo;@bi($member, 'description')&rdquo;</p>
           @endif
         </div>
       </div>

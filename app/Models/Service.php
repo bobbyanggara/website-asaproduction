@@ -2,10 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AutoTranslates;
 use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
+    use AutoTranslates;
+
+    /** Field Indonesia yang otomatis diterjemahkan ke kolom "<field>_en" saat admin menyimpan. */
+    protected array $translatable = ['title', 'description'];
+
     protected $guarded = [];
 
     public function scopeActive($query)

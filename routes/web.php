@@ -16,10 +16,13 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\PortfolioController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ProductItemController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TeamMemberController;
+use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\WebsiteBenefitController;
 use App\Http\Controllers\Admin\WebsiteClientController;
@@ -34,6 +37,7 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomSystemController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PortfolioController as PublicPortfolioController;
 use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
@@ -72,6 +76,16 @@ Route::get('/solusi/jasa-pembuatan-website', [WebsiteController::class, 'index']
 |--------------------------------------------------------------------------
 */
 Route::get('/solusi/jasa-pembuatan-sistem-kustom', [CustomSystemController::class, 'index'])->name('solusi.custom-system');
+
+/*
+|--------------------------------------------------------------------------
+| Produk (halaman publik, dinamis)
+|--------------------------------------------------------------------------
+| Satu route untuk semua produk. Produk baru yang ditambahkan lewat Admin >
+| Produk langsung bisa dibuka di /produk/{slug} tanpa menambah route/kode.
+| Slug lama (absen-asa, klinik-asa) tetap sama, jadi URL lama tidak putus.
+*/
+Route::get('/produk/{product:slug}', [ProductController::class, 'show'])->name('produk.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -136,6 +150,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::get('settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingController::class, 'update'])->name('settings.update');
 
+    // Isi versi Inggris untuk konten lama (konten baru otomatis diterjemahkan saat disimpan).
+    Route::get('translations', [TranslationController::class, 'index'])->name('translations.index');
+    Route::post('translations/run', [TranslationController::class, 'run'])->name('translations.run');
+
     Route::resource('posts', PostController::class)->except(['show']);
     Route::resource('team', TeamMemberController::class)->except(['show']);
     Route::resource('services', ServiceController::class)->except(['show']);
@@ -168,6 +186,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::resource('custom-system-clients', CustomSystemClientController::class)->except(['show']);
     Route::resource('custom-system-portfolios', CustomSystemPortfolioController::class)->except(['show']);
     Route::resource('custom-system-faqs', CustomSystemFaqController::class)->except(['show']);
+
+    // Produk (dinamis): tambah produk baru -> otomatis muncul di navbar & punya
+    // halaman publik /produk/{slug}. Keunggulan, Klien, dan FAQ dikelola per produk.
+    Route::resource('products', AdminProductController::class)->except(['show']);
+    Route::prefix('products/{product}/{type}')
+        ->whereIn('type', ['benefits', 'clients', 'faqs'])
+        ->name('product-items.')
+        ->group(function () {
+            Route::get('/', [ProductItemController::class, 'index'])->name('index');
+            Route::get('create', [ProductItemController::class, 'create'])->name('create');
+            Route::post('/', [ProductItemController::class, 'store'])->name('store');
+            Route::get('{id}/edit', [ProductItemController::class, 'edit'])->whereNumber('id')->name('edit');
+            Route::put('{id}', [ProductItemController::class, 'update'])->whereNumber('id')->name('update');
+            Route::delete('{id}', [ProductItemController::class, 'destroy'])->whereNumber('id')->name('destroy');
+        });
 
     Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::get('contact-messages/poll-status', [ContactMessageController::class, 'pollStatus'])->name('contact-messages.poll-status');

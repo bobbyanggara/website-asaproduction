@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AutoTranslates;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Post extends Model
 {
+    use AutoTranslates;
+
+    /** Field Indonesia yang otomatis diterjemahkan ke kolom "<field>_en" saat admin menyimpan. */
+    protected array $translatable = ['title', 'excerpt', 'content'];
+
     protected $guarded = [];
 
     protected $casts = [

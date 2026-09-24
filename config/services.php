@@ -45,6 +45,16 @@ return [
         // Kalau butuh kualitas jawaban lebih pintar & masih cukup cepat, coba
         // 'llama-3.3-70b-versatile'. Override lewat GROQ_MODEL di .env.
         'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
+        // Model khusus terjemahan konten (dipanggil saat admin menyimpan, jadi
+        // kecepatan tidak sekritis chatbot). Kosong = pakai GROQ_MODEL di atas.
+        // Kalau hasil terjemahan kurang natural, coba 'llama-3.3-70b-versatile'.
+        'translate_model' => env('GROQ_TRANSLATE_MODEL'),
+    ],
+
+    // Terjemahan otomatis ID -> EN saat admin menyimpan konten. Set
+    // AUTO_TRANSLATE=false di .env untuk mematikan (mis. saat import massal).
+    'auto_translate' => [
+        'enabled' => env('AUTO_TRANSLATE', true),
     ],
 
 ];

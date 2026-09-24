@@ -30,7 +30,7 @@ class ServiceController extends Controller
 
         Service::create($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil ditambahkan.');
+        return redirect()->route('admin.services.index')->with('success', 'Keunggulan berhasil ditambahkan.');
     }
 
     public function edit(Service $service)
@@ -54,14 +54,14 @@ class ServiceController extends Controller
 
         $service->update($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Layanan berhasil diperbarui.');
+        return redirect()->route('admin.services.index')->with('success', 'Keunggulan berhasil diperbarui.');
     }
 
     public function destroy(Service $service)
     {
         $service->delete();
 
-        return back()->with('success', 'Layanan berhasil dihapus.');
+        return back()->with('success', 'Keunggulan berhasil dihapus.');
     }
 
     private function validated(Request $request): array

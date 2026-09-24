@@ -53,6 +53,8 @@
     </details>
   @endunless
 
+  @include('admin.partials.en-fields', ['item' => $item])
+
   <div class="mt-3">
     <button type="submit" class="btn btn-dark">Simpan</button>
     <a href="{{ route('admin.custom-system-portfolios.index') }}" class="btn btn-outline-secondary">Batal</a>

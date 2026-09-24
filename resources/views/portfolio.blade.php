@@ -70,7 +70,7 @@
       <div class="portfolio-filter" id="portfolioFilter" role="tablist">
         <button type="button" class="portfolio-filter_tab is-active" data-category="all" role="tab" aria-selected="true" data-i18n="portfolioPage.filterAll">All</button>
         @foreach($categories as $category)
-        <button type="button" class="portfolio-filter_tab" data-category="{{ $category }}" role="tab" aria-selected="false">{{ $category }}</button>
+        <button type="button" class="portfolio-filter_tab" data-category="{{ $category }}" role="tab" aria-selected="false">@bipair($category, $categoryEn[$category] ?? null)</button>
         @endforeach
       </div>
     </div>
@@ -89,13 +89,13 @@
           </button>
           <div class="portfolio-card_body">
             @if($item->category)
-            <span class="portfolio-card_tag">{{ $item->category }}</span>
+            <span class="portfolio-card_tag">@bi($item, 'category')</span>
             @endif
             @if($item->title)
-            <h3 class="portfolio-card_title">{{ $item->title }}</h3>
+            <h3 class="portfolio-card_title">@bi($item, 'title')</h3>
             @endif
             @if($item->description)
-            <p class="portfolio-card_desc">{{ $item->description }}</p>
+            <p class="portfolio-card_desc">@bi($item, 'description', ['nl2br' => true])</p>
             @endif
             @if($item->link)
             <a href="{{ $item->link }}" target="_blank" rel="noopener" class="portfolio-card_link" data-i18n="portfolioPage.viewProject">Lihat Proyek &rarr;</a>

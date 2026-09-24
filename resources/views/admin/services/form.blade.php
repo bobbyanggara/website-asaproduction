@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', $item->exists ? 'Edit Layanan' : 'Tambah Layanan')
+@section('title', $item->exists ? 'Edit Keunggulan' : 'Tambah Keunggulan')
 
 @section('content')
 <form method="POST" action="{{ $item->exists ? route('admin.services.update', $item) : route('admin.services.store') }}" enctype="multipart/form-data">
@@ -37,6 +37,8 @@
       </div>
     </div>
   </div>
+
+  @include('admin.partials.en-fields', ['item' => $item])
 
   <div class="mt-3">
     <button type="submit" class="btn btn-dark">Simpan</button>

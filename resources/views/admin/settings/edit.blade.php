@@ -62,6 +62,11 @@
         <input type="text" name="promo_text" class="form-control" maxlength="255" value="{{ old('promo_text', $setting->promo_text) }}" placeholder="Contoh: 🔥 Promo spesial bulan ini — diskon hingga 20% untuk semua paket jasa!">
         <div class="form-text">Teks ini akan berjalan (marquee) di bar promo bagian paling atas halaman, sebelum menu navigasi. Kosongkan atau matikan toggle di atas untuk menyembunyikannya.</div>
       </div>
+      <div class="col-12">
+        <label class="form-label">Teks Promo (EN)</label>
+        <input type="text" name="promo_text_en" class="form-control" maxlength="255" value="{{ old('promo_text_en', $setting->promo_text_en) }}" placeholder="Otomatis diterjemahkan saat disimpan">
+        <div class="form-text">Kosongkan saja — akan diterjemahkan otomatis dari teks Indonesia. Isi hanya kalau ingin mengubah hasilnya.</div>
+      </div>
     </div>
   </div>
 

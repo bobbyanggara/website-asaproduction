@@ -54,8 +54,8 @@
             {{ $post->likes }}
           </span>
         </div>
-        <h2 class="post-card_title">{{ $post->title }}</h2>
-        <p class="post-card_excerpt">{{ $post->excerpt ?: Str::limit(strip_tags($post->content), 120) }}</p>
+        <h2 class="post-card_title">@bi($post, 'title')</h2>
+        <p class="post-card_excerpt">@biexcerpt($post, 120)</p>
         <span class="post-card_readmore" data-i18n="blogIndex.readMore">Baca selengkapnya &rarr;</span>
       </div>
     </a>

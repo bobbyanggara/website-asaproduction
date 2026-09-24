@@ -32,7 +32,7 @@
 
   @include('partials.breadcrumb', ['items' => [
     ['label' => 'Blog', 'i18n' => 'nav.blog', 'url' => route('blog.index')],
-    ['label' => $post->title],
+    ['label' => $post->title, 'label_en' => $post->title_en],
   ]])
 
   {{-- ======================== ARTICLE HEADER ======================== --}}
@@ -40,7 +40,7 @@
     <div class="container">
       <a href="{{ route('blog.index') }}" class="back-link">&larr; <span data-i18n="blogShow.backToBlog">Kembali ke Blog</span></a>
       <div class="post-date">{{ $post->author ?: 'Admin' }} &bull; {{ optional($post->published_at)->translatedFormat('d F Y, H:i') }}</div>
-      <h1>{{ $post->title }}</h1>
+      <h1>@bi($post, 'title')</h1>
     </div>
   </div>
 
@@ -85,11 +85,7 @@
 
   {{-- ======================== CONTENT ======================== --}}
   <div class="article-content">
-    @foreach(preg_split('/\r?\n\r?\n/', trim($post->content)) as $paragraph)
-      @if(trim($paragraph) !== '')
-        <p>{{ trim($paragraph) }}</p>
-      @endif
-    @endforeach
+    @bibody($post, 'content')
   </div>
 
   {{-- ======================== RELATED POSTS ======================== --}}
@@ -105,7 +101,7 @@
             @endif
           </div>
           <div class="related-card_body">
-            <span class="related-card_title">{{ $r->title }}</span>
+            <span class="related-card_title">@bi($r, 'title')</span>
           </div>
         </a>
       @endforeach

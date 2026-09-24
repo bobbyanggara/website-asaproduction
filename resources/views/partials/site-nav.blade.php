@@ -484,16 +484,16 @@
     @if($setting->promo_enabled && $setting->promo_text)
     <div class="site-nav_marquee" aria-label="Promo">
       <div class="site-nav_marquee-track">
-        <span>{{ $setting->promo_text }}</span>
-        <span>{{ $setting->promo_text }}</span>
+        <span>@bi($setting, 'promo_text')</span>
+        <span>@bi($setting, 'promo_text')</span>
       </div>
     </div>
     @endif
 
     <ul class="site-nav_menu" id="navMenu">
-      <li><a href="{{ route('home') }}" data-i18n="nav.home">Home</a></li>
+      @include('partials.nav-products')
       <li class="has-dropdown">
-        <button type="button" class="dropdown-toggle"><span data-i18n="nav.servicesToggle">Layanan</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
+        <button type="button" class="dropdown-toggle"><span data-i18n="nav.servicesToggle">Solusi</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
         <ul class="dropdown-menu dropdown-menu--services">
           <li>
             <a href="{{ route('solusi.website') }}">

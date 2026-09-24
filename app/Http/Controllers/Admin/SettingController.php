@@ -4,31 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
-use App\Services\AutoTranslateService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
-    /**
-     * Pasangan field ID -> field EN yang otomatis diterjemahkan
-     * saat kolom EN dikosongkan oleh admin.
-     */
-    private const AUTO_TRANSLATE_PAIRS = [
-        'hero_title' => 'hero_title_en',
-        'hero_subtitle' => 'hero_subtitle_en',
-        'about_title' => 'about_title_en',
-        'about_description' => 'about_description_en',
-        'about_label' => 'about_label_en',
-        'about_cta_text' => 'about_cta_text_en',
-        'footer_title' => 'footer_title_en',
-        'footer_subtitle' => 'footer_subtitle_en',
-        'footer_cta_text' => 'footer_cta_text_en',
-    ];
-
-    public function __construct(private AutoTranslateService $translator)
-    {
-    }
-
     public function edit()
     {
         $setting = Setting::current();
@@ -45,6 +24,7 @@ class SettingController extends Controller
             'brand_slogan' => ['nullable', 'string', 'max:255'],
             'promo_enabled' => ['nullable', 'boolean'],
             'promo_text' => ['nullable', 'string', 'max:255'],
+            'promo_text_en' => ['nullable', 'string', 'max:255'],
             'blog_section_enabled' => ['nullable', 'boolean'],
             'hero_title' => ['required', 'string', 'max:255'],
             'hero_title_en' => ['nullable', 'string', 'max:255'],
@@ -94,42 +74,11 @@ class SettingController extends Controller
             }
         }
 
-        $data = $this->fillMissingTranslations($data);
-
+        // Versi Inggris (kolom *_en) diisi otomatis oleh model Setting (trait
+        // AutoTranslates) kalau dikosongkan, atau kalau teks Indonesianya berubah
+        // sementara kolom EN-nya tidak diubah manual.
         $setting->update($data);
 
         return back()->with('success', 'Pengaturan berhasil disimpan.');
-    }
-
-    /**
-     * Untuk setiap pasangan ID/EN, kalau field EN dikosongkan admin
-     * tapi field ID diisi, otomatis terjemahkan lewat Groq (satu
-     * panggilan API untuk semua field sekaligus) supaya admin tidak
-     * perlu isi manual satu-satu.
-     */
-    private function fillMissingTranslations(array $data): array
-    {
-        $toTranslate = [];
-
-        foreach (self::AUTO_TRANSLATE_PAIRS as $idField => $enField) {
-            $idValue = $data[$idField] ?? null;
-            $enValue = $data[$enField] ?? null;
-
-            if (filled($idValue) && blank($enValue)) {
-                $toTranslate[$enField] = $idValue;
-            }
-        }
-
-        if (empty($toTranslate)) {
-            return $data;
-        }
-
-        $translated = $this->translator->translateBatch($toTranslate);
-
-        foreach ($translated as $enField => $englishText) {
-            $data[$enField] = $englishText;
-        }
-
-        return $data;
     }
 }

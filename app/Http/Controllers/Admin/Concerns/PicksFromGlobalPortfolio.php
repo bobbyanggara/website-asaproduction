@@ -49,7 +49,9 @@ trait PicksFromGlobalPortfolio
 
             $modelClass::create([
                 'title' => $portfolio->title,
+                'title_en' => $portfolio->title_en,
                 'description' => $portfolio->description,
+                'description_en' => $portfolio->description_en,
                 'link' => $portfolio->link,
                 'thumbnail' => $portfolio->thumbnail,
                 'image' => $portfolio->image ?: $portfolio->thumbnail,

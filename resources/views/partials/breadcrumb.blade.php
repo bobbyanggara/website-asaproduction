@@ -11,6 +11,8 @@
   - Item terakhir di $items dianggap halaman aktif: tidak dibuat link.
   - 'i18n' opsional: isi kalau labelnya ada di kamus SITE_I18N (public/js/i18n-data.js)
     supaya ikut berubah saat bahasa diganti. Kosongkan untuk teks dinamis (mis. judul artikel).
+  - 'label_en' opsional: versi Inggris untuk label dinamis dari database (mis. judul artikel);
+    dirender dua bahasa lewat @bipair, jadi ikut berganti saat bahasa diubah.
   - 'url' opsional: isi kalau item BUKAN halaman aktif tapi tetap perlu link (mis. "Blog"
     di breadcrumb halaman detail artikel).
 
@@ -105,7 +107,7 @@
       @if(!empty($item['url']) && !$loop->last)
         <a href="{{ $item['url'] }}"@if(!empty($item['i18n'])) data-i18n="{{ $item['i18n'] }}"@endif><span>{{ $item['label'] }}</span></a>
       @else
-        <span class="breadcrumb-current" aria-current="page"@if(!empty($item['i18n'])) data-i18n="{{ $item['i18n'] }}"@endif>{{ $item['label'] }}</span>
+        <span class="breadcrumb-current" aria-current="page"@if(!empty($item['i18n'])) data-i18n="{{ $item['i18n'] }}"@endif>@if(!empty($item['label_en'])) @bipair($item['label'], $item['label_en']) @else {{ $item['label'] }} @endif</span>
       @endif
     @endforeach
   </div>

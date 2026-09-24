@@ -145,7 +145,7 @@
       filter: drop-shadow(0 0 6px rgba(46,139,255,.6)) drop-shadow(0 2px 4px rgba(0,0,0,.45));
       animation: brand-rocket-orbit-3d 7s linear infinite;
     }
-    .brand_logo-rocket svg{
+    .brand_logo-rocket_body{
       display: block;
       width: 100%;
       height: 100%;
@@ -222,6 +222,45 @@
       .brand_logo-rocket{ animation: none; opacity: 0; }
       .brand_logo-rocket_flame{ animation: none; }
       .brand_logo-trail{ animation: none; opacity: 0; }
+    }
+
+    /* ===== Roket hero — MODE FX (dikendalikan JS: lihat blok script tepat setelah hero) =====
+       Animasi CSS di atas (12 keyframe) sengaja DIPERTAHANKAN sebagai CADANGAN: kalau JS
+       gagal jalan atau canvas tidak didukung, roket lama tetap mengorbit seperti biasa.
+       Begitu JS aktif, ia menambahkan kelas .is-fx pada .brand_logo-wrap → animasi CSS lama
+       dimatikan dan JS memegang kendali penuh (gerak mulus, api berlapis, jejak partikel).
+       Warna roket memakai class (bukan atribut var()) supaya ada nilai cadangan yang pasti. */
+    .brand_logo-rocket .rk-accent{ fill: #2E8BFF; fill: var(--brand-accent, #2E8BFF); }
+    .brand_logo-rocket .rk-accent-dark{ fill: #0051B5; fill: var(--brand-light, #0051B5); }
+    .brand_logo-rocket_jet{
+      display: none;
+      position: absolute;
+      top: 19.4px;
+      left: 50%;
+      width: 8px;
+      height: 17px;
+      margin-left: -4px;
+      pointer-events: none;
+      transform-origin: 50% 0;
+      filter: drop-shadow(0 0 3px rgba(255,150,50,.85));
+    }
+    .brand_logo-fx{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      max-width: none;
+      pointer-events: none;
+    }
+    .brand_logo-wrap.is-fx .brand_logo-rocket{
+      animation: none;
+      will-change: transform, opacity;
+    }
+    .brand_logo-wrap.is-fx .brand_logo-trail,
+    .brand_logo-wrap.is-fx .brand_logo-rocket_flame{ display: none; }
+    .brand_logo-wrap.is-fx .brand_logo-rocket_jet{ display: block; }
+    @media (prefers-reduced-motion: reduce){
+      .brand_logo-fx{ display: none; }
     }
 
     /* ======================================================================
@@ -509,7 +548,7 @@
       .site-nav_menu > li{
         align-items: stretch;
       }
-      {{-- Garis pemisah tipis antara Beranda / Layanan / Info supaya baris-baris
+      {{-- Garis pemisah tipis antara Produk / Layanan / Info supaya baris-baris
            menu nggak terasa menempel satu sama lain (rapi & mudah dipindai). --}}
       .site-nav_menu > li:nth-child(2),
       .site-nav_menu > li:nth-child(3){
@@ -1252,16 +1291,16 @@
       @if($setting->promo_enabled && $setting->promo_text)
       <div class="site-nav_marquee" aria-label="Promo">
         <div class="site-nav_marquee-track">
-          <span>{{ $setting->promo_text }}</span>
-          <span>{{ $setting->promo_text }}</span>
+          <span>@bi($setting, 'promo_text')</span>
+          <span>@bi($setting, 'promo_text')</span>
         </div>
       </div>
       @endif
 
       <ul class="site-nav_menu" id="navMenu">
-        <li><a href="#home" data-i18n="nav.home">Home</a></li>
+        @include('partials.nav-products')
         <li class="has-dropdown">
-          <button type="button" class="dropdown-toggle"><span data-i18n="nav.servicesToggle">Layanan</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
+          <button type="button" class="dropdown-toggle"><span data-i18n="nav.servicesToggle">Solusi</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
           <ul class="dropdown-menu dropdown-menu--services">
             <li>
               <a href="{{ route('solusi.website') }}">
@@ -1411,13 +1450,48 @@
           <span class="brand_logo-trail" aria-hidden="true"></span>
           <span class="brand_logo-trail" aria-hidden="true"></span>
           <span class="brand_logo-rocket" aria-hidden="true">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="12" cy="11" rx="4" ry="8" fill="#ffffff"/>
-              <circle cx="12" cy="9" r="2" fill="var(--brand-accent, #2E8BFF)"/>
-              <path d="M8 14 L4 19 L8 17 Z" fill="var(--brand-accent, #2E8BFF)"/>
-              <path d="M16 14 L20 19 L16 17 Z" fill="var(--brand-accent, #2E8BFF)"/>
+            <svg class="brand_logo-rocket_body" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" focusable="false">
+              <defs>
+                <linearGradient id="brandRkBody" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#b4c3da"/>
+                  <stop offset=".42" stop-color="#ffffff"/>
+                  <stop offset="1" stop-color="#93a6c4"/>
+                </linearGradient>
+                <radialGradient id="brandRkGlass" cx=".35" cy=".3" r=".9">
+                  <stop offset="0" stop-color="#9fe0ff"/>
+                  <stop offset=".55" stop-color="#2b6fd6"/>
+                  <stop offset="1" stop-color="#0a2a5e"/>
+                </radialGradient>
+              </defs>
+              <path class="rk-accent" d="M8.1 11.6 L3.9 17.7 L4.6 19.7 L8.1 17.4 Z"/>
+              <path class="rk-accent" d="M15.9 11.6 L20.1 17.7 L19.4 19.7 L15.9 17.4 Z"/>
+              <path class="rk-accent-dark" d="M8.1 14.6 L5.6 18.3 L4.6 19.7 L8.1 17.4 Z" opacity=".55"/>
+              <path class="rk-accent-dark" d="M15.9 14.6 L18.4 18.3 L19.4 19.7 L15.9 17.4 Z" opacity=".55"/>
+              <path d="M9.5 16.4 L14.5 16.4 L13.7 18.8 L10.3 18.8 Z" fill="#56657f"/>
+              <path d="M12 1.1 C14.9 3.5 16.2 7.3 16 12.4 L15.7 16.8 L8.3 16.8 L8 12.4 C7.8 7.3 9.1 3.5 12 1.1 Z" fill="url(#brandRkBody)"/>
+              <path class="rk-accent" d="M12 1.1 C13.3 2.2 14.3 3.6 14.9 5.4 L9.1 5.4 C9.7 3.6 10.7 2.2 12 1.1 Z"/>
+              <rect class="rk-accent" x="8.05" y="13.5" width="7.9" height=".85"/>
+              <circle cx="12" cy="9.5" r="2.3" fill="#e4eefc"/>
+              <circle cx="12" cy="9.5" r="1.75" fill="url(#brandRkGlass)"/>
+              <ellipse cx="11.25" cy="8.75" rx=".6" ry=".34" fill="#ffffff" opacity=".9" transform="rotate(-35 11.25 8.75)"/>
             </svg>
             <span class="brand_logo-rocket_flame"></span>
+            <svg class="brand_logo-rocket_jet" viewBox="0 0 10 20" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+              <defs>
+                <linearGradient id="brandRkFlameOuter" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ffb347"/>
+                  <stop offset=".55" stop-color="#ff5a1f" stop-opacity=".85"/>
+                  <stop offset="1" stop-color="#ff3d00" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="brandRkFlameCore" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#ffffff"/>
+                  <stop offset=".5" stop-color="#fff2a8"/>
+                  <stop offset="1" stop-color="#ffd25a" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M1 0 C.4 6 2.6 12 5 20 C7.4 12 9.6 6 9 0 Z" fill="url(#brandRkFlameOuter)"/>
+              <path d="M2.6 0 C2.2 4.5 3.6 8.5 5 13 C6.4 8.5 7.8 4.5 7.4 0 Z" fill="url(#brandRkFlameCore)"/>
+            </svg>
           </span>
         </div>
         <h1 class="brand_name" style="margin:0 0 6px 0;font-family:'League Spartan', sans-serif;">
@@ -1427,6 +1501,462 @@
       </div>
     </div>
   </header>
+
+  {{-- Mesin animasi roket hero. Sengaja diletakkan tepat setelah hero (bukan di akhir body)
+       supaya langsung aktif sebelum script berat lain selesai dimuat. --}}
+<script>
+/* ==========================================================================
+   ROKET HERO — mesin animasi berbasis JS (requestAnimationFrame)
+
+   Kenapa JS, bukan CSS keyframe lagi?
+   - Versi CSS lama hanya punya 12 titik → jalurnya "poligon" bersegi, rotasi
+     dan skala diinterpolasi linear antar-titik → terasa kaku/patah-patah.
+     Di sini posisi dihitung LANGSUNG dari rumus elips di setiap frame, jadi
+     jalurnya benar-benar mulus di semua resolusi & kecepatan layar.
+   - Arah hidung roket = turunan (tangen) rumus jalur itu sendiri, jadi selalu
+     pas menghadap arah terbang, tanpa "loncat" di titik manapun.
+   - Jejak asap/api berupa partikel di ruang dunia (bukan titik yang menempel
+     di roket) → ekornya melengkung mengikuti orbit dan memudar alami.
+
+   Efek yang ada:
+   1. Orbit 3D  : elips miring; sisi dekat (bawah) roket membesar & lewat DI
+                  DEPAN logo, sisi jauh (atas) mengecil & lewat DI BELAKANG logo.
+                  Roket juga memendek sedikit saat menuju/menjauhi kamera.
+   2. Kecepatan : ala hukum Kepler — ngebut di sisi dekat, santai di sisi jauh,
+                  plus goyangan kecil (bob & roll) supaya terasa hidup.
+   3. Mesin     : api berlapis yang berkedip acak, panjangnya ikut kecepatan.
+   4. Jejak     : partikel api → biru brand + kilau bintang berkelap-kelip.
+                  Partikel yang lahir di sisi jauh digambar di belakang logo.
+   5. Interaksi : arahkan kursor ke logo = mesin menderu; klik/tap = turbo
+                  (ngebut, semburan percikan, cincin kejut).
+   6. Intro     : roket meluncur keluar dari balik logo saat hero muncul.
+
+   Aman & hemat: berhenti otomatis saat hero di luar layar / tab tidak aktif,
+   menghormati prefers-reduced-motion, kualitas turun otomatis di perangkat
+   lambat, dan animasi CSS lama tetap jadi cadangan kalau JS/canvas gagal.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var wrap   = document.querySelector('.brand_logo-wrap');
+  var rocket = wrap && wrap.querySelector('.brand_logo-rocket');
+  var jet    = wrap && wrap.querySelector('.brand_logo-rocket_jet');
+  if (!wrap || !rocket || !jet) { return; }
+  if (!window.requestAnimationFrame || !document.createElement('canvas').getContext) { return; }
+
+  /* ---------- Parameter ---------- */
+  var TAU = Math.PI * 2;
+  var PERIOD = 7;                     // detik per putaran (rata-rata, sama seperti versi lama)
+  var ECC = 0.26;                     // 0 = kecepatan konstan; makin besar makin beda dekat vs jauh
+  var RATIO = 0.34;                   // Ry / Rx (sama seperti orbit lama: 34 / 100)
+  var TILT = -11 * Math.PI / 180;     // kemiringan orbit (ujung kanan sedikit naik)
+  var COS_T = Math.cos(TILT), SIN_T = Math.sin(TILT);
+  var W0 = TAU / (PERIOD * Math.sqrt(1 - ECC * ECC));   // kecepatan sudut dasar (rad/dtk)
+  var INTRO_DELAY = 0.5;              // selaras dengan delay fade-in blok logo (.5s)
+  var INTRO_DUR = 1.5;
+  var MAX_PARTS = 200;                // batas partikel per lapisan
+  var NOZZLE = 7.6;                   // jarak lubang mesin dari pusat roket (px, skala 1)
+
+  /* ---------- State ---------- */
+  var Rx = 100, Ry = Rx * RATIO;      // radius orbit (Rx dikecilkan otomatis di layar sempit)
+  var theta = 3 * Math.PI / 2;        // mulai di puncak orbit (sisi jauh, tersembunyi di balik logo)
+  var clock = 0, last = null, raf = 0;
+  var running = false, inView = true, reduced = false, inited = false, failed = false;
+  var hover = false, hoverV = 0, clickV = 0;
+  var quality = 1, ema = 1 / 60;
+  var emitAcc = 0, prev = { x: 0, y: 0, ok: false };
+  var cur = { x: 0, y: 0, s: 1 };
+  var lastFront = null;
+  var rings = [];
+  var pool = [];
+  var view = { ready: false, left: -160, hh: 86, cw: 320, ch: 172, dpr: 1 };
+  var layers = null, SPR = null, STAR = null;
+  var SPR_N = 20;
+
+  /* ---------- Sprite (digambar sekali, dipakai ulang → murah) ---------- */
+  var PAL = [[255, 247, 205], [255, 196, 96], [255, 140, 60], [205, 226, 255], [110, 175, 255], [46, 139, 255]];
+  var PAL_AT = [0, 0.15, 0.32, 0.55, 0.8, 1];
+
+  function palColor(t) {
+    for (var i = 1; i < PAL_AT.length; i++) {
+      if (t <= PAL_AT[i]) {
+        var u = (t - PAL_AT[i - 1]) / (PAL_AT[i] - PAL_AT[i - 1]);
+        var a = PAL[i - 1], b = PAL[i];
+        return [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u, a[2] + (b[2] - a[2]) * u];
+      }
+    }
+    return PAL[PAL.length - 1];
+  }
+
+  function buildSprites() {
+    var i, c, g, col, rgb, grad;
+    SPR = [];
+    for (i = 0; i < SPR_N; i++) {
+      c = document.createElement('canvas');
+      c.width = c.height = 40;
+      g = c.getContext('2d');
+      col = palColor(i / (SPR_N - 1));
+      rgb = Math.round(col[0]) + ',' + Math.round(col[1]) + ',' + Math.round(col[2]);
+      grad = g.createRadialGradient(20, 20, 0, 20, 20, 20);
+      grad.addColorStop(0, 'rgba(' + rgb + ',1)');
+      grad.addColorStop(0.35, 'rgba(' + rgb + ',0.55)');
+      grad.addColorStop(1, 'rgba(' + rgb + ',0)');
+      g.fillStyle = grad;
+      g.fillRect(0, 0, 40, 40);
+      SPR.push(c);
+    }
+    // Kilau bintang 4 sudut (glow lembut + dua garis tipis)
+    c = document.createElement('canvas');
+    c.width = c.height = 48;
+    g = c.getContext('2d');
+    grad = g.createRadialGradient(24, 24, 0, 24, 24, 12);
+    grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+    grad.addColorStop(1, 'rgba(160,205,255,0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 48, 48);
+    g.translate(24, 24);
+    g.fillStyle = 'rgba(235,245,255,0.98)';
+    g.beginPath();
+    g.moveTo(0, -23);
+    g.quadraticCurveTo(1.6, -1.6, 23, 0);
+    g.quadraticCurveTo(1.6, 1.6, 0, 23);
+    g.quadraticCurveTo(-1.6, 1.6, -23, 0);
+    g.quadraticCurveTo(-1.6, -1.6, 0, -23);
+    g.closePath();
+    g.fill();
+    STAR = c;
+  }
+
+  /* ---------- Lapisan kanvas: belakang (di bawah logo) & depan (di atas logo) ---------- */
+  function makeLayer(z) {
+    var c = document.createElement('canvas');
+    c.className = 'brand_logo-fx';
+    c.setAttribute('aria-hidden', 'true');
+    c.style.zIndex = z;
+    wrap.insertBefore(c, rocket);          // di depan roket dalam DOM → roket menimpa partikel
+    var g = c.getContext('2d');
+    return g ? { canvas: c, ctx: g, list: [] } : null;
+  }
+
+  function ensureBuilt() {
+    if (inited) { return true; }
+    var back = makeLayer(1), front = makeLayer(3);
+    if (!back || !front) {
+      if (back) { wrap.removeChild(back.canvas); }
+      if (front) { wrap.removeChild(front.canvas); }
+      return false;
+    }
+    layers = { back: back, front: front };
+    buildSprites();
+    inited = true;
+    return true;
+  }
+
+  /* ---------- Ukuran adaptif ----------
+     Di layar sempit orbit tidak boleh keluar dari layar, jadi radius dikecilkan
+     (minimum 84 px = tetap melewati sisi logo). Kanvas juga dipotong sebatas
+     lebar layar supaya tidak pernah memicu scroll horizontal. */
+  function layout() {
+    if (!inited) { return; }
+    var r = wrap.getBoundingClientRect();
+    var vw = document.documentElement.clientWidth || window.innerWidth || 0;
+    var cx = r.width ? r.left + r.width / 2 : vw / 2;     // belum ada ukuran → anggap di tengah
+    var avail = vw > 0 ? Math.min(cx, vw - cx) : 100;
+    Rx = Math.max(84, Math.min(100, avail - 24));
+    Ry = Rx * RATIO;
+
+    var hw = Rx + 60, hh = 86;
+    var left = vw > 0 ? Math.max(-hw, -cx) : -hw;
+    var right = vw > 0 ? Math.min(hw, vw - cx) : hw;
+    var cw = Math.max(40, Math.round(right - left));
+    var ch = hh * 2;
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+
+    if (view.ready && view.left === left && view.hh === hh && view.cw === cw && view.dpr === dpr) {
+      return;                                              // tidak berubah → jangan reset kanvas
+    }
+    view.ready = true;
+    view.left = left; view.hh = hh; view.cw = cw; view.ch = ch; view.dpr = dpr;
+    [layers.back, layers.front].forEach(function (L) {
+      var c = L.canvas;
+      c.width = Math.round(cw * dpr);
+      c.height = Math.round(ch * dpr);
+      c.style.width = cw + 'px';
+      c.style.height = ch + 'px';
+      c.style.marginLeft = left + 'px';
+      c.style.marginTop = (-hh) + 'px';
+      L.ctx.setTransform(dpr, 0, 0, dpr, -left * dpr, hh * dpr);   // koordinat = px dari pusat logo
+    });
+  }
+
+  var layoutQueued = false;
+  function queueLayout() {
+    if (layoutQueued) { return; }
+    layoutQueued = true;
+    window.requestAnimationFrame(function () { layoutQueued = false; layout(); });
+  }
+
+  /* ---------- Partikel ---------- */
+  function spawn(layer, kind, x, y, vx, vy, size, life, alpha, drag, grow) {
+    var list = layer.list;
+    if (list.length >= MAX_PARTS) { return; }
+    var p = pool.pop() || {};
+    p.kind = kind; p.x = x; p.y = y; p.vx = vx; p.vy = vy;
+    p.s0 = size; p.life = life; p.a0 = alpha; p.drag = drag; p.grow = grow;
+    p.age = 0; p.tw = 9 + Math.random() * 7; p.ph = Math.random() * TAU;
+    list.push(p);
+  }
+
+  function stepLayer(L, dt) {
+    var a = L.list, i, p, k;
+    for (i = a.length - 1; i >= 0; i--) {
+      p = a[i];
+      p.age += dt;
+      if (p.age >= p.life) {
+        pool.push(p);
+        a[i] = a[a.length - 1];
+        a.pop();
+        continue;
+      }
+      k = Math.exp(-p.drag * dt);
+      p.vx *= k; p.vy *= k;
+      p.x += p.vx * dt; p.y += p.vy * dt;
+    }
+  }
+
+  function drawLayer(L, dim, withRings) {
+    var g = L.ctx, a = L.list, i, p, t, s, al, tw;
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+    g.clearRect(view.left, -view.hh, view.cw, view.ch);
+    g.globalCompositeOperation = 'lighter';
+    for (i = 0; i < a.length; i++) {
+      p = a[i];
+      t = p.age / p.life;
+      if (p.kind === 0) {
+        al = p.a0 * Math.pow(1 - t, 1.35) * (t < 0.08 ? t / 0.08 : 1) * dim;
+        s = p.s0 * (1 + p.grow * t);
+        g.globalAlpha = al;
+        g.drawImage(SPR[Math.min(SPR_N - 1, (t * SPR_N) | 0)], p.x - s, p.y - s, s * 2, s * 2);
+      } else {
+        tw = 0.55 + 0.45 * Math.sin(p.age * p.tw + p.ph);
+        al = p.a0 * (1 - t) * tw * dim;
+        s = p.s0 * (0.55 + 0.45 * tw);
+        g.globalAlpha = al;
+        g.drawImage(STAR, p.x - s, p.y - s, s * 2, s * 2);
+      }
+    }
+    if (withRings && rings.length) {
+      g.lineWidth = 1.4;
+      for (i = 0; i < rings.length; i++) {
+        t = rings[i].age / rings[i].life;
+        g.globalAlpha = Math.pow(1 - t, 2) * 0.75;
+        g.strokeStyle = 'rgb(150,205,255)';
+        g.beginPath();
+        g.arc(rings[i].x, rings[i].y, 8 + t * 46, 0, TAU);
+        g.stroke();
+      }
+    }
+    g.globalAlpha = 1;
+  }
+
+  /* ---------- Turbo (klik / tap pada logo) ---------- */
+  function burst() {
+    if (!running) { return; }
+    var i, ang, sp;
+    clickV = 1;
+    rings.push({ x: cur.x, y: cur.y, age: 0, life: 0.7 });
+    for (i = 0; i < 26; i++) {
+      ang = Math.random() * TAU;
+      sp = 50 + Math.random() * 110;
+      spawn(layers.front, 0, cur.x, cur.y, Math.cos(ang) * sp, Math.sin(ang) * sp,
+            1.6 + Math.random() * 1.8, 0.45 + Math.random() * 0.4, 0.75, 2.6, 0.5);
+    }
+    for (i = 0; i < 9; i++) {
+      ang = Math.random() * TAU;
+      sp = 25 + Math.random() * 70;
+      spawn(layers.front, 1, cur.x, cur.y, Math.cos(ang) * sp, Math.sin(ang) * sp,
+            3 + Math.random() * 3, 0.9 + Math.random() * 0.7, 0.95, 1.6, 0);
+    }
+  }
+
+  /* ---------- Satu langkah simulasi + render ---------- */
+  function frame(now) {
+    raf = 0;
+    if (!running) { return; }
+    try {
+      if (last === null) { last = now; }
+      var dt = (now - last) / 1000;
+      last = now;
+      if (!(dt > 0)) { dt = 1 / 60; }
+      if (dt > 0.05) { dt = 0.05; }              // tab baru aktif lagi → jangan lompat
+      ema += (dt - ema) * 0.05;
+      quality = ema > 0.028 ? 0.5 : 1;           // perangkat lambat → partikel dikurangi setengah
+      clock += dt;
+
+      /* -- Intro & dorongan mesin -- */
+      var e = clock - INTRO_DELAY;
+      var intro = e <= 0 ? 0 : Math.min(1, e / INTRO_DUR);
+      var introEase = 1 - Math.pow(1 - intro, 3);
+      hoverV += ((hover ? 0.55 : 0) - hoverV) * (1 - Math.exp(-7 * dt));
+      clickV = Math.max(0, clickV - dt / 1.7);
+      var boost = Math.min(1.4, hoverV + clickV + (intro < 1 ? Math.pow(1 - intro, 2) * 0.9 : 0));
+
+      /* -- Gerak di orbit -- */
+      theta += W0 * (1 + ECC * Math.sin(theta)) * (1 + 1.35 * boost) * dt;
+      if (theta >= TAU) { theta -= TAU; }
+      var ct = Math.cos(theta), st = Math.sin(theta);
+      var lx = Rx * ct, ly = Ry * st;
+      var px = lx * COS_T - ly * SIN_T;
+      var py = lx * SIN_T + ly * COS_T + Math.sin(clock * 2.4) * 1.3;          // bob halus
+      var dx = -Rx * st, dy = Ry * ct;                                          // turunan jalur = arah terbang
+      var hx = dx * COS_T - dy * SIN_T, hy = dx * SIN_T + dy * COS_T;
+      var hl = Math.sqrt(hx * hx + hy * hy) || 1;
+      hx /= hl; hy /= hl;
+      var rot = Math.atan2(hx, -hy)                                             // hidung (atas SVG) → arah terbang
+              + (Math.sin(clock * 3.1) * 3.2 + Math.sin(clock * 1.3 + 1) * 1.6) * Math.PI / 180;
+
+      /* -- Kedalaman 3D: st > 0 = sisi dekat kamera -- */
+      var s = (1 + 0.36 * st) * (0.4 + 0.6 * introEase);
+      var f = Math.sqrt(st * st + RATIO * RATIO * ct * ct);                     // pemendekan saat menuju/menjauhi kamera
+      var sx = s * (0.97 + 0.03 * Math.cos(clock * 2.6));
+      var sy = s * (0.82 + 0.18 * f);
+      var front = st >= 0;
+      if (front !== lastFront) { rocket.style.zIndex = front ? 3 : 1; lastFront = front; }
+
+      rocket.style.opacity = (Math.min(1, intro * 3) * (0.82 + 0.09 * (st + 1))).toFixed(3);
+      rocket.style.transform = 'translate3d(' + px.toFixed(2) + 'px,' + py.toFixed(2) + 'px,0) rotate(' +
+                               rot.toFixed(4) + 'rad) scale(' + sx.toFixed(3) + ',' + sy.toFixed(3) + ')';
+      cur.x = px; cur.y = py; cur.s = s;
+
+      /* -- Api mesin: berlapis, berkedip acak, memanjang saat boost -- */
+      var n = (Math.sin(clock * 57) + Math.sin(clock * 39 + 2.1) + Math.sin(clock * 91 + 4.2)) / 3;
+      jet.style.transform = 'scale(' + ((0.92 - 0.1 * n) * (1 + 0.25 * boost)).toFixed(3) + ',' +
+                            ((0.88 + 0.28 * n) * (1 + 1.15 * boost)).toFixed(3) + ')';
+      jet.style.opacity = (0.9 + 0.1 * n).toFixed(3);
+
+      /* -- Jejak partikel (dilahirkan di lubang mesin, dirata sepanjang gerak frame ini) -- */
+      var bx = -Math.sin(rot), by = Math.cos(rot);                              // arah "belakang" roket
+      var nx = px + bx * NOZZLE * sy, ny = py + by * NOZZLE * sy;
+      if (intro > 0.04) {
+        if (!prev.ok) { prev.x = nx; prev.y = ny; prev.ok = true; }
+        emitAcc += (58 + 150 * boost) * quality * dt;
+        var cnt = Math.floor(emitAcc), i, u, ex, ey, back, layer, spark;
+        emitAcc -= cnt;
+        layer = front ? layers.front : layers.back;
+        for (i = 1; i <= cnt; i++) {
+          u = i / cnt;
+          ex = prev.x + (nx - prev.x) * u;
+          ey = prev.y + (ny - prev.y) * u;
+          back = (14 + Math.random() * 22) * (1 + 0.5 * boost);
+          spark = Math.random() < 0.11 + 0.2 * boost;
+          if (spark) {
+            spawn(layer, 1, ex, ey, bx * back * 0.4 + (Math.random() - 0.5) * 28, by * back * 0.4 + (Math.random() - 0.5) * 28,
+                  (2.4 + Math.random() * 2.4) * s, 1 + Math.random() * 0.7, 0.95, 1.2, 0);
+          } else {
+            spawn(layer, 0, ex, ey, bx * back + (Math.random() - 0.5) * 18, by * back + (Math.random() - 0.5) * 18,
+                  (2.6 + Math.random() * 2.2) * s, 0.55 + Math.random() * 0.5 + 0.25 * boost, 0.55, 1.8, 1.6 + Math.random() * 0.8);
+          }
+        }
+      }
+      prev.x = nx; prev.y = ny;
+
+      /* -- Cincin kejut -- */
+      for (i = rings.length - 1; i >= 0; i--) {
+        rings[i].age += dt;
+        if (rings[i].age >= rings[i].life) { rings.splice(i, 1); }
+      }
+
+      /* -- Gambar -- */
+      stepLayer(layers.back, dt);
+      stepLayer(layers.front, dt);
+      drawLayer(layers.back, 0.8, false);       // sedikit lebih redup = terasa lebih jauh
+      drawLayer(layers.front, 1, true);
+
+      raf = window.requestAnimationFrame(frame);
+    } catch (err) {
+      fail();
+    }
+  }
+
+  /* ---------- Kendali hidup-mati ---------- */
+  function start() {
+    if (running || failed) { return; }
+    if (!ensureBuilt()) { fail(); return; }
+    layout();
+    wrap.classList.add('is-fx');
+    running = true;
+    last = null;
+    prev.ok = false;
+    raf = window.requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    running = false;
+    if (raf) { window.cancelAnimationFrame(raf); raf = 0; }
+  }
+
+  // Kalau ada error tak terduga: bersihkan semua, biarkan animasi CSS lama mengambil alih.
+  function fail() {
+    failed = true;
+    stop();
+    wrap.classList.remove('is-fx');
+    rocket.style.opacity = '';
+    rocket.style.transform = '';
+    rocket.style.zIndex = '';
+    jet.style.transform = '';
+    jet.style.opacity = '';
+    if (layers) {
+      [layers.back, layers.front].forEach(function (L) {
+        if (L.canvas.parentNode) { L.canvas.parentNode.removeChild(L.canvas); }
+      });
+    }
+  }
+
+  function sync() {
+    var should = inView && !document.hidden && !reduced && !failed;
+    if (should && !running) { start(); }
+    else if (!should && running) { stop(); }
+    if (reduced) {
+      wrap.classList.remove('is-fx');           // CSS reduced-motion menyembunyikan roket
+    }
+  }
+
+  /* ---------- Pasang ---------- */
+  var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  reduced = !!(mq && mq.matches);
+  if (mq) {
+    var onMq = function () { reduced = !!mq.matches; sync(); };
+    if (mq.addEventListener) { mq.addEventListener('change', onMq); }
+    else if (mq.addListener) { mq.addListener(onMq); }
+  }
+
+  if (!reduced) {
+    // Sembunyikan roket sampai frame pertama menaruhnya di posisi yang benar
+    // (mencegah kedipan sesaat di tengah logo).
+    rocket.style.opacity = '0';
+  }
+
+  var pe = !!window.PointerEvent;
+  wrap.addEventListener(pe ? 'pointerenter' : 'mouseenter', function () { hover = true; }, false);
+  wrap.addEventListener(pe ? 'pointerleave' : 'mouseleave', function () { hover = false; }, false);
+  wrap.addEventListener(pe ? 'pointerdown' : 'mousedown', burst, false);
+
+  window.addEventListener('resize', queueLayout, false);
+  window.addEventListener('orientationchange', queueLayout, false);
+  window.addEventListener('load', queueLayout, false);
+  document.addEventListener('visibilitychange', sync, false);
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      inView = entries[entries.length - 1].isIntersecting;
+      sync();
+    }, { threshold: 0 }).observe(wrap);
+  }
+
+  sync();
+})();
+</script>
 
   {{-- ======================== CONTENT ======================== --}}
   <main>
@@ -1489,11 +2019,11 @@
               @if($t->company)
               <h3 class="testimonial-card_company">{{ $t->company }}</h3>
               @endif
-              <p class="testimonial-card_quote">{{ $t->message }}</p>
+              <p class="testimonial-card_quote">@bi($t, 'message', ['nl2br' => true])</p>
               <img class="testimonial-card_photo" src="{{ $t->photo ? asset('storage/'.$t->photo) : asset('images/page-1_img13.jpg') }}" alt="{{ $t->name }}"/>
               <cite class="testimonial-card_name">{{ $t->name }}</cite>
               @if($t->title)
-              <p class="testimonial-card_role">{{ $t->title }}</p>
+              <p class="testimonial-card_role">@bi($t, 'title')</p>
               @endif
             </blockquote>
           </div>
@@ -1547,8 +2077,8 @@
               <img src="{{ asset('storage/'.$service->icon) }}" alt="{{ $service->title }}" loading="lazy" style="max-width:120px;margin:0 auto;"/>
             @endif
             <hr/>
-            <h3>{{ $service->title }}</h3>
-            <p>{{ $service->description }}</p>
+            <h3>@bi($service, 'title')</h3>
+            <p>@bi($service, 'description', ['nl2br' => true])</p>
           </div>
           @endforeach
         </div>
@@ -1600,8 +2130,8 @@
                     {{ $post->likes }}
                   </span>
                 </div>
-                <h3 class="blog-card_title">{{ $post->title }}</h3>
-                <p class="blog-card_excerpt">{{ $post->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($post->content), 100) }}</p>
+                <h3 class="blog-card_title">@bi($post, 'title')</h3>
+                <p class="blog-card_excerpt">@biexcerpt($post, 100)</p>
                 <span class="blog-card_readmore" data-i18n="blog.readmore">Baca Selengkapnya →</span>
               </div>
             </a>
@@ -1628,11 +2158,11 @@
           @foreach($faqs as $faq)
           <details class="faq-item wow fadeInUp" data-wow-delay="{{ 0.08 * ($loop->index % 6) }}s" data-wow-duration="0.7s">
             <summary>
-              <span>{{ $faq->question }}</span>
+              <span>@bi($faq, 'question')</span>
               <i class="fa fa-angle-right" aria-hidden="true"></i>
             </summary>
             <div class="faq-answer">
-              <p>{{ $faq->answer }}</p>
+              <p>@bi($faq, 'answer', ['nl2br' => true])</p>
             </div>
           </details>
           @endforeach

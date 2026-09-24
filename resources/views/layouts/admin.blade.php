@@ -11,6 +11,9 @@
       'website' => ['label' => 'Jasa Website', 'icon' => 'bi-globe2'],
       'custom-system' => ['label' => 'Jasa Sistem Kustom', 'icon' => 'bi-diagram-3'],
     ];
+    // Halaman "Produk" — dinamis dari tabel products: produk baru yang
+    // ditambah admin otomatis muncul di sidebar ini.
+    $__sidebarProducts = \App\Models\Product::ordered()->get(['id', 'name', 'slug', 'is_active']);
   @endphp
   <link rel="icon" href="{{ $__favicon ? asset('storage/'.$__favicon) : asset('images/favicon.ico') }}" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -66,6 +69,7 @@
       left: 0;
       width: var(--sidebar-w);
       height: 100vh;
+      height: 100dvh; /* di HP, 100vh ikut tinggi address bar sehingga footer sidebar ketutup */
       background: linear-gradient(195deg, var(--sidebar-bg) 0%, var(--sidebar-bg-soft) 100%);
       color: var(--sidebar-text);
       display: flex;
@@ -99,6 +103,8 @@
     .sidebar-scroll {
       flex: 1 1 auto;
       overflow-y: auto;
+      overscroll-behavior: contain; /* scroll di ujung sidebar tidak menggeser halaman utama */
+      scroll-behavior: auto;        /* restore posisi harus instan, bukan animasi */
       padding: 1rem .85rem;
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,.15) transparent;
@@ -367,13 +373,16 @@
       <a href="{{ route('admin.settings.edit') }}" class="nav-link-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
         <i class="bi bi-sliders"></i> Pengaturan Situs
       </a>
+      <a href="{{ route('admin.translations.index') }}" class="nav-link-item {{ request()->routeIs('admin.translations.*') ? 'active' : '' }}">
+        <i class="bi bi-translate"></i> Terjemahan (EN)
+      </a>
 
       <div class="nav-section-label">Konten Halaman</div>
       <a href="{{ route('admin.team.index') }}" class="nav-link-item {{ request()->routeIs('admin.team.*') ? 'active' : '' }}">
         <i class="bi bi-people-fill"></i> Tim Kami
       </a>
       <a href="{{ route('admin.services.index') }}" class="nav-link-item {{ request()->routeIs('admin.services.*') ? 'active' : '' }}">
-        <i class="bi bi-stars"></i> Layanan
+        <i class="bi bi-award-fill"></i> Keunggulan
       </a>
       <a href="{{ route('admin.portfolio.index') }}" class="nav-link-item {{ request()->routeIs('admin.portfolio.*') ? 'active' : '' }}">
         <i class="bi bi-images"></i> Portofolio
@@ -426,6 +435,42 @@
         </div>
       @endforeach
 
+      <div class="nav-section-label">Halaman Produk</div>
+      <a href="{{ route('admin.products.index') }}" class="nav-link-item {{ request()->routeIs('admin.products.index') || request()->routeIs('admin.products.create') ? 'active' : '' }}">
+        <i class="bi bi-box-seam-fill"></i> Semua Produk
+        <span class="badge-count" style="background:rgba(255,255,255,.14);">{{ $__sidebarProducts->count() }}</span>
+      </a>
+
+      @foreach($__sidebarProducts as $__p)
+        @php
+          $groupActive = (request()->routeIs('admin.products.edit', 'admin.products.update') && optional(request()->route('product'))->id === $__p->id)
+            || (request()->routeIs('admin.product-items.*') && optional(request()->route('product'))->id === $__p->id);
+          $collapseId = 'nav-produk-'.$__p->id;
+          $__routeType = request()->route('type');
+        @endphp
+        <a href="#{{ $collapseId }}" class="nav-link-item nav-group_toggle {{ $groupActive ? 'active' : '' }}"
+           data-bs-toggle="collapse" role="button"
+           aria-expanded="{{ $groupActive ? 'true' : 'false' }}" aria-controls="{{ $collapseId }}">
+          <i class="bi bi-box-seam"></i> {{ $__p->name }}
+          @unless($__p->is_active)<span class="badge-count" style="background:rgba(255,255,255,.14);">Draft</span>@endunless
+          <i class="bi bi-chevron-down"></i>
+        </a>
+        <div class="collapse nav-group_sub {{ $groupActive ? 'show' : '' }}" id="{{ $collapseId }}">
+          <a href="{{ route('admin.products.edit', $__p) }}" class="nav-link-item {{ request()->routeIs('admin.products.edit', 'admin.products.update') && optional(request()->route('product'))->id === $__p->id ? 'active' : '' }}">
+            <i class="bi bi-file-earmark-text-fill"></i> Konten Halaman
+          </a>
+          <a href="{{ route('admin.product-items.index', [$__p, 'benefits']) }}" class="nav-link-item {{ request()->routeIs('admin.product-items.*') && $__routeType === 'benefits' && optional(request()->route('product'))->id === $__p->id ? 'active' : '' }}">
+            <i class="bi bi-award-fill"></i> Keunggulan
+          </a>
+          <a href="{{ route('admin.product-items.index', [$__p, 'clients']) }}" class="nav-link-item {{ request()->routeIs('admin.product-items.*') && $__routeType === 'clients' && optional(request()->route('product'))->id === $__p->id ? 'active' : '' }}">
+            <i class="bi bi-diagram-3-fill"></i> Klien
+          </a>
+          <a href="{{ route('admin.product-items.index', [$__p, 'faqs']) }}" class="nav-link-item {{ request()->routeIs('admin.product-items.*') && $__routeType === 'faqs' && optional(request()->route('product'))->id === $__p->id ? 'active' : '' }}">
+            <i class="bi bi-question-circle-fill"></i> FAQ
+          </a>
+        </div>
+      @endforeach
+
       <div class="nav-section-label">Pesan Masuk</div>
       <a href="{{ route('admin.contact-messages.index') }}" class="nav-link-item {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
         <i class="bi bi-envelope-fill"></i> Pesan Kontak
@@ -433,6 +478,46 @@
         <span class="badge-count" id="contactUnreadBadge" style="{{ $unreadCount ? '' : 'display:none;' }}">{{ $unreadCount }}</span>
       </a>
     </div>
+
+    {{-- Ingat posisi scroll menu sidebar antar halaman.
+         Tiap klik menu = pindah halaman penuh, sehingga scroll sidebar biasanya
+         reset ke atas. Skrip ini dijalankan tepat setelah menu dirender (sebelum
+         browser menggambar layar) jadi tidak ada efek "loncat ke atas". --}}
+    <script>
+      (function () {
+        var box = document.querySelector('#adminSidebar .sidebar-scroll');
+        if (!box) return;
+        var KEY = 'adminSidebarScroll';
+
+        function save() {
+          try { sessionStorage.setItem(KEY, String(box.scrollTop)); } catch (e) {}
+        }
+
+        var saved = null;
+        try { saved = sessionStorage.getItem(KEY); } catch (e) {}
+
+        if (saved !== null && !isNaN(parseInt(saved, 10))) {
+          box.scrollTop = parseInt(saved, 10);
+        }
+
+        // Pastikan menu aktif selalu terlihat (kunjungan pertama, atau redirect
+        // ke menu yang posisinya di luar area scroll tersimpan).
+        var items = box.querySelectorAll('a.nav-link-item.active');
+        var active = items.length ? items[items.length - 1] : null;
+        if (active) {
+          var b = box.getBoundingClientRect();
+          var a = active.getBoundingClientRect();
+          if (a.top < b.top + 8) {
+            box.scrollTop -= (b.top + 8) - a.top;
+          } else if (a.bottom > b.bottom - 8) {
+            box.scrollTop += a.bottom - (b.bottom - 8);
+          }
+        }
+
+        box.addEventListener('click', save);       // klik menu / sub menu
+        window.addEventListener('pagehide', save); // submit form, redirect, back/forward
+      })();
+    </script>
 
     <div class="sidebar-footer">
       <a href="{{ route('home') }}" target="_blank" class="view-site">

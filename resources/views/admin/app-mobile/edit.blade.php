@@ -73,6 +73,8 @@
     Poin "Keunggulan" dikelola terpisah di menu <a href="{{ route('admin.app-mobile-benefits.index') }}">Keunggulan App Mobile</a>. Portofolio yang tampil di halaman ini otomatis diambil dari menu Portofolio dengan kategori <strong>"Jasa Pembuatan Aplikasi"</strong>. Logo klien dikelola sendiri di menu <a href="{{ route('admin.app-mobile-clients.index') }}">Klien App Mobile</a> (tidak diambil dari menu Partner di beranda).
   </div>
 
+  @include('admin.partials.en-fields', ['item' => $page])
+
   <div class="mt-3">
     <button type="submit" class="btn btn-dark">Simpan</button>
   </div>

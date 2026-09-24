@@ -2,10 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\AutoTranslates;
 use Illuminate\Database\Eloquent\Model;
 
 class CustomSystemPage extends Model
 {
+    use AutoTranslates;
+
+    /** Field Indonesia yang otomatis diterjemahkan ke kolom "<field>_en" saat admin menyimpan. */
+    protected array $translatable = ['hero_title', 'hero_subtitle', 'preview_title', 'preview_caption'];
+
     protected $guarded = [];
 
     /**

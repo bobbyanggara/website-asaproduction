@@ -7,20 +7,20 @@
 @if($faqs->count())
 <section class="well faq-section" id="faq">
   <div class="container center wow fadeInUp" data-wow-duration="0.9s">
-    <h2>F.A.Q</h2>
+    <h2 data-i18n="faq.title">F.A.Q</h2>
     <hr/>
-    <p>Pertanyaan yang sering diajukan</p>
+    <p data-i18n="faq.subtitle">Pertanyaan yang sering diajukan</p>
   </div>
   <div class="container">
     <div class="faq-list">
       @foreach($faqs as $faq)
       <details class="faq-item wow fadeInUp" data-wow-delay="{{ 0.08 * ($loop->index % 6) }}s" data-wow-duration="0.7s">
         <summary>
-          <span>{{ $faq->question }}</span>
+          <span>@bi($faq, 'question')</span>
           <i class="fa fa-angle-right" aria-hidden="true"></i>
         </summary>
         <div class="faq-answer">
-          <p>{{ $faq->answer }}</p>
+          <p>@bi($faq, 'answer', ['nl2br' => true])</p>
         </div>
       </details>
       @endforeach

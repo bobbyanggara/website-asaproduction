@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\KlinikAsaPage;
+use Illuminate\Http\Request;
+
+class KlinikAsaPageController extends Controller
+{
+    public function edit()
+    {
+        $page = KlinikAsaPage::current();
+
+        return view('admin.klinik-asa.edit', compact('page'));
+    }
+
+    public function update(Request $request)
+    {
+        $page = KlinikAsaPage::current();
+
+        $data = $request->validate([
+            'hero_title' => ['nullable', 'string', 'max:255'],
+            'hero_subtitle' => ['nullable', 'string'],
+            'preview_title' => ['nullable', 'string', 'max:255'],
+            'preview_caption' => ['nullable', 'string'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
+            'hero_image' => ['nullable', 'image', 'max:2048'],
+            'preview_media' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,webp,mp4,webm', 'max:20480'],
+        ]);
+
+        if ($request->hasFile('hero_image')) {
+            $data['hero_image'] = $request->file('hero_image')->store('klinik-asa-page', 'public');
+        } else {
+            unset($data['hero_image']);
+        }
+
+        if ($request->hasFile('preview_media')) {
+            $data['preview_media'] = $request->file('preview_media')->store('klinik-asa-page', 'public');
+        } else {
+            unset($data['preview_media']);
+        }
+
+        $page->update($data);
+
+        return back()->with('success', 'Konten halaman berhasil disimpan.');
+    }
+}

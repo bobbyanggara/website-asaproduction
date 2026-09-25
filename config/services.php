@@ -37,17 +37,23 @@ return [
 
     'groq' => [
         'key' => env('GROQ_API_KEY'),
-        // 'openai/gpt-oss-120b' (model lama) adalah model 120B yang berat &
-        // lambat untuk chatbot FAQ sederhana seperti ini. 'llama-3.1-8b-instant'
-        // jauh lebih cepat di Groq (biasanya <1 detik untuk time-to-first-token)
-        // dan kualitasnya lebih dari cukup untuk menjawab seputar isi website
-        // berdasarkan KONTEKS WEBSITE yang sudah disiapkan di system prompt.
-        // Kalau butuh kualitas jawaban lebih pintar & masih cukup cepat, coba
-        // 'llama-3.3-70b-versatile'. Override lewat GROQ_MODEL di .env.
-        'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
+        // CATATAN (2026-09-25): 'llama-3.1-8b-instant' dan
+        // 'llama-3.3-70b-versatile' yang dulu dipakai di sini SUDAH PINDAH
+        // ke tier Enterprise (contact-sales) di Groq per pengecekan
+        // console.groq.com/docs/models — API key Free/Developer biasa akan
+        // dapat error 404 "model_not_found" kalau masih pakai salah satu
+        // dari keduanya. Diganti ke 'openai/gpt-oss-20b': model pay-as-you-go
+        // yang masih tersedia untuk akun biasa, dan justru lebih cepat
+        // (~1000 token/detik) untuk chatbot FAQ sederhana seperti ini.
+        // Kalau butuh kualitas jawaban lebih pintar (agak lebih lambat &
+        // lebih mahal), coba 'openai/gpt-oss-120b'. Override lewat
+        // GROQ_MODEL di .env. Selalu cek console.groq.com/docs/models kalau
+        // suatu saat dapat error 404 lagi — daftar model aktif Groq sering
+        // berubah.
+        'model' => env('GROQ_MODEL', 'openai/gpt-oss-20b'),
         // Model khusus terjemahan konten (dipanggil saat admin menyimpan, jadi
         // kecepatan tidak sekritis chatbot). Kosong = pakai GROQ_MODEL di atas.
-        // Kalau hasil terjemahan kurang natural, coba 'llama-3.3-70b-versatile'.
+        // Kalau hasil terjemahan kurang natural, coba 'openai/gpt-oss-120b'.
         'translate_model' => env('GROQ_TRANSLATE_MODEL'),
     ],
 

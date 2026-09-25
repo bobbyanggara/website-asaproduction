@@ -141,6 +141,14 @@
           var reply = (data && data.reply) ? data.reply : (window.__t ? window.__t('chatbot.errorGeneral') : 'Maaf, terjadi kendala. Silakan coba lagi.');
           appendMessage(reply, 'bot');
 
+          // Bantuan debug: kalau server balas field "debug" (hanya muncul
+          // saat APP_DEBUG=true di .env server), tampilkan di Console
+          // browser (F12 > Console) supaya penyebab error kelihatan tanpa
+          // perlu buka log server. Tidak pernah ditampilkan ke pengunjung.
+          if (data && data.debug) {
+            console.error('[Chatbot debug]', data.debug);
+          }
+
           history.push({ role: 'user', content: message });
           history.push({ role: 'assistant', content: reply });
           if (history.length > 12) {

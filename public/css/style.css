@@ -1395,6 +1395,7 @@ footer * + .copyright {
   max-width: calc(100vw - 32px);
   height: 500px;
   max-height: calc(100vh - 140px);
+  max-height: calc(100dvh - 140px);
   background: #f6f8fb;
   border-radius: 22px;
   box-shadow: 0 30px 70px -18px rgba(0, 12, 36, 0.4), 0 4px 14px -4px rgba(0, 12, 36, 0.15);
@@ -1505,6 +1506,8 @@ footer * + .copyright {
 .chatbot_messages {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 18px 16px;
   display: flex;
   flex-direction: column;
@@ -1622,6 +1625,7 @@ footer * + .copyright {
   .chatbot_window {
     width: calc(100vw - 20px);
     height: calc(100vh - 96px);
+    height: calc(100dvh - 96px);
     max-height: none;
     bottom: 70px;
     border-radius: 20px;

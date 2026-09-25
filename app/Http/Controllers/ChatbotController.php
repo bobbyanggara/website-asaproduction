@@ -5,18 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\AppMobileBenefit;
 use App\Models\AppMobileFaq;
 use App\Models\AppMobilePage;
-use App\Models\AppMobileProcessStep;
-use App\Models\AppMobileService;
-use App\Models\AppMobileStat;
-use App\Models\AppMobileTechBadge;
 use App\Models\Certificate;
 use App\Models\CustomSystemBenefit;
 use App\Models\CustomSystemFaq;
 use App\Models\CustomSystemPage;
-use App\Models\CustomSystemProcessStep;
-use App\Models\CustomSystemService;
-use App\Models\CustomSystemStat;
-use App\Models\CustomSystemTechBadge;
 use App\Models\Faq;
 use App\Models\Partner;
 use App\Models\Portfolio;
@@ -27,10 +19,6 @@ use App\Models\Testimonial;
 use App\Models\WebsiteBenefit;
 use App\Models\WebsiteFaq;
 use App\Models\WebsitePage;
-use App\Models\WebsiteProcessStep;
-use App\Models\WebsiteService;
-use App\Models\WebsiteStat;
-use App\Models\WebsiteTechBadge;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -101,13 +89,23 @@ class ChatbotController extends Controller
             ]);
         }
 
-        $messages = array_merge(
-            [['role' => 'system', 'content' => $this->buildSystemPrompt($lang)]],
-            $validated['history'] ?? [],
-            [['role' => 'user', 'content' => $validated['message']]]
-        );
-
+        // PENTING: pembuatan $messages (khususnya buildSystemPrompt(), yang
+        // melakukan ±25 query ke database + Cache::remember) DULU ada di
+        // luar try/catch di bawah. Kalau ada masalah di situ (koneksi DB
+        // terputus, cache driver belum siap, tabel belum di-migrate, dll),
+        // exception itu tidak tertangkap sama sekali → Laravel balas dengan
+        // JSON error mentah (tanpa field "reply") → widget di frontend
+        // menampilkan pesan generik "Maaf, terjadi kendala. Silakan coba
+        // lagi." karena data.reply kosong. Makanya bagian ini sekarang
+        // dipindah ke DALAM try supaya selalu balas dengan fallback message
+        // yang benar (dan tercatat rapi di log) walau ada error di database.
         try {
+            $messages = array_merge(
+                [['role' => 'system', 'content' => $this->buildSystemPrompt($lang)]],
+                $validated['history'] ?? [],
+                [['role' => 'user', 'content' => $validated['message']]]
+            );
+
             $response = Http::withToken($apiKey)
                 ->timeout(20)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
@@ -120,9 +118,16 @@ class ChatbotController extends Controller
             if ($response->failed()) {
                 Log::error('Chatbot: Groq API error', ['status' => $response->status(), 'body' => $response->body()]);
 
-                return response()->json([
-                    'reply' => $this->fallbackMessage('api_error', $lang),
-                ]);
+                $payload = ['reply' => $this->fallbackMessage('api_error', $lang)];
+
+                if (config('app.debug')) {
+                    $payload['debug'] = [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ];
+                }
+
+                return response()->json($payload);
             }
 
             $reply = trim((string) $response->json('choices.0.message.content'));
@@ -133,11 +138,33 @@ class ChatbotController extends Controller
 
             return response()->json(['reply' => $reply]);
         } catch (\Throwable $e) {
-            Log::error('Chatbot: exception', ['message' => $e->getMessage()]);
-
-            return response()->json([
-                'reply' => $this->fallbackMessage('exception', $lang),
+            // Log lengkap (bukan cuma pesan) supaya penyebab pastinya
+            // ketahuan dari storage/logs/laravel.log — sebelumnya cuma
+            // getMessage() yang dicatat, seringkali kurang informatif untuk
+            // error semacam "Undefined property" atau error koneksi cURL.
+            Log::error('Chatbot: exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => collect($e->getTrace())->take(5)->toArray(),
             ]);
+
+            $payload = ['reply' => $this->fallbackMessage('exception', $lang)];
+
+            // Kalau APP_DEBUG=true di .env, sisipkan detail error asli ke
+            // response supaya kelihatan langsung di tab Network browser
+            // (klik request ke /chat > Response) tanpa perlu akses SSH/log
+            // server. JANGAN aktifkan APP_DEBUG=true di server produksi
+            // yang sudah live untuk publik — ini murni bantuan debug
+            // sementara.
+            if (config('app.debug')) {
+                $payload['debug'] = [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile().':'.$e->getLine(),
+                ];
+            }
+
+            return response()->json($payload);
         }
     }
 
@@ -180,15 +207,19 @@ class ChatbotController extends Controller
                 return;
             }
 
-            $messages = array_merge(
-                [['role' => 'system', 'content' => $this->buildSystemPrompt($lang)]],
-                $validated['history'] ?? [],
-                [['role' => 'user', 'content' => $validated['message']]]
-            );
-
             $fullReply = '';
 
             try {
+                // Sama seperti send(): buildSystemPrompt() dipindah ke dalam
+                // try ini juga, supaya kalau query DB/cache-nya gagal, event
+                // "done" dengan fallback message tetap terkirim ke browser,
+                // bukan mati diam-diam di tengah stream tanpa respons apa pun.
+                $messages = array_merge(
+                    [['role' => 'system', 'content' => $this->buildSystemPrompt($lang)]],
+                    $validated['history'] ?? [],
+                    [['role' => 'user', 'content' => $validated['message']]]
+                );
+
                 $pending = Http::withToken($apiKey)
                     ->withOptions(['stream' => true])
                     ->timeout(30)
@@ -275,10 +306,6 @@ class ChatbotController extends Controller
         string $heading,
         $page,
         string $benefitModel,
-        string $serviceModel,
-        string $processStepModel,
-        string $statModel,
-        string $techBadgeModel,
         string $faqModel,
     ): string {
         $lines = ["\n=== SOLUSI: {$heading} ==="];
@@ -301,28 +328,15 @@ class ChatbotController extends Controller
             }
         }
 
-        $services = $serviceModel::active()->ordered()->get();
-        if ($services->count()) {
-            $lines[] = 'Cakupan pekerjaan/layanan yang termasuk: '.$services->pluck('title')->implode(', ');
-        }
-
-        $steps = $processStepModel::active()->ordered()->get();
-        if ($steps->count()) {
-            $lines[] = 'Tahapan/proses pengerjaan (berurutan):';
-            foreach ($steps as $i => $step) {
-                $lines[] = ($i + 1).'. '.$step->title.($step->description ? ': '.$step->description : '');
-            }
-        }
-
-        $stats = $statModel::active()->ordered()->get();
-        if ($stats->count()) {
-            $lines[] = 'Pencapaian/angka terkait: '.$stats->map(fn ($s) => "{$s->value} {$s->label}")->implode(', ');
-        }
-
-        $techBadges = $techBadgeModel::active()->ordered()->get();
-        if ($techBadges->count()) {
-            $lines[] = 'Teknologi/tools yang digunakan: '.$techBadges->pluck('label')->implode(', ');
-        }
+        // Catatan: dulu di sini ada juga referensi ke model
+        // *Service/*ProcessStep/*Stat/*TechBadge per solusi (mis.
+        // WebsiteService, WebsiteProcessStep, dst). Model-model itu TIDAK
+        // PERNAH dibuat (tidak ada file app/Models-nya maupun migration-nya),
+        // sehingga PHP melempar exception "Failed to open stream" setiap kali
+        // chatbot dipanggil dan langsung mematikan seluruh endpoint /chat.
+        // Halaman Solusi yang asli (WebsiteController dkk) juga tidak pernah
+        // memakai konsep ini, jadi referensinya dihapus di sini supaya sesuai
+        // dengan data yang benar-benar ada di database.
 
         if ($page->cta_description) {
             $lines[] = "Ajakan penutup: {$page->cta_description}";
@@ -416,10 +430,6 @@ class ChatbotController extends Controller
                 'JASA PEMBUATAN WEBSITE',
                 WebsitePage::current(),
                 WebsiteBenefit::class,
-                WebsiteService::class,
-                WebsiteProcessStep::class,
-                WebsiteStat::class,
-                WebsiteTechBadge::class,
                 WebsiteFaq::class,
             );
 
@@ -427,10 +437,6 @@ class ChatbotController extends Controller
                 'JASA PEMBUATAN APLIKASI MOBILE (ANDROID & IOS)',
                 AppMobilePage::current(),
                 AppMobileBenefit::class,
-                AppMobileService::class,
-                AppMobileProcessStep::class,
-                AppMobileStat::class,
-                AppMobileTechBadge::class,
                 AppMobileFaq::class,
             );
 
@@ -438,10 +444,6 @@ class ChatbotController extends Controller
                 'JASA PEMBUATAN SISTEM KUSTOM',
                 CustomSystemPage::current(),
                 CustomSystemBenefit::class,
-                CustomSystemService::class,
-                CustomSystemProcessStep::class,
-                CustomSystemStat::class,
-                CustomSystemTechBadge::class,
                 CustomSystemFaq::class,
             );
 

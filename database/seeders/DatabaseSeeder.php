@@ -21,10 +21,11 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Admin user
         User::firstOrCreate(
-            ['email' => 'admin@asaproduction.test'],
+            ['email' => 'admin@asa.id'],
             [
+                
                 'name' => 'Admin Asa Production',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('admin123'),
                 'role' => 'admin',
             ]
         );

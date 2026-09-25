@@ -377,28 +377,44 @@
       justify-content: flex-start;
       gap: 0;
       margin: 0;
-      padding: 10px;
+      padding: 12px;
       max-height: 0;
-      overflow: hidden;
+      overflow: hidden auto;
       opacity: 0;
       border-radius: 22px;
-      background: linear-gradient(180deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,0) 50%), rgba(9,16,32,.42);
-      -webkit-backdrop-filter: blur(34px) saturate(200%) brightness(1.1);
-      backdrop-filter: blur(34px) saturate(200%) brightness(1.1);
-      border: 1px solid rgba(255,255,255,.22);
-      box-shadow: 0 16px 40px -12px rgba(0,0,0,.5), inset 0 1.5px 0 rgba(255,255,255,.32), inset 0 -1px 0 rgba(0,0,0,.16);
+      {{-- Liquid glass: blur kuat + latar semi-transparan gelap (bukan
+           solid) supaya efek kaca terasa, tapi alpha tetap cukup tinggi
+           (.62) supaya kontras teks putih di atasnya tetap terjaga terlepas
+           dari seberapa terang konten di belakangnya. --}}
+      background: linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,.02) 40%, rgba(255,255,255,.04) 100%), rgba(9, 18, 36, .62);
+      -webkit-backdrop-filter: blur(38px) saturate(220%) brightness(1.12) contrast(1.05);
+      backdrop-filter: blur(38px) saturate(220%) brightness(1.12) contrast(1.05);
+      border: 1px solid rgba(255,255,255,.28);
+      box-shadow: 0 20px 46px -12px rgba(0,0,0,.55), inset 0 1.5px 0 rgba(255,255,255,.3), inset 0 -1px 0 rgba(0,0,0,.2), inset 0 0 28px rgba(255,255,255,.06);
       transition: max-height .35s cubic-bezier(.22,1,.36,1), opacity .25s ease;
     }
-    .site-nav_menu.is-open{ max-height: 520px; opacity: 1; }
-    .site-nav_menu > li{ align-items: stretch; }
-    {{-- Garis pemisah tipis antara Beranda / Layanan / Info supaya baris-baris
-         menu nggak terasa menempel satu sama lain (rapi & mudah dipindai). --}}
-    .site-nav_menu > li:nth-child(2),
-    .site-nav_menu > li:nth-child(3){ border-top: 1px solid rgba(255,255,255,.08); }
+    .site-nav_menu.is-open{ max-height: min(70vh, 520px); opacity: 1; }
+    {{-- PENTING: aturan dasar (di luar media query) mengeset
+         `.site-nav_menu > li{ display:flex }` tanpa flex-direction, jadi
+         default-nya row (horizontal). Sebelumnya, di mobile cuma
+         align-items yang di-override — tombol dropdown ("Solusi"/"Info")
+         dan daftar submenu-nya jadi nempel BERSEBELAHAN (bukan bertumpuk
+         ke bawah), sehingga teks submenu kepotong di tepi kanan panel.
+         flex-direction:column di sini yang jadi kuncinya. --}}
+    .site-nav_menu > li{ display: flex; flex-direction: column; align-items: stretch; }
+    {{-- Garis pemisah tipis antar-item level atas (Produk / Solusi / Info /
+         WhatsApp / bahasa) supaya baris-baris menu nggak menempel satu sama
+         lain. Diganti dari nth-child(2)/(3) yang statis (rawan meleset kalau
+         menu "Produk" tidak ada karena belum ada produk aktif) ke selector
+         sibling (`li + li`) yang otomatis mengikuti jumlah item apa pun.
+         Item yang sudah punya garis sendiri (tombol WhatsApp) dikecualikan
+         supaya tidak dobel. --}}
+    .site-nav_menu > li + li:not(.site-nav_cta-item):not(#navLangSlot){ border-top: 1px solid rgba(255,255,255,.08); }
     .site-nav_menu > li > a{
       display: block;
       padding: 14px 16px;
       border-radius: 14px;
+      font-size: 14.5px;
       transition: background .18s ease, color .18s ease;
     }
     .site-nav_menu > li > a:active{ background: rgba(255,255,255,.08); }
@@ -407,9 +423,11 @@
       width: 100%;
       padding: 14px 16px;
       border-radius: 14px;
+      font-size: 14.5px;
       justify-content: space-between;
       transition: background .18s ease;
     }
+    .has-dropdown.is-open .dropdown-toggle{ background: rgba(255,255,255,.06); border-radius: 14px 14px 0 0; }
     .dropdown-toggle:active{ background: rgba(255,255,255,.08); }
     .dropdown-menu{
       position: static;
@@ -425,20 +443,25 @@
       padding: 0;
       max-height: 0;
       overflow: hidden;
-      transition: max-height .25s ease;
+      transition: max-height .3s cubic-bezier(.22,1,.36,1);
     }
-    {{-- Panel kecil di dalam panel besar: latar & indent tipis supaya sub-item
-         (mis. daftar layanan) terlihat jelas sebagai "anak" dari tombol
-         Layanan/Info, bukan sejajar dengan menu utama. --}}
+    {{-- Panel kecil di dalam panel besar: latar gelap semi-transparan (lebih
+         gelap dari panel induk) supaya sub-item (mis. daftar layanan) tetap
+         terlihat jelas sebagai "laci" tersendiri walau kedua panel sama-sama
+         kaca/blur — bukan latar solid, jadi nuansa liquid glass tetap kerasa. --}}
     .has-dropdown.is-open .dropdown-menu{
-      max-height: 300px;
+      max-height: 340px;
+      overflow-y: auto;
       transform: none;
-      background: rgba(255,255,255,.04);
-      border-radius: 12px;
-      margin: 2px 0 6px;
-      padding: 4px;
+      background: rgba(0,0,0,.3);
+      border-radius: 0 0 14px 14px;
+      margin: 0 0 8px;
+      padding: 6px;
     }
-    .dropdown-menu a{ padding: 11px 14px 11px 26px; font-size: 13.5px; border-radius: 10px; }
+    .dropdown-menu a{ padding: 11px 14px 11px 16px; font-size: 13.5px; border-radius: 10px; }
+    {{-- Reset min-width:300px dari versi desktop supaya submenu tidak
+         berpotensi lebih lebar dari layar di HP yang sangat sempit. --}}
+    .dropdown-menu--services{ min-width: 0; }
     {{-- Versi mobile dropdown "Layanan": ikon lebih kecil, subtitle tetap
          ikut turun ke baris baru, indent kiri disamakan dengan item lain. --}}
     .dropdown-menu--services a{ padding: 10px 14px 10px 16px; gap: 10px; }

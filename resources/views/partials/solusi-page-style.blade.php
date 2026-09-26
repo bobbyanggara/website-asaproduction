@@ -137,11 +137,15 @@
 
   {{--
     ===== KEUNGGULAN =====
-    Kartu ini secara konsep sama seperti "Services Feature Cards"
-    (.well__ins1 .grid_4) di home.blade.php — jadi interaksi hover-nya
-    disamakan: sapuan gradient brand + ikon jadi putih (invert), bukan cuma
-    translateY+shadow polos seperti sebelumnya. Transition & timing (.35s
-    ease) juga disamakan persis dengan punya home.
+    Kartu ini disamakan SATU BANDING SATU dengan "Services Feature Cards"
+    (.well__ins1 .grid_4) di home.blade.php / style.css: radius, padding,
+    box-shadow default, warna border, jarak translateY saat hover, dan
+    kekuatan shadow saat hover semuanya memakai angka yang sama persis
+    seperti di beranda (sebelumnya beda-beda tipis — radius 14px vs 16px,
+    tanpa shadow default, translateY 6px vs 8px — makanya kartunya kelihatan
+    "mirip tapi enggak sama" dibanding beranda). Sapuan gradient brand saat
+    hover + ikon jadi putih (invert) & transition timing (.35s ease) juga
+    disamakan persis dengan punya home.
 
     Catatan tinggi kartu: .row/.grid_4 di sini masih grid lama berbasis
     float (lihat grid.css), bukan flexbox — jadi height:100% pada
@@ -175,22 +179,31 @@
     margin-left: 0;
   }
   .solusi-benefit-card{
+    box-sizing: border-box;
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     background: #fff;
-    border: 1px solid #e9ecf2;
-    border-radius: 14px;
-    padding: 40px 28px;
+    border: 1px solid rgba(0,34,76,.06);
+    border-radius: 16px;
+    padding: 48px 30px 40px;
+    box-shadow: 0 6px 24px rgba(0,34,76,.08);
     text-align: center;
+    cursor: pointer;
     transition: background .35s ease, box-shadow .35s ease, transform .35s ease, border-color .35s ease;
   }
-  .solusi-benefit-card:hover{
-    transform: translateY(-6px);
+  .solusi-benefit-card:hover,
+  .solusi-benefit-card:focus-within{
+    transform: translateY(-8px);
     background: linear-gradient(135deg, var(--brand-accent), var(--brand-light) 55%, var(--brand-dark));
     border-color: transparent;
-    box-shadow: 0 20px 40px -22px rgba(0,34,76,.35);
+    box-shadow: 0 16px 40px rgba(0,34,76,.28);
+  }
+  @media (max-width: 767px){
+    .solusi-benefit-card{
+      padding: 36px 24px 30px;
+    }
   }
   .solusi-benefit-card_icon{
     width: 96px;
@@ -203,16 +216,19 @@
     justify-content: center;
     transition: background .35s ease;
   }
-  .solusi-benefit-card:hover .solusi-benefit-card_icon{
+  .solusi-benefit-card:hover .solusi-benefit-card_icon,
+  .solusi-benefit-card:focus-within .solusi-benefit-card_icon{
     background: rgba(255,255,255,.16);
   }
   .solusi-benefit-card_icon img{
     width: 52px;
     height: 52px;
     object-fit: contain;
-    transition: filter .35s ease;
+    transition: transform .35s ease, filter .35s ease;
   }
-  .solusi-benefit-card:hover .solusi-benefit-card_icon img{
+  .solusi-benefit-card:hover .solusi-benefit-card_icon img,
+  .solusi-benefit-card:focus-within .solusi-benefit-card_icon img{
+    transform: scale(1.08);
     filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0,0,0,.15));
   }
   .solusi-benefit-card_icon i{
@@ -220,7 +236,8 @@
     color: var(--brand-light);
     transition: color .35s ease;
   }
-  .solusi-benefit-card:hover .solusi-benefit-card_icon i{
+  .solusi-benefit-card:hover .solusi-benefit-card_icon i,
+  .solusi-benefit-card:focus-within .solusi-benefit-card_icon i{
     color: #fff;
   }
   .solusi-benefit-card h3{
@@ -238,7 +255,9 @@
     transition: color .35s ease;
   }
   .solusi-benefit-card:hover h3,
-  .solusi-benefit-card:hover p{
+  .solusi-benefit-card:hover p,
+  .solusi-benefit-card:focus-within h3,
+  .solusi-benefit-card:focus-within p{
     color: #fff;
   }
 
@@ -307,6 +326,140 @@
   }
   @media (max-width: 520px){
     .solusi-portfolio_grid{ grid-template-columns: 1fr; }
+  }
+
+  {{--
+    ===== LIGHTBOX (overview gambar portofolio) =====
+    Disalin dari public/css/portfolio-theme.css (dipakai juga di
+    portfolio.blade.php & home.blade.php) supaya tema popup-nya konsisten,
+    tanpa perlu memuat seluruh file portfolio-theme.css (yang juga berisi
+    style grid/filter portofolio yang tidak dipakai di halaman /solusi/*).
+  --}}
+  .portfolio-lightbox{
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 12, 28, .92);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease;
+  }
+  .portfolio-lightbox.is-open{
+    opacity: 1;
+    visibility: visible;
+  }
+  .portfolio-lightbox_track{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+  }
+  .portfolio-lightbox_track::-webkit-scrollbar{
+    display: none;
+  }
+  .portfolio-lightbox_track.is-dragging{
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .portfolio-lightbox_slide{
+    flex: 0 0 100%;
+    max-width: 100%;
+    scroll-snap-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 40px 84px;
+  }
+  .portfolio-lightbox_slide img{
+    max-width: 100%;
+    max-height: 78vh;
+    border-radius: 12px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.6);
+    pointer-events: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .portfolio-lightbox_caption{
+    color: #fff;
+    margin-top: 16px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .portfolio-lightbox_close{
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.02) 45%, rgba(255,255,255,.05) 100%) no-repeat,
+      rgba(255,255,255,.04);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+    backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+    border: 1px solid rgba(255,255,255,.22);
+    color: #fff;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 20px -8px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.12);
+    transition: background .25s ease, box-shadow .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .portfolio-lightbox_close:hover{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.03) 45%, rgba(255,255,255,.07) 100%) no-repeat,
+      rgba(255,255,255,.08);
+    transform: scale(1.06);
+  }
+  .portfolio-lightbox_nav{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,.02) 45%, rgba(255,255,255,.05) 100%) no-repeat,
+      rgba(255,255,255,.04);
+    -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+    backdrop-filter: blur(24px) saturate(200%) brightness(1.05);
+    border: 1px solid rgba(255,255,255,.22);
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 20px -8px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.4), inset 0 -1px 0 rgba(0,0,0,.12);
+    transition: background .25s ease, box-shadow .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .portfolio-lightbox_nav:hover{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.03) 45%, rgba(255,255,255,.07) 100%) no-repeat,
+      rgba(255,255,255,.08);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .portfolio-lightbox_nav svg{
+    pointer-events: none;
+  }
+  .portfolio-lightbox_nav--prev{ left: 20px; }
+  .portfolio-lightbox_nav--next{ right: 20px; }
+  .portfolio-lightbox_nav[hidden]{ display: none; }
+  @media (max-width: 640px){
+    .portfolio-lightbox_slide{
+      padding: 20px 16px;
+    }
+    .portfolio-lightbox_nav{
+      display: none;
+    }
   }
 
   {{--

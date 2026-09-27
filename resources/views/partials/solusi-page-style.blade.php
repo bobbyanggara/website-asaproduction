@@ -156,29 +156,36 @@
     (tidak menyentuh .row global) supaya kartu sejajar/simetris seperti
     section Layanan di halaman utama.
 
-    Kenapa CSS Grid, bukan flexbox+flex-grow (versi sebelumnya): section
-    Layanan di beranda SELALU berisi tepat 3 kartu, jadi 3 kolom fixed
-    width-nya otomatis rapi. Section Keunggulan di sini jumlah kartunya
-    ikut data admin (halaman /solusi/* kebetulan 3, tapi beberapa /produk/*
-    ada 4). Dengan flex-grow: 1, begitu jumlah kartu TIDAK kelipatan 3,
-    kartu sisa di baris terakhir (mis. kartu ke-4 sendirian) ikut melar
-    flex-grow mengisi SISA lebar & tinggi barisnya sendiri — jadi kelihatan
-    lebih besar/tidak sejajar dengan kartu di baris atasnya (ini penyebab
-    kartu Keunggulan di /solusi & /produk kelihatan tidak simetris
-    dibanding beranda). CSS Grid dengan kolom fixed (repeat(3,1fr) dst.)
-    tidak punya masalah ini: setiap kolom selalu sama lebar di SEMUA baris,
-    dan kartu yang sendirian di baris terakhir tetap seukuran kartu
-    lainnya (sisa slot di baris itu dibiarkan kosong, tidak ikut melar).
-    align-items:stretch bawaan grid juga otomatis menyamakan tinggi kartu
-    per baris, jadi height:100% di .solusi-benefit-card tetap perlu
-    dipertahankan. Breakpoint kolomnya disamakan dengan pola
-    .solusi-portfolio_grid di bawah (3 → 2 → 1 kolom) supaya konsisten.
+    Kenapa flexbox (dengan flex-basis fixed + justify-content:center),
+    bukan CSS Grid kolom fixed (versi sebelumnya): section Layanan di
+    beranda SELALU berisi tepat 3 kartu, jadi 3 kolom otomatis rapi mulus.
+    Section Keunggulan di sini jumlah kartunya ikut data admin (kadang 3,
+    kadang 4/5/dst — lihat /produk/*). CSS Grid repeat(3,1fr) memang
+    membuat lebar setiap kolom seragam, TAPI kalau jumlah kartu bukan
+    kelipatan 3, kartu sisa di baris terakhir (mis. kartu ke-4) selalu
+    jatuh di kolom paling kiri (slot 1) karena grid auto-placement mengisi
+    dari kiri, sementara 2 slot kolom di kanannya sengaja dibiarkan kosong
+    (tidak ikut melar) — hasilnya kartu itu kelihatan "menggantung"
+    sendirian di kiri dengan area kosong besar di kanannya, alih-alih
+    simetris di tengah. Itu penyebab tampilan Keunggulan kelihatan
+    amburadul saat jumlah kartu tidak pas kelipatan 3.
+
+    Flexbox dengan flex-basis/max-width dihitung fixed per breakpoint
+    (bukan flex-grow:1) TIDAK membuat kartu sisa melar seperti versi
+    flex-grow lama, tapi container flex-nya diberi justify-content:center
+    sehingga baris terakhir yang tidak penuh otomatis rata tengah, bukan
+    menempel ke kiri. Tinggi antar kartu per baris tetap seragam karena
+    align-items:stretch adalah default flexbox per baris (flex-wrap
+    membuat stretch berlaku per baris, sama seperti grid), jadi
+    height:100% di .solusi-benefit-card tetap perlu dipertahankan.
+    Breakpoint kolomnya disamakan dengan pola .solusi-portfolio_grid di
+    bawah (3 → 2 → 1 kolom) supaya konsisten.
   --}}
   .solusi-benefits .row{
     margin-top: 32px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     margin-left: 0;
     gap: 30px;
   }
@@ -187,12 +194,20 @@
     float: none;
     width: auto;
     margin-left: 0;
+    flex: 0 0 calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
   }
   @media (max-width: 767px){
-    .solusi-benefits .row{ grid-template-columns: repeat(2, 1fr); }
+    .solusi-benefits .row > [class*="grid_"]{
+      flex-basis: calc(50% - 15px);
+      max-width: calc(50% - 15px);
+    }
   }
   @media (max-width: 520px){
-    .solusi-benefits .row{ grid-template-columns: 1fr; }
+    .solusi-benefits .row > [class*="grid_"]{
+      flex-basis: 100%;
+      max-width: 100%;
+    }
   }
   .solusi-benefit-card{
     box-sizing: border-box;

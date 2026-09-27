@@ -147,26 +147,37 @@
     hover + ikon jadi putih (invert) & transition timing (.35s ease) juga
     disamakan persis dengan punya home.
 
-    Catatan tinggi kartu: .row/.grid_4 di sini masih grid lama berbasis
-    float (lihat grid.css), bukan flexbox — jadi height:100% pada
-    .solusi-benefit-card saja tidak cukup untuk menyamakan tinggi antar
-    kartu kalau panjang teksnya beda. .solusi-benefits .row di-override
-    jadi flex khusus di section ini saja (tidak menyentuh .row global)
-    supaya kartu benar-benar sejajar/simetris, konsisten dengan kesan
-    "equal height" yang sama seperti section Layanan di halaman utama.
+    Catatan tinggi & lebar kartu: .row/.grid_4 di sini masih grid lama
+    berbasis float (lihat grid.css) dengan width FIXED per breakpoint
+    (mis. 370px/300px/236px) — jadi height:100% pada .solusi-benefit-card
+    saja tidak cukup untuk menyamakan tinggi antar kartu kalau panjang
+    teksnya beda, dan tidak otomatis membagi rata lebar container juga.
+    .solusi-benefits .row di-override jadi grid khusus di section ini saja
+    (tidak menyentuh .row global) supaya kartu sejajar/simetris seperti
+    section Layanan di halaman utama.
 
-    Lebar kolom: .grid_4 dari grid.css punya width FIXED per breakpoint
-    (mis. 370px/300px/236px) + margin-left tetap. Kalau cuma ditambah
-    display:flex tanpa mengubah width itu, sisa ruang kosong di container
-    menumpuk di satu sisi (biasanya kanan) dan gap antar kartu jadi tidak
-    rata — kartu tengah/kanan terlihat "kepepet". Makanya width bawaan
-    grid_4 ditimpa jadi flex:1 (equal-width) di section ini saja, supaya
-    3 kartu benar-benar membagi rata lebar container dengan gap simetris.
+    Kenapa CSS Grid, bukan flexbox+flex-grow (versi sebelumnya): section
+    Layanan di beranda SELALU berisi tepat 3 kartu, jadi 3 kolom fixed
+    width-nya otomatis rapi. Section Keunggulan di sini jumlah kartunya
+    ikut data admin (halaman /solusi/* kebetulan 3, tapi beberapa /produk/*
+    ada 4). Dengan flex-grow: 1, begitu jumlah kartu TIDAK kelipatan 3,
+    kartu sisa di baris terakhir (mis. kartu ke-4 sendirian) ikut melar
+    flex-grow mengisi SISA lebar & tinggi barisnya sendiri — jadi kelihatan
+    lebih besar/tidak sejajar dengan kartu di baris atasnya (ini penyebab
+    kartu Keunggulan di /solusi & /produk kelihatan tidak simetris
+    dibanding beranda). CSS Grid dengan kolom fixed (repeat(3,1fr) dst.)
+    tidak punya masalah ini: setiap kolom selalu sama lebar di SEMUA baris,
+    dan kartu yang sendirian di baris terakhir tetap seukuran kartu
+    lainnya (sisa slot di baris itu dibiarkan kosong, tidak ikut melar).
+    align-items:stretch bawaan grid juga otomatis menyamakan tinggi kartu
+    per baris, jadi height:100% di .solusi-benefit-card tetap perlu
+    dipertahankan. Breakpoint kolomnya disamakan dengan pola
+    .solusi-portfolio_grid di bawah (3 → 2 → 1 kolom) supaya konsisten.
   --}}
   .solusi-benefits .row{
     margin-top: 32px;
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     align-items: stretch;
     margin-left: 0;
     gap: 30px;
@@ -175,8 +186,13 @@
     display: flex;
     float: none;
     width: auto;
-    flex: 1 1 260px;
     margin-left: 0;
+  }
+  @media (max-width: 767px){
+    .solusi-benefits .row{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px){
+    .solusi-benefits .row{ grid-template-columns: 1fr; }
   }
   .solusi-benefit-card{
     box-sizing: border-box;
@@ -457,9 +473,18 @@
     .portfolio-lightbox_slide{
       padding: 20px 16px;
     }
+    /* Tombol panah tetap tampil di mobile, cuma diperkecil & digeser lebih
+       ke tepi supaya tidak menutupi gambar dan tetap gampang di-tap. */
     .portfolio-lightbox_nav{
-      display: none;
+      width: 38px;
+      height: 38px;
     }
+    .portfolio-lightbox_nav svg{
+      width: 20px;
+      height: 20px;
+    }
+    .portfolio-lightbox_nav--prev{ left: 8px; }
+    .portfolio-lightbox_nav--next{ right: 8px; }
   }
 
   {{--

@@ -28,8 +28,14 @@
 
       <div class="col-12">
         <label class="form-label">Isi Artikel *</label>
-        <textarea name="content" class="form-control" rows="12" required>{{ old('content', $item->content) }}</textarea>
-        <div class="form-text">Setiap baris baru otomatis jadi paragraf baru di halaman blog.</div>
+        <div id="contentEditor" style="min-height:340px; background:#fff;"></div>
+        <textarea name="content" id="contentInput" style="display:none" required>{{ old('content', $item->content) }}</textarea>
+        <div class="form-text">
+          Pakai heading (H2/H3), daftar, kutipan, dan gambar seperlunya — artikel dengan struktur
+          jelas lebih enak dibaca dan lebih baik untuk SEO daripada satu blok teks panjang.
+          Untuk gambar, tombol <strong>gambar</strong> di toolbar akan minta URL gambar (upload dulu
+          gambarnya ke tempat lain, lalu tempel link-nya di sini).
+        </div>
       </div>
 
       <div class="col-12">
@@ -66,9 +72,65 @@
   </div>
 </form>
 
+{{-- Editor artikel rich text (Quill) — supaya admin bisa bikin artikel dengan
+     heading, daftar, kutipan, dan gambar, bukan cuma paragraf teks polos.
+     Isi tersimpan sebagai HTML di textarea #contentInput, lalu dibersihkan lagi
+     di server (lihat App\Support\HtmlSanitizer) sebelum disimpan ke database. --}}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <script>
   const metaEl = document.getElementById('meta_description');
   const counterEl = document.getElementById('meta_count');
   metaEl.addEventListener('input', () => counterEl.textContent = metaEl.value.length);
+
+  (function () {
+    const input = document.getElementById('contentInput');
+    const editorEl = document.getElementById('contentEditor');
+    if (!input || !editorEl || typeof Quill === 'undefined') return;
+
+    const quill = new Quill('#contentEditor', {
+      theme: 'snow',
+      placeholder: 'Tulis isi artikel di sini…',
+      modules: {
+        toolbar: [
+          [{ header: [2, 3, 4, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link', 'image'],
+          ['clean'],
+        ],
+      },
+    });
+
+    // Isi awal: kalau field lama masih teks polos (belum pernah dipakai rich
+    // editor), pecah per baris kosong jadi <p> dulu supaya paragraf tidak
+    // hilang saat dipindah ke editor.
+    const raw = input.value || '';
+    const looksLikeHtml = /<(p|h[1-6]|ul|ol|li|blockquote|img|figure|table|pre)[\s>]/i.test(raw);
+    const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const initialHtml = looksLikeHtml
+      ? raw
+      : raw.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean)
+          .map((p) => '<p>' + escapeHtml(p).replace(/\n/g, '<br>') + '</p>').join('');
+
+    if (initialHtml) {
+      quill.clipboard.dangerouslyPasteHTML(initialHtml);
+    }
+
+    // Tombol gambar: minta URL (bukan upload langsung), supaya artikel tidak
+    // membengkak berisi gambar base64 di database.
+    quill.getModule('toolbar').addHandler('image', function () {
+      const url = window.prompt('Masukkan URL gambar (mis. https://situs-anda.com/gambar.jpg):');
+      if (!url) return;
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, 'image', url, 'user');
+      quill.setSelection(range.index + 1);
+    });
+
+    document.querySelector('form').addEventListener('submit', function () {
+      input.value = quill.root.innerHTML;
+    });
+  })();
 </script>
 @endsection

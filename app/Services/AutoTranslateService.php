@@ -190,26 +190,53 @@ class AutoTranslateService
             ."Balas HANYA dengan objek JSON valid, tanpa teks lain dan tanpa markdown code fence.\n\n"
             .$payload;
 
-        $maxTokens = (int) min(8000, max(1200, mb_strlen($payload) * 0.9));
+        // Budget dinaikkan (minimum 2000, bukan 1200): model gpt-oss di Groq adalah
+        // "reasoning model" — token untuk proses berpikir internalnya dipotong dari
+        // max_tokens yang sama dengan jawaban akhir. Kalau budget terlalu mepet,
+        // token habis untuk "mikir" dan jawaban JSON-nya jadi kosong -> Groq balas
+        // 400 json_validate_failed dengan failed_generation kosong (bukan salah
+        // prompt, tapi model kehabisan token sebelum sempat menjawab).
+        $maxTokens = (int) min(8000, max(2000, mb_strlen($payload) * 0.9));
+        $model = config('services.groq.translate_model') ?: config('services.groq.model');
 
         for ($attempt = 1; $attempt <= 2; $attempt++) {
             try {
+                $body = [
+                    'model' => $model,
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'You are a precise JSON-in, JSON-out Indonesian-to-English translation engine for website content.'],
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                    'temperature' => 0.2,
+                    'max_tokens' => $maxTokens,
+                    'response_format' => ['type' => 'json_object'],
+                ];
+
+                // Model gpt-oss (20b/120b) mendukung reasoning_effort. Set 'low' supaya
+                // sebagian besar budget token dipakai untuk jawaban, bukan reasoning
+                // internal — tugas terjemahan tidak butuh reasoning dalam.
+                if (str_contains($model, 'gpt-oss')) {
+                    $body['reasoning_effort'] = 'low';
+                }
+
                 $response = Http::withToken((string) config('services.groq.key'))
                     ->timeout(45)
-                    ->post('https://api.groq.com/openai/v1/chat/completions', [
-                        'model' => config('services.groq.translate_model') ?: config('services.groq.model'),
-                        'messages' => [
-                            ['role' => 'system', 'content' => 'You are a precise JSON-in, JSON-out Indonesian-to-English translation engine for website content.'],
-                            ['role' => 'user', 'content' => $prompt],
-                        ],
-                        'temperature' => 0.2,
-                        'max_tokens' => $maxTokens,
-                        'response_format' => ['type' => 'json_object'],
-                    ]);
+                    ->post('https://api.groq.com/openai/v1/chat/completions', $body);
 
                 // Kena rate limit / server sibuk: tunggu sebentar lalu coba sekali lagi.
                 if (($response->status() === 429 || $response->serverError()) && $attempt === 1) {
                     usleep(1_500_000);
+
+                    continue;
+                }
+
+                // json_validate_failed dengan failed_generation kosong = model reasoning
+                // kehabisan token budget sebelum sempat menjawab (lihat catatan di atas).
+                // Percobaan kedua pakai budget token penuh (8000) untuk kasus langka di
+                // mana reasoning_effort=low saja belum cukup (mis. artikel sangat panjang).
+                if ($attempt === 1 && $response->status() === 400
+                    && str_contains($response->body(), 'json_validate_failed')) {
+                    $body['max_tokens'] = 8000;
 
                     continue;
                 }

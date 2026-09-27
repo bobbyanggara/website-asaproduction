@@ -121,6 +121,7 @@ window.SITE_I18N = {
     'blogIndex.mastheadTitle': 'Artikel & Insight',
     'blogIndex.mastheadDesc': 'Tips, cerita di balik layar, dan wawasan seputar dunia produksi kreatif dari {site}.',
     'blogIndex.readMore': 'Baca selengkapnya →',
+    'blogIndex.minRead': 'menit',
     'blogIndex.empty': 'Belum ada artikel yang dipublikasikan.',
 
     // ---- Portfolio page ----
@@ -139,6 +140,10 @@ window.SITE_I18N = {
 
     // ---- Blog show (article) page ----
     'blogShow.backToBlog': 'Kembali ke Blog',
+    'blogShow.byLine': 'Oleh',
+    'blogShow.minRead': 'menit baca',
+    'blogShow.tocTitle': 'Daftar Isi',
+    'blogShow.bylineRole': 'Tim {site}',
     'blogShow.shareLabel': 'Bagikan',
     'blogShow.shareFacebook': 'Bagikan ke Facebook',
     'blogShow.shareWhatsapp': 'Bagikan ke WhatsApp',
@@ -284,6 +289,7 @@ window.SITE_I18N = {
     'blogIndex.mastheadTitle': 'Articles & Insights',
     'blogIndex.mastheadDesc': 'Tips, behind-the-scenes stories, and insights from the world of creative production at {site}.',
     'blogIndex.readMore': 'Read more →',
+    'blogIndex.minRead': 'min',
     'blogIndex.empty': 'No articles have been published yet.',
 
     // ---- Portfolio page ----
@@ -302,6 +308,10 @@ window.SITE_I18N = {
 
     // ---- Blog show (article) page ----
     'blogShow.backToBlog': 'Back to Blog',
+    'blogShow.byLine': 'By',
+    'blogShow.minRead': 'min read',
+    'blogShow.tocTitle': 'Table of Contents',
+    'blogShow.bylineRole': '{site} Team',
     'blogShow.shareLabel': 'Share',
     'blogShow.shareFacebook': 'Share on Facebook',
     'blogShow.shareWhatsapp': 'Share on WhatsApp',

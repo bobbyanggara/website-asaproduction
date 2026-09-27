@@ -63,4 +63,12 @@ return [
         'enabled' => env('AUTO_TRANSLATE', true),
     ],
 
+    // Token statis untuk endpoint otomatisasi n8n (routes/api.php + VerifyN8nToken).
+    // WAJIB di-generate sendiri per environment, jangan dikosongkan di production —
+    // kalau kosong, VerifyN8nToken menutup endpoint (abort 500) daripada terbuka bebas.
+    // Contoh generate: php artisan tinker --execute="echo bin2hex(random_bytes(32));"
+    'n8n' => [
+        'token' => env('N8N_API_TOKEN'),
+    ],
+
 ];

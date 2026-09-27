@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -94,6 +95,11 @@ class PostController extends Controller
         $data['is_active'] = $request->boolean('is_active');
         $data['author'] = $data['author'] !== null && trim($data['author']) !== '' ? trim($data['author']) : 'Admin';
         unset($data['thumbnail']);
+
+        // Isi artikel ditulis lewat rich text editor (Quill) -> bersihkan HTML-nya
+        // di sini juga (bukan cuma saat render) supaya yang tersimpan di database
+        // sudah aman dari tag/atribut berbahaya, bukan cuma disaring saat tampil.
+        $data['content'] = HtmlSanitizer::clean($data['content']);
 
         return $data;
     }

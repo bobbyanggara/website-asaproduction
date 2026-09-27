@@ -6,6 +6,7 @@ use App\Models\Certificate;
 use App\Models\Post;
 use App\Models\Service;
 use App\Models\Setting;
+use App\Support\HtmlSanitizer;
 
 class BlogController extends Controller
 {
@@ -17,7 +18,12 @@ class BlogController extends Controller
         $services = Service::active()->ordered()->get();
         $certificates = Certificate::active()->ordered()->get();
 
-        return view('blog.index', compact('setting', 'posts', 'services', 'certificates'));
+        // Estimasi lama baca per kartu artikel ("X menit baca").
+        $readingMinutes = $posts->mapWithKeys(
+            fn (Post $p) => [$p->id => HtmlSanitizer::readingMinutes((string) $p->content)]
+        );
+
+        return view('blog.index', compact('setting', 'posts', 'services', 'certificates', 'readingMinutes'));
     }
 
     public function show(string $slug)
@@ -35,7 +41,9 @@ class BlogController extends Controller
         $services = Service::active()->ordered()->get();
         $certificates = Certificate::active()->ordered()->get();
 
-        return view('blog.show', compact('setting', 'post', 'related', 'services', 'certificates'));
+        $readingMinutes = HtmlSanitizer::readingMinutes((string) $post->content);
+
+        return view('blog.show', compact('setting', 'post', 'related', 'services', 'certificates', 'readingMinutes'));
     }
 
     public function like(Post $post)

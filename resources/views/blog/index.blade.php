@@ -5,8 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="format-detection" content="telephone=no"/>
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Blog - {{ $setting->site_title ?? 'Asa Production' }}</title>
-  <meta name="description" content="Kumpulan artikel dan insight seputar produksi kreatif dari {{ $setting->site_title ?? 'Asa Production' }}.">
+  @php
+    $siteName = $setting->site_title ?? 'Asa Production';
+    $canonicalUrl = url()->current();
+  @endphp
+
+  <title>Blog - {{ $siteName }}</title>
+  <meta name="description" content="Kumpulan artikel dan insight seputar produksi kreatif dari {{ $siteName }}.">
+  <link rel="canonical" href="{{ $canonicalUrl }}">
+  <meta name="robots" content="index, follow">
+  @if($posts->previousPageUrl())
+  <link rel="prev" href="{{ $posts->previousPageUrl() }}">
+  @endif
+  @if($posts->nextPageUrl())
+  <link rel="next" href="{{ $posts->nextPageUrl() }}">
+  @endif
+
+  {{-- Open Graph --}}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ $siteName }}">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:title" content="Blog - {{ $siteName }}">
+  <meta property="og:description" content="Kumpulan artikel dan insight seputar produksi kreatif dari {{ $siteName }}.">
+  <meta property="og:url" content="{{ $canonicalUrl }}">
+
+  {{-- Data terstruktur (schema.org): daftar artikel blog dari {{ $siteName }}. --}}
+  <script type="application/ld+json">
+  {!! json_encode([
+    '@context' => 'https://schema.org',
+    '@graph' => [
+      [
+        '@type' => 'Blog',
+        'name' => 'Blog '.$siteName,
+        'url' => $canonicalUrl,
+        'publisher' => ['@type' => 'Organization', 'name' => $siteName],
+        'blogPost' => $posts->map(fn ($p) => [
+          '@type' => 'BlogPosting',
+          'headline' => $p->title,
+          'url' => route('blog.show', $p->slug),
+          'datePublished' => optional($p->published_at)->toAtomString(),
+        ])->values()->all(),
+      ],
+      [
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+          ['@type' => 'ListItem', 'position' => 1, 'name' => 'Beranda', 'item' => route('home')],
+          ['@type' => 'ListItem', 'position' => 2, 'name' => 'Blog', 'item' => $canonicalUrl],
+        ],
+      ],
+    ],
+  ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +105,13 @@
         </div>
         <h2 class="post-card_title">@bi($post, 'title')</h2>
         <p class="post-card_excerpt">@biexcerpt($post, 120)</p>
-        <span class="post-card_readmore" data-i18n="blogIndex.readMore">Baca selengkapnya &rarr;</span>
+        <div class="post-card_footer">
+          <span class="post-card_readmore" data-i18n="blogIndex.readMore">Baca selengkapnya &rarr;</span>
+          <span class="post-card_readtime">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+            {{ $readingMinutes[$post->id] ?? 1 }} <span data-i18n="blogIndex.minRead">menit</span>
+          </span>
+        </div>
       </div>
     </a>
     @endforeach

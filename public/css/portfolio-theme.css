@@ -337,9 +337,18 @@
   .portfolio-lightbox_slide{
     padding: 20px 16px;
   }
+  /* Tombol panah tetap tampil di mobile, cuma diperkecil & digeser lebih
+     ke tepi supaya tidak menutupi gambar dan tetap gampang di-tap. */
   .portfolio-lightbox_nav{
-    display: none;
+    width: 38px;
+    height: 38px;
   }
+  .portfolio-lightbox_nav svg{
+    width: 20px;
+    height: 20px;
+  }
+  .portfolio-lightbox_nav--prev{ left: 8px; }
+  .portfolio-lightbox_nav--next{ right: 8px; }
 }
 
 @media (max-width: 767px){

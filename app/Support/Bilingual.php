@@ -61,8 +61,12 @@ class Bilingual
     }
 
     /**
-     * Isi panjang berparagraf (pemisah baris kosong), tiap paragraf jadi <p>.
-     * Paragraf ID dan EN dirender sebagai dua kelompok <p> terpisah.
+     * Isi artikel (mis. Post::content). Sejak editor artikel jadi rich text
+     * (lihat admin/posts/form.blade.php), field ini bisa berisi HTML dengan
+     * heading, list, blockquote, gambar, dll — dibersihkan lewat HtmlSanitizer
+     * lalu dirender apa adanya. Artikel lama yang masih teks polos (sebelum
+     * rich editor ada) tetap didukung: dipecah per baris kosong jadi <p>
+     * seperti perilaku lama, supaya tidak ada artikel lama yang rusak.
      */
     public static function body($model, string $field): HtmlString
     {
@@ -73,25 +77,45 @@ class Bilingual
         $id = (string) $model->getAttribute($field);
         $en = trim((string) $model->getAttribute($field.'_en'));
 
-        $paragraphs = function (string $text, string $attrs): string {
+        $render = function (string $text): string {
+            $text = trim($text);
+            if ($text === '') {
+                return '';
+            }
+
+            if (static::looksLikeHtml($text)) {
+                return \App\Support\HtmlSanitizer::clean($text);
+            }
+
+            // Artikel lama (teks polos): pecah per baris kosong jadi <p>.
             $html = '';
-            foreach (preg_split('/\R{2,}/u', trim($text)) ?: [] as $paragraph) {
+            foreach (preg_split('/\R{2,}/u', $text) ?: [] as $paragraph) {
                 $paragraph = trim($paragraph);
                 if ($paragraph !== '') {
-                    $html .= '<p'.$attrs.'>'.nl2br(e($paragraph)).'</p>';
+                    $html .= '<p>'.nl2br(e($paragraph)).'</p>';
                 }
             }
 
             return $html;
         };
 
-        if ($en === '' || $en === trim($id)) {
-            return new HtmlString($paragraphs($id, ''));
+        $idHtml = $render($id);
+        $enHtml = $render($en);
+
+        if ($enHtml === '' || $enHtml === $idHtml) {
+            return new HtmlString($idHtml);
         }
 
         return new HtmlString(
-            $paragraphs($id, ' data-i18n-lang="id"').$paragraphs($en, ' data-i18n-lang="en" style="display:none"')
+            '<div data-i18n-lang="id">'.$idHtml.'</div>'
+            .'<div data-i18n-lang="en" style="display:none">'.$enHtml.'</div>'
         );
+    }
+
+    /** Heuristik: teks dianggap HTML kalau mengandung tag blok yang dikenal editor artikel. */
+    private static function looksLikeHtml(string $text): bool
+    {
+        return (bool) preg_match('/<(p|h[1-6]|ul|ol|li|blockquote|img|figure|table|pre)[\s>]/i', $text);
     }
 
     /** Ringkasan otomatis dari isi artikel kalau excerpt kosong (per bahasa). */

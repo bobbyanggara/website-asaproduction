@@ -18,6 +18,32 @@
   <link rel="stylesheet" href="{{ asset('css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('css/site-nav-shared.css') }}">
   <link rel="stylesheet" href="{{ asset('css/blog-theme.css') }}">
+
+  <style>
+    /* =========================================================
+       SECTION TITLE THEME — konsisten dengan home.blade.php:
+       teks gradient biru brand + garis aksen gradient di bawah
+       judul section. Class "section-heading" untuk <h2>, dan
+       "section-heading_bar" untuk <hr/> aksennya. */
+    .section-heading{
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 800;
+      letter-spacing: .02em;
+      background: linear-gradient(135deg, #16213a, var(--brand-light, #0051B5));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    .section-heading_bar{
+      width: 56px;
+      height: 3px;
+      border: none;
+      border-radius: 999px;
+      margin: 14px auto;
+      background: linear-gradient(90deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+    }
+  </style>
 </head>
 <body class="blog-body">
 
@@ -41,7 +67,7 @@
     <div class="about-hero-grid">
       <div>
         <span class="about-section_eyebrow" data-i18n="about.label">Who We Are</span>
-        <h2 data-i18n="aboutPage.sectionTitle" data-i18n-var-site="{{ $setting->site_title ?? 'Asa Production' }}">Tentang {{ $setting->site_title ?? 'Asa Production' }}</h2>
+        <h2 class="section-heading" data-i18n="aboutPage.sectionTitle" data-i18n-var-site="{{ $setting->site_title ?? 'Asa Production' }}">Tentang {{ $setting->site_title ?? 'Asa Production' }}</h2>
         <p>
           <span data-i18n-lang="id"><a href="https://www.instagram.com/asaproductionnewgen/" target="_blank" rel="noopener" style="color:var(--brand-light);">Asa Production</a> perusahaan yang bergerak dalam bidang IT dan penerbitan perangkat lunak (Software) yang sedang berkembang pesat, berlokasi di Kabupaten <a href="https://sidoarjokab.go.id/" target="_blank" rel="noopener" style="color:var(--brand-light);">Sidoarjo</a> - Jawa Timur. Didirikan pada tahun 2019 sebagai perusahaan rintisan berfokus pada bidang pengembangan perangkat lunak dan website. Kami menyediakan berbagai solusi dan produk seperti Aplikasi Warehouse Management System, Aplikasi Enterprise Resource Planning, Aplikasi Absensi Online, Aplikasi Customer Relationship Management, dan Aplikasi lainnya yang menunjang bisnis Anda.</span>
           <span data-i18n-lang="en" style="display:none"><a href="https://www.instagram.com/asaproductionnewgen/" target="_blank" rel="noopener" style="color:var(--brand-light);">Asa Production</a> is a fast-growing IT and software publishing company based in <a href="https://sidoarjokab.go.id/" target="_blank" rel="noopener" style="color:var(--brand-light);">Sidoarjo Regency</a>, East Java. Founded in 2019 as a startup, we focus on software and website development. We provide a range of solutions and products such as Warehouse Management System applications, Enterprise Resource Planning applications, Online Attendance applications, Customer Relationship Management applications, and other applications to support your business.</span>
@@ -57,7 +83,7 @@
   @if($team->count())
   <section class="about-section about-section--center" style="padding-bottom:90px;">
     <span class="about-section_eyebrow" data-i18n="aboutPage.teamEyebrow">Founder & Tim</span>
-    <h2 data-i18n="aboutPage.teamTitle">Tak kenal maka tak sayang</h2>
+    <h2 class="section-heading" data-i18n="aboutPage.teamTitle">Tak kenal maka tak sayang</h2>
     <div class="team-grid">
       @foreach($team as $member)
       <div class="team-card">

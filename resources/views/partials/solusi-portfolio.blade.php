@@ -5,8 +5,8 @@
 --}}
 <section class="well solusi-portfolio center" id="portofolio">
   <div class="container">
-    <h2 data-i18n="solusi.portfolioTitle">Temukan inspirasimu</h2>
-    <hr/>
+    <h2 class="section-heading" data-i18n="solusi.portfolioTitle">Temukan inspirasimu</h2>
+    <hr class="section-heading_bar"/>
     @if($portfolios->count())
       <div class="solusi-portfolio_grid">
         @foreach($portfolios as $item)

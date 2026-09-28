@@ -189,6 +189,23 @@
     margin-left: 0;
     gap: 30px;
   }
+  {{--
+    FIX 3-kartu-per-baris: grid.css punya clearfix lama
+    (.row:before/.row:after { display:table; content:""; }) untuk grid
+    float-based. Begitu .row di atas jadi flex container, dua
+    pseudo-element clearfix itu ikut dihitung browser sebagai flex ITEM
+    tambahan (bukan cuma dekorasi kosong) — jadi row ini sebenarnya berisi
+    5 item (::before + 3 kartu + ::after), bukan 3, dan itu mencuri jatah
+    gap sehingga kartu ke-3 terlempar ke baris baru (jadi cuma 2 kartu per
+    baris di desktop, bukan 3). Clearfix ini juga tidak diperlukan lagi di
+    sini karena flex container tidak butuh clearfix (tidak ada float yang
+    perlu di-clear), makanya aman dinonaktifkan khusus di section ini.
+  --}}
+  .solusi-benefits .row:before,
+  .solusi-benefits .row:after{
+    content: none;
+    display: none;
+  }
   .solusi-benefits .row > [class*="grid_"]{
     display: flex;
     float: none;

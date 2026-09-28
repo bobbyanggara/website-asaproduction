@@ -82,8 +82,8 @@
 @endif
 <section class="well2 center">
   <div class="container wow fadeInUp" data-wow-duration="0.9s">
-    <h2 data-i18n="clients.title">Clients</h2>
-    <hr/>
+    <h2 class="section-heading" data-i18n="clients.title">Clients</h2>
+    <hr class="section-heading_bar"/>
     <p data-i18n="clients.subtitle">Telah dipercaya oleh berbagai bisnis</p>
   </div>
   @if($useMarquee)

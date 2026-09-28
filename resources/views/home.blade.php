@@ -65,6 +65,35 @@
       text-transform: none !important;
     }
 
+    /* =========================================================
+       SECTION TITLE THEME — dipakai di SEMUA section & halaman
+       (home, about, /solusi/*, /produk/*, dan partial yang dipakai
+       bersama seperti Clients/FAQ/Portofolio), supaya judul section
+       konsisten: teks gradient biru brand + garis aksen gradient
+       di bawahnya. Cukup tambahkan class ini ke markup:
+         <h2 class="section-heading">Judul</h2>
+         <hr class="section-heading_bar"/>
+       (hr boleh dilewati kalau section tidak punya garis bawah,
+       misalnya heading gaya "eyebrow" di halaman About.) */
+    .section-heading{
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 800;
+      letter-spacing: .02em;
+      background: linear-gradient(135deg, #16213a, var(--brand-light, #0051B5));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    .section-heading_bar{
+      width: 56px;
+      height: 3px;
+      border: none;
+      border-radius: 999px;
+      margin: 14px auto;
+      background: linear-gradient(90deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+    }
+
     /* ===== Subtle hover micro-interactions ===== */
     .well__ins1 .grid_4{
       transition: transform .35s cubic-bezier(.22,1,.36,1);
@@ -637,68 +666,108 @@
       }
     }
 
-    /* ===== ABOUT / WHO WE ARE — split full-bleed 2 kolom (referensi: kreasiai.com) ===== */
+    /* ===== ABOUT / WHO WE ARE =====
+       Split 2 kolom full-bleed: foto kiri, panel navy solid kanan.
+       Sengaja polos: satu warna latar, satu warna aksen, garis tipis
+       sebagai pemisah, dan angka kecil sebagai penanda poin. */
     .about-split{
       display: grid;
       grid-template-columns: 1fr 1fr;
       align-items: stretch;
     }
-    .about-split_col--text{
-      background: #f4f6fb;
-      display: flex;
-      align-items: center;
-    }
-    .about-split_inner{
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 90px 60px;
-    }
-    .about-split_eyebrow{
-      display: block;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 700;
-      font-size: 13px;
-      color: var(--brand-accent, #2E8BFF);
-      margin-bottom: 14px;
-    }
-    .about-split_title{
-      text-align: left;
-      margin: 0 0 20px;
-      font-size: clamp(24px, 3vw, 32px);
-      line-height: 1.3;
-      color: #1a2340;
-    }
-    .about-split_desc{
-      color: #6b7280;
-      font-size: 15.5px;
-      line-height: 1.75;
-      margin: 0 0 30px;
-    }
     .about-split_col--photo{
+      position: relative;
       overflow: hidden;
+      min-height: 480px;
     }
     .about-split_col--photo img{
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-      min-height: 420px;
+    }
+    .about-split_col--text{
+      background: var(--brand-dark, #00224C);
+      display: flex;
+      align-items: center;
+    }
+    .about-split_inner{
+      width: 100%;
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 88px 56px;
+    }
+    .about-split_eyebrow{
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-weight: 600;
+      font-size: 12.5px;
+      color: var(--brand-accent, #2E8BFF);
+      margin-bottom: 22px;
+    }
+    .about-split_eyebrow::before{
+      content: "";
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+    }
+    .about-split_title{
+      text-align: left;
+      margin: 0 0 22px;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 700;
+      font-size: clamp(26px, 3.2vw, 38px);
+      line-height: 1.2;
+      letter-spacing: 0;
+      color: #fff;
+    }
+    .about-split_desc{
+      color: rgba(255,255,255,.72);
+      font-size: 15.5px;
+      line-height: 1.8;
+      margin: 0 0 34px;
+    }
+    .about-split_points{
+      list-style: none;
+      margin: 0 0 40px;
+      padding: 0;
+      border-top: 1px solid rgba(255,255,255,.14);
+    }
+    .about-split_points li{
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+      color: #fff;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .about-split_points li span:first-child{
+      flex: 0 0 auto;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      color: var(--brand-accent, #2E8BFF);
+      font-variant-numeric: tabular-nums;
+    }
+    .about-split_cta{
+      text-align: center;
     }
     @media (max-width: 900px){
       .about-split{
         grid-template-columns: 1fr;
       }
-      .about-split_inner{
-        padding: 60px 24px;
-        text-align: center;
-      }
-      .about-split_title,
-      .about-split_eyebrow{
-        text-align: center;
-      }
-      .about-split_col--photo img{
+      .about-split_col--photo{
         min-height: 280px;
+      }
+      .about-split_inner{
+        padding: 56px 24px;
       }
     }
 
@@ -1302,6 +1371,164 @@
       .blog-section_grid .grid_4 + .grid_4{
         margin-top: 28px;
       }
+    }
+
+    /* =========================================================
+       TESTIMONIALS — redesain
+       Bug lama: elemen <svg class="testimonial-card_quote-icon">
+       dan <blockquote class="testimonial-card"> sama sekali tidak
+       punya CSS sendiri, jadi browser memakai ukuran default SVG
+       (mengikuti viewBox, jadi raksasa) + margin bawaan <blockquote>.
+       Hasilnya tanda kutip abu-abu besar menutupi separuh card,
+       persis seperti di screenshot bug.
+       Sekarang: ikon kutip jadi badge kecil bergradasi, teks quote
+       dikasih ukuran wajar, dan seluruh card dirapikan jadi gaya
+       modern/futuristik (glow tipis, kartu kaca, ring foto gradasi)
+       yang senada dengan warna brand (--brand-accent/--brand-light). */
+    .testimonial-section{
+      position: relative;
+      overflow: hidden;
+      padding-top: 90px;
+      padding-bottom: 100px;
+      background:
+        radial-gradient(560px 320px at 12% 0%, rgba(46,139,255,.08), transparent 60%),
+        radial-gradient(620px 360px at 88% 100%, rgba(0,81,181,.07), transparent 60%),
+        #f7f9fd;
+    }
+    .testimonial-section::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(46,139,255,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(46,139,255,.05) 1px, transparent 1px);
+      background-size: 34px 34px;
+      -webkit-mask-image: radial-gradient(60% 60% at 50% 20%, #000 0%, transparent 75%);
+      mask-image: radial-gradient(60% 60% at 50% 20%, #000 0%, transparent 75%);
+      pointer-events: none;
+    }
+    .testimonial-section .container{ position: relative; z-index: 1; }
+
+    /* Rapatkan jarak subtitle -> card. Sebelumnya bertumpuk:
+       margin global "* + .owl-carousel" (49px) + padding atas item (10px).
+       Di-override khusus testimoni supaya carousel lain tidak ikut berubah. */
+    .testimonial-section .testimonial-carousel{
+      margin-top: 22px;
+    }
+    .testimonial-carousel .item{
+      padding: 0 12px 26px;
+      box-sizing: border-box;
+    }
+    .testimonial-card{
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      margin: 0;
+      padding: 34px 28px 26px;
+      box-sizing: border-box;
+      text-align: left;
+      background: #fff;
+      border: 1px solid #eceff5;
+      border-radius: 20px;
+      box-shadow: 0 14px 34px -18px rgba(16,32,64,.18);
+      overflow: hidden;
+      transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease, border-color .35s ease;
+    }
+    .testimonial-card::after{
+      /* Tanda kutip dekoratif — sekarang dikunci ukurannya lewat font-size,
+         dibuat sangat transparan, dan overflow:hidden pada parent memastikan
+         dia tidak pernah "bocor" keluar/menutupi konten seperti bug awal. */
+      content: "\201C";
+      position: absolute;
+      top: -34px;
+      right: 6px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 150px;
+      line-height: 1;
+      font-weight: 700;
+      color: rgba(46,139,255,.07);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .testimonial-card:hover{
+      transform: translateY(-8px);
+      border-color: rgba(46,139,255,.35);
+      box-shadow: 0 22px 44px -16px rgba(16,32,64,.26);
+    }
+    .testimonial-card_quote-icon{
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      padding: 11px;
+      box-sizing: border-box;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+      box-shadow: 0 10px 20px -8px rgba(46,139,255,.6);
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .testimonial-card_quote{
+      position: relative;
+      z-index: 1;
+      flex: 1 0 auto;
+      margin: 0 0 26px;
+      font-size: 15px;
+      line-height: 1.75;
+      color: #4b5567;
+      font-weight: 400;
+    }
+    .testimonial-card_footer{
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid #eef1f7;
+    }
+    .testimonial-card_photo{
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid transparent;
+      background:
+        linear-gradient(#fff,#fff) padding-box,
+        linear-gradient(135deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5)) border-box;
+    }
+    .testimonial-card_meta{
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .testimonial-card_name{
+      font-style: normal;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #16213a;
+      line-height: 1.3;
+    }
+    .testimonial-card_role{
+      margin: 2px 0 0;
+      font-size: 12.5px;
+      color: #8a93a3;
+      line-height: 1.3;
+    }
+    .testimonial-card_company{
+      margin: 1px 0 0;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--brand-accent, #2E8BFF);
+      line-height: 1.3;
     }
   </style>
 </head>
@@ -1997,8 +2224,8 @@
     @if($partners->count())
     <section class="well2 center">
       <div class="container wow fadeInUp" data-wow-duration="0.9s">
-        <h2 data-i18n="clients.title">Clients</h2>
-        <hr/>
+        <h2 class="section-heading" data-i18n="clients.title">Clients</h2>
+        <hr class="section-heading_bar"/>
         <p data-i18n="clients.subtitle">Telah dipercaya oleh berbagai bisnis</p>
       </div>
       <div class="partner-marquee-wrap">
@@ -2041,23 +2268,30 @@
     <section class="well testimonial-section">
       <div class="container center">
         <div class="wow fadeInUp" data-wow-duration="0.9s">
-          <h2 data-i18n="testimonials.title">testimonials</h2>
-          <hr/>
+          <h2 class="section-heading" data-i18n="testimonials.title">testimonials</h2>
+          <hr class="section-heading_bar"/>
           <p data-i18n="testimonials.subtitle">Apa kata mereka yang sudah menggunakan layanan kami</p>
         </div>
         <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.15s" data-wow-duration="0.9s">
           @foreach($testimonials as $t)
           <div class="item">
             <blockquote class="testimonial-card">
-              @if($t->company)
-              <h3 class="testimonial-card_company">{{ $t->company }}</h3>
-              @endif
+              <svg class="testimonial-card_quote-icon" viewBox="0 0 32 24" fill="none" aria-hidden="true">
+                <path d="M8.8 24c-2.32 0-4.24-.8-5.76-2.4C1.52 20 .76 17.973.76 15.52c0-2.187.573-4.36 1.72-6.52C3.653 6.813 5.32 4.813 7.52 3l3.6 3.24c-1.573 1.28-2.787 2.573-3.64 3.88-.827 1.28-1.293 2.44-1.4 3.48.267-.08.573-.12.92-.12 1.44 0 2.64.507 3.6 1.52.987 1.013 1.48 2.267 1.48 3.76 0 1.52-.507 2.787-1.52 3.8C9.547 23.507 8.32 24 8.8 24zm17.04 0c-2.32 0-4.24-.8-5.76-2.4-1.52-1.6-2.28-3.627-2.28-6.08 0-2.187.573-4.36 1.72-6.52 1.173-2.187 2.84-4.187 5-6l3.6 3.24c-1.573 1.28-2.787 2.573-3.64 3.88-.827 1.28-1.293 2.44-1.4 3.48.267-.08.573-.12.92-.12 1.44 0 2.64.507 3.6 1.52.987 1.013 1.48 2.267 1.48 3.76 0 1.52-.507 2.787-1.52 3.8-.987 1.013-2.213 1.44-3.72 1.44z" fill="currentColor"/>
+              </svg>
               <p class="testimonial-card_quote">@bi($t, 'message', ['nl2br' => true])</p>
-              <img class="testimonial-card_photo" src="{{ $t->photo ? asset('storage/'.$t->photo) : asset('images/page-1_img13.jpg') }}" alt="{{ $t->name }}"/>
-              <cite class="testimonial-card_name">{{ $t->name }}</cite>
-              @if($t->title)
-              <p class="testimonial-card_role">@bi($t, 'title')</p>
-              @endif
+              <div class="testimonial-card_footer">
+                <img class="testimonial-card_photo" src="{{ $t->photo ? asset('storage/'.$t->photo) : asset('images/page-1_img13.jpg') }}" alt="{{ $t->name }}"/>
+                <div class="testimonial-card_meta">
+                  <cite class="testimonial-card_name">{{ $t->name }}</cite>
+                  @if($t->title)
+                  <p class="testimonial-card_role">@bi($t, 'title')</p>
+                  @endif
+                  @if($t->company)
+                  <p class="testimonial-card_company">{{ $t->company }}</p>
+                  @endif
+                </div>
+              </div>
             </blockquote>
           </div>
           @endforeach
@@ -2066,9 +2300,8 @@
     </section>
     @endif
 
-    {{-- ABOUT / WHO WE ARE — layout disamakan dengan referensi (kreasiai.com):
-         split 2 kolom sama lebar, kiri background abu-abu muda berisi teks +
-         tombol solid biru, kanan foto full-bleed tanpa rounded corner.
+    {{-- ABOUT / WHO WE ARE — foto full-bleed kiri, panel navy solid kanan.
+         Judul/deskripsi/label/CTA tetap dari $setting->about_* (dwibahasa).
          Tombol mengarah ke halaman "Tentang Asa Production". --}}
     <section class="about-split" id="about">
       <div class="about-split_col about-split_col--photo wow fadeInLeft" data-wow-duration="0.9s">
@@ -2085,13 +2318,20 @@
           @if($setting->about_description)
           <p class="about-split_desc"><span data-i18n-lang="id">{{ $setting->about_description }}</span><span data-i18n-lang="en" style="display:none">{{ $setting->about_description_en ?: $setting->about_description }}</span></p>
           @endif
-          <a href="{{ route('about') }}" class="btn">
-            @if($setting->about_cta_text)
-              <span data-i18n-lang="id">{{ $setting->about_cta_text }}</span><span data-i18n-lang="en" style="display:none">{{ $setting->about_cta_text_en ?: $setting->about_cta_text }}</span>
-            @else
-              <span data-i18n="about.cta">Pelajari Lebih Lanjut</span>
-            @endif
-          </a>
+          <ul class="about-split_points">
+            <li><span>01</span><span data-i18n="about.point1">Berdiri sejak 2019 di Sidoarjo, Jawa Timur</span></li>
+            <li><span>02</span><span data-i18n="about.point2">Fokus pada pengembangan perangkat lunak dan website</span></li>
+            <li><span>03</span><span data-i18n="about.point3">Solusi disesuaikan dengan alur kerja bisnis Anda</span></li>
+          </ul>
+          <div class="about-split_cta">
+            <a href="{{ route('about') }}" class="btn">
+              @if($setting->about_cta_text)
+                <span data-i18n-lang="id">{{ $setting->about_cta_text }}</span><span data-i18n-lang="en" style="display:none">{{ $setting->about_cta_text_en ?: $setting->about_cta_text }}</span>
+              @else
+                <span data-i18n="about.cta">Pelajari Lebih Lanjut</span>
+              @endif
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -2101,6 +2341,11 @@
     @if($services->count())
     <section class="well well__ins1 center" id="services">
       <div class="container">
+        <div class="wow fadeInUp" data-wow-duration="0.9s">
+          <h2 class="section-heading" data-i18n="services.title">Keunggulan Kami</h2>
+          <hr class="section-heading_bar"/>
+          <p data-i18n="services.subtitle">Alasan klien memilih layanan kami</p>
+        </div>
         <div class="row">
           @foreach($services as $service)
           <div class="grid_4 wow fadeInUp" data-wow-delay="{{ 0.1 * ($loop->index % 3) }}s" data-wow-duration="0.8s">
@@ -2122,12 +2367,17 @@
     {{-- PORTFOLIO / GALLERY --}}
     @if($portfolios->count())
     <section class="thumb-container" id="gallery">
+      <div class="container center wow fadeInUp" data-wow-duration="0.9s" style="width:100%;margin-bottom:24px;">
+        <h2 class="section-heading" data-i18n="gallery.title">Portofolio Kami</h2>
+        <hr class="section-heading_bar"/>
+        <p data-i18n="gallery.subtitle">Beberapa proyek terbaik yang telah kami kerjakan</p>
+      </div>
       @foreach($portfolios as $item)
       <div class="item wow zoomIn" data-wow-delay="{{ 0.08 * ($loop->index % 6) }}s" data-wow-duration="0.7s">
-        {{-- data-full & data-title dipakai portfolio-lightbox.js untuk overview
-             gambar yang bisa discroll/digeser ke samping, sama seperti di
+        {{-- data-full, data-title & data-desc dipakai portfolio-lightbox.js untuk
+             overview gambar yang bisa discroll/digeser ke samping, sama seperti di
              halaman /portfolio. href tetap ada sebagai fallback jika JS mati. --}}
-        <a class="portfolio-thumb" style="padding-bottom:73.17073170731707%;" href="{{ asset('storage/'.$item->image) }}" data-full="{{ asset('storage/'.$item->image) }}" data-title="{{ $item->title }}">
+        <a class="portfolio-thumb" style="padding-bottom:73.17073170731707%;" href="{{ asset('storage/'.$item->image) }}" data-full="{{ asset('storage/'.$item->image) }}" data-title="{{ $item->title }}" data-desc="{{ $item->description }}">
           <img src="{{ asset('storage/'.$item->thumbnail) }}" alt="{{ $item->title }}" loading="lazy"/>
           <span class="thumb_overlay"></span>
         </a>
@@ -2141,8 +2391,8 @@
     @if($setting->blog_section_enabled && $latestPosts->count())
     <section class="well blog-section" id="blog">
       <div class="container center wow fadeInUp" data-wow-duration="0.9s">
-        <h2 data-i18n="blog.title">Artikel Terbaru</h2>
-        <hr/>
+        <h2 class="section-heading" data-i18n="blog.title">Artikel Terbaru</h2>
+        <hr class="section-heading_bar"/>
         <p data-i18n="blog.subtitle">Tips dan wawasan seputar dunia produksi kreatif</p>
       </div>
       <div class="container">
@@ -2182,8 +2432,8 @@
     @if($faqs->count())
     <section class="well faq-section" id="faq">
       <div class="container center wow fadeInUp" data-wow-duration="0.9s">
-        <h2 data-i18n="faq.title">F.A.Q</h2>
-        <hr/>
+        <h2 class="section-heading" data-i18n="faq.title">F.A.Q</h2>
+        <hr class="section-heading_bar"/>
         <p data-i18n="faq.subtitle">Pertanyaan yang sering diajukan</p>
       </div>
       <div class="container">

@@ -7,8 +7,8 @@
 @if($faqs->count())
 <section class="well faq-section" id="faq">
   <div class="container center wow fadeInUp" data-wow-duration="0.9s">
-    <h2 data-i18n="faq.title">F.A.Q</h2>
-    <hr/>
+    <h2 class="section-heading" data-i18n="faq.title">F.A.Q</h2>
+    <hr class="section-heading_bar"/>
     <p data-i18n="faq.subtitle">Pertanyaan yang sering diajukan</p>
   </div>
   <div class="container">

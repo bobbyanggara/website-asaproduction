@@ -19,6 +19,32 @@
   <link rel="stylesheet" href="{{ asset('css/site-nav-shared.css') }}">
   <link rel="stylesheet" href="{{ asset('css/blog-theme.css') }}">
 
+  <style>
+    /* =========================================================
+       SECTION TITLE THEME — konsisten dengan home.blade.php:
+       teks gradient biru brand + garis aksen gradient di bawah
+       judul section. Class "section-heading" untuk <h2>, dan
+       "section-heading_bar" untuk <hr/> aksennya. */
+    .section-heading{
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 800;
+      letter-spacing: .02em;
+      background: linear-gradient(135deg, #16213a, var(--brand-light, #0051B5));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    .section-heading_bar{
+      width: 56px;
+      height: 3px;
+      border: none;
+      border-radius: 999px;
+      margin: 14px auto;
+      background: linear-gradient(90deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+    }
+  </style>
+
   <script src="{{ asset('js/jquery.js') }}"></script>
   <script src="{{ asset('js/jquery-migrate-1.2.1.js') }}"></script>
   <script src='{{ asset('js/device.min.js') }}'></script>
@@ -66,8 +92,8 @@
     @if($page->preview_media)
     <section class="well solusi-preview center">
       <div class="container">
-        <h2>@if($product->preview_title)@bi($product, 'preview_title')@else<span data-i18n="product.previewDefault" data-i18n-var-name="{{ $product->name }}">Preview {{ $product->name }}</span>@endif</h2>
-        <hr/>
+        <h2 class="section-heading">@if($product->preview_title)@bi($product, 'preview_title')@else<span data-i18n="product.previewDefault" data-i18n-var-name="{{ $product->name }}">Preview {{ $product->name }}</span>@endif</h2>
+        <hr class="section-heading_bar"/>
         <div class="solusi-preview_media">
           @if(\Illuminate\Support\Str::endsWith(strtolower($page->preview_media), ['.mp4', '.webm']))
             <video src="{{ asset('storage/'.$page->preview_media) }}" autoplay muted loop playsinline></video>
@@ -86,8 +112,8 @@
     @if($benefits->count())
     <section class="well solusi-benefits center" id="keunggulan">
       <div class="container">
-        <h2 data-i18n="solusi.benefitsTitle">Keunggulan</h2>
-        <hr/>
+        <h2 class="section-heading" data-i18n="solusi.benefitsTitle">Keunggulan</h2>
+        <hr class="section-heading_bar"/>
         <div class="row">
           @foreach($benefits as $benefit)
           <div class="grid_4 wow fadeInUp" data-wow-delay="{{ 0.1 * ($loop->index % 3) }}s" data-wow-duration="0.8s">

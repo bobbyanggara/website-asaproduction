@@ -42,6 +42,17 @@ window.SITE_I18N = {
     // ---- Home: about section ----
     'about.label': 'Tentang Kami',
     'about.cta': 'Pelajari Lebih Lanjut',
+    'about.point1': 'Berdiri sejak 2019 di Sidoarjo, Jawa Timur',
+    'about.point2': 'Fokus pada pengembangan perangkat lunak dan website',
+    'about.point3': 'Solusi disesuaikan dengan alur kerja bisnis Anda',
+
+    // ---- Home: services / keunggulan ----
+    'services.title': 'Keunggulan Kami',
+    'services.subtitle': 'Alasan klien memilih layanan kami',
+
+    // ---- Home: portfolio gallery ----
+    'gallery.title': 'Portofolio Kami',
+    'gallery.subtitle': 'Beberapa proyek terbaik yang telah kami kerjakan',
 
     // ---- Home: clients ----
     'clients.title': 'Klien',
@@ -210,6 +221,17 @@ window.SITE_I18N = {
     // ---- Home: about section ----
     'about.label': 'Who We Are',
     'about.cta': 'Learn More',
+    'about.point1': 'Founded in 2019 in Sidoarjo, East Java',
+    'about.point2': 'Focused on software and website development',
+    'about.point3': 'Solutions tailored to your business workflow',
+
+    // ---- Home: services / advantages ----
+    'services.title': 'Our Advantages',
+    'services.subtitle': 'Why clients choose our services',
+
+    // ---- Home: portfolio gallery ----
+    'gallery.title': 'Our Portfolio',
+    'gallery.subtitle': 'Some of the best projects we have worked on',
 
     // ---- Home: clients ----
     'clients.title': 'Clients',

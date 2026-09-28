@@ -84,7 +84,7 @@
       <div class="portfolio-grid" id="portfolioGrid">
         @foreach($portfolios as $item)
         <div class="portfolio-card wow fadeInUp" data-wow-delay="{{ 0.08 * ($loop->index % 6) }}s" data-wow-duration="0.7s" data-category="{{ $item->category ?: 'all' }}">
-          <button type="button" class="portfolio-card_thumb" data-full="{{ asset('storage/'.$item->image) }}" data-title="{{ $item->title }}" aria-label="{{ $item->title ?: 'Lihat detail proyek' }}" @unless($item->title) data-i18n-aria-label="portfolioPage.viewDetail" @endunless>
+          <button type="button" class="portfolio-card_thumb" data-full="{{ asset('storage/'.$item->image) }}" data-title="{{ $item->title }}" data-desc="{{ $item->description }}" aria-label="{{ $item->title ?: 'Lihat detail proyek' }}" @unless($item->title) data-i18n-aria-label="portfolioPage.viewDetail" @endunless>
             <img src="{{ asset('storage/'.$item->thumbnail) }}" alt="{{ $item->title }}" loading="lazy"/>
           </button>
           <div class="portfolio-card_body">

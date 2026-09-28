@@ -268,9 +268,20 @@
 .portfolio-lightbox_caption{
   color: #fff;
   margin-top: 16px;
+  max-width: 640px;
+  text-align: center;
+}
+.portfolio-lightbox_caption-title{
+  display: block;
   font-size: 15px;
   font-weight: 600;
-  text-align: center;
+}
+.portfolio-lightbox_caption-desc{
+  margin: 6px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: rgba(255,255,255,.75);
 }
 .portfolio-lightbox_close{
   position: absolute;

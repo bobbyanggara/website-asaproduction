@@ -34,10 +34,26 @@
     slide.appendChild(img);
 
     var title = el.getAttribute('data-title');
-    if (title) {
+    var desc = el.getAttribute('data-desc');
+
+    if (title || desc) {
       var caption = document.createElement('figcaption');
       caption.className = 'portfolio-lightbox_caption';
-      caption.textContent = title;
+
+      if (title) {
+        var captionTitle = document.createElement('span');
+        captionTitle.className = 'portfolio-lightbox_caption-title';
+        captionTitle.textContent = title;
+        caption.appendChild(captionTitle);
+      }
+
+      if (desc) {
+        var captionDesc = document.createElement('p');
+        captionDesc.className = 'portfolio-lightbox_caption-desc';
+        captionDesc.textContent = desc;
+        caption.appendChild(captionDesc);
+      }
+
       slide.appendChild(caption);
     }
 

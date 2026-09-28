@@ -1,6 +1,38 @@
 @extends('layouts.admin')
 @section('title', $item->exists ? 'Edit Artikel' : 'Tulis Artikel')
 
+@push('styles')
+<style>
+  /* Perbaikan teks bertumpuk: tinggi editor Quill harus diatur di .ql-container
+     (bukan di elemen #contentEditor), dan isi yang panjang di-scroll DI DALAM
+     editor. Tanpa ini, isi meluap keluar kotak dan menimpa teks bantuan +
+     counter meta description di bawahnya. */
+  .post-editor-wrap {
+    position: relative;
+    display: flow-root;      /* wadah menghitung tinggi anak-anaknya, tidak meluap */
+    background: #fff;
+    border-radius: 10px;
+  }
+  .post-editor-wrap .ql-toolbar.ql-snow {
+    border-color: var(--card-border);
+    border-radius: 10px 10px 0 0;
+  }
+  .post-editor-wrap .ql-container.ql-snow {
+    height: 340px;           /* tinggi tetap; isi lebih panjang di-scroll */
+    border-color: var(--card-border);
+    border-radius: 0 0 10px 10px;
+    font-family: inherit;
+    font-size: .95rem;
+  }
+  .post-editor-wrap .ql-editor {
+    height: 100%;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+  }
+  .post-editor-wrap .ql-editor img { max-width: 100%; height: auto; }
+</style>
+@endpush
+
 @section('content')
 <form method="POST" action="{{ $item->exists ? route('admin.posts.update', $item) : route('admin.posts.store') }}" enctype="multipart/form-data">
   @csrf
@@ -28,9 +60,11 @@
 
       <div class="col-12">
         <label class="form-label">Isi Artikel *</label>
-        <div id="contentEditor" style="min-height:340px; background:#fff;"></div>
+        <div class="post-editor-wrap">
+          <div id="contentEditor"></div>
+        </div>
         <textarea name="content" id="contentInput" style="display:none" required>{{ old('content', $item->content) }}</textarea>
-        <div class="form-text">
+        <div class="form-text mt-2">
           Pakai heading (H2/H3), daftar, kutipan, dan gambar seperlunya — artikel dengan struktur
           jelas lebih enak dibaca dan lebih baik untuk SEO daripada satu blok teks panjang.
           Untuk gambar, tombol <strong>gambar</strong> di toolbar akan minta URL gambar (upload dulu

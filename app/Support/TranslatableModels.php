@@ -11,6 +11,7 @@ use App\Models\CustomSystemFaq;
 use App\Models\CustomSystemPage;
 use App\Models\CustomSystemPortfolio;
 use App\Models\Faq;
+use App\Models\LegalPage;
 use App\Models\Portfolio;
 use App\Models\Post;
 use App\Models\Product;
@@ -43,6 +44,7 @@ class TranslatableModels
             'testimonial' => ['label' => 'Testimoni', 'class' => Testimonial::class],
             'faq' => ['label' => 'FAQ (beranda)', 'class' => Faq::class],
             'post' => ['label' => 'Artikel Blog', 'class' => Post::class],
+            'legal-page' => ['label' => 'Halaman Legal (Ketentuan Layanan & Kebijakan Privasi)', 'class' => LegalPage::class],
 
             'website-page' => ['label' => 'Halaman Jasa Website', 'class' => WebsitePage::class],
             'website-benefit' => ['label' => 'Keunggulan Website', 'class' => WebsiteBenefit::class],

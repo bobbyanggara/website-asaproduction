@@ -246,6 +246,34 @@ document.write('<meta name="viewport" content="width=device-width,initial-scale=
                 // (1.8 detik per item — lihat $moveFraction/$rightDuration di
                 // resources/views/home.blade.php, bagian partner-marquee).
                 var timeout = $this.hasClass('testimonial-carousel') ? 1800 : 2500;
+
+                // Testimoni > 3: pager ringkas (tombol < > + "01 --- 08") menggantikan titik
+                // per-testimoni yang sebelumnya bisa belasan dan memanjang. Markup pager ada
+                // di home.blade.php (hanya dirender kalau testimoni > 3); kalau tidak ada,
+                // carousel memakai titik bawaan (maksimal 3 titik).
+                var $pager = $this.hasClass('testimonial-carousel') ? $this.siblings('.testimonial-pager') : $();
+                var compact = $pager.length > 0;
+                if (compact) {
+                    var total = $this.children().length;   // dihitung SEBELUM Owl menambah klon
+                    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+                    $this.on('initialized.owl.carousel changed.owl.carousel', function (e) {
+                        var owl = e.relatedTarget;
+                        if (!owl || typeof owl.relative !== 'function') return;
+                        var idx;
+                        try { idx = owl.relative(owl.current()); } catch (err) { return; }
+                        if (typeof idx !== 'number' || isNaN(idx)) return;
+                        idx = ((idx % total) + total) % total;
+                        $pager.find('.tp-current').text(pad(idx + 1));
+                        $pager.find('.tp-bar').css('width', ((idx + 1) / total * 100) + '%');
+                    });
+                    $pager.on('click', '.tp-prev', function () {
+                        var owl = $this.data('owlCarousel'); if (owl) owl.prev();
+                    });
+                    $pager.on('click', '.tp-next', function () {
+                        var owl = $this.data('owlCarousel'); if (owl) owl.next();
+                    });
+                }
+
                 $this.owlCarousel({
                     margin: 30,
                     autoplay: true,
@@ -254,7 +282,7 @@ document.write('<meta name="viewport" content="width=device-width,initial-scale=
                     loop: true,
                     center: true,
                     smartSpeed: 300,
-                    dots: true,
+                    dots: !compact,
                     dotsEach: 1,
                     nav: false,
                     responsive: {

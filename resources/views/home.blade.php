@@ -1530,6 +1530,83 @@
       color: var(--brand-accent, #2E8BFF);
       line-height: 1.3;
     }
+
+    /* ---- Navigasi testimoni ----------------------------------------
+       Dulu: 1 titik per testimoni (bisa belasan titik -> baris panjang).
+       Sekarang:
+        - Testimoni > 3  : pager kapsul kaca yang ukurannya TETAP, berapa
+                           pun jumlah testimoninya: [<]  01 ━━━ 08  [>]
+        - Testimoni <= 3 : titik kecil bulat (maksimal 3, jadi tetap rapi).
+       Pager dibuat di Blade (di bawah carousel), perilakunya diikat di
+       public/js/script.js. */
+    .testimonial-carousel .owl-dots{
+      display: flex; justify-content: center; align-items: center;
+      gap: 10px; margin-top: 4px; line-height: 1;
+    }
+    .testimonial-carousel .owl-dots .owl-dot{
+      display: block; width: auto; height: auto; margin: 0; padding: 4px;
+      border: 0; border-radius: 0; background: none; cursor: pointer;
+    }
+    .testimonial-carousel .owl-dots .owl-dot + .owl-dot{ margin-left: 0; }
+    .testimonial-carousel .owl-dots .owl-dot:hover,
+    .testimonial-carousel .owl-dots .owl-dot.active{ background: none; }
+    .testimonial-carousel .owl-dot span{
+      display: block; width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(0,34,76,.18);
+      transition: transform .3s cubic-bezier(.22,1,.36,1), background .3s ease, box-shadow .3s ease;
+    }
+    .testimonial-carousel .owl-dot.active span{
+      background: linear-gradient(135deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+      box-shadow: 0 0 0 4px rgba(46,139,255,.18);
+      transform: scale(1.15);
+    }
+
+    .testimonial-pager{
+      display: flex; align-items: center; justify-content: center; gap: 14px;
+      width: max-content; max-width: 100%; margin: 6px auto 0; padding: 6px;
+      box-sizing: border-box; border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+      border: 1px solid rgba(46,139,255,.18);
+      box-shadow: 0 14px 30px -16px rgba(16,32,64,.35), inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .testimonial-pager .tp-btn{
+      display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+      width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%;
+      background: #fff; color: var(--brand-light, #0051B5); cursor: pointer;
+      box-shadow: inset 0 0 0 1px #e3e9f4;
+      transition: background .25s ease, color .25s ease, transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease;
+    }
+    .testimonial-pager .tp-btn:hover{
+      background: linear-gradient(135deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+      color: #fff; transform: scale(1.06);
+      box-shadow: 0 8px 18px -8px rgba(46,139,255,.7);
+    }
+    .testimonial-pager .tp-btn:active{ transform: scale(.94); }
+    .testimonial-pager .tp-btn:focus-visible{ outline: 2px solid var(--brand-accent, #2E8BFF); outline-offset: 2px; }
+    .testimonial-pager .tp-btn svg{ display: block; }
+    .testimonial-pager .tp-status{
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'League Spartan', sans-serif; font-size: 14px; font-weight: 700;
+      line-height: 1; color: #16213a; font-variant-numeric: tabular-nums;
+    }
+    .testimonial-pager .tp-total{ color: #9aa5b8; font-weight: 600; }
+    .testimonial-pager .tp-track{
+      position: relative; display: block; width: 84px; height: 4px;
+      border-radius: 99px; background: rgba(0,34,76,.1); overflow: hidden;
+    }
+    .testimonial-pager .tp-bar{
+      position: absolute; top: 0; bottom: 0; left: 0; display: block; border-radius: inherit;
+      background: linear-gradient(90deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
+      transition: width .45s cubic-bezier(.22,1,.36,1);
+    }
+    @media (max-width: 480px){
+      .testimonial-pager{ gap: 10px; }
+      .testimonial-pager .tp-track{ width: 60px; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .testimonial-pager .tp-bar, .testimonial-pager .tp-btn, .testimonial-carousel .owl-dot span{ transition: none; }
+    }
   </style>
 </head>
 
@@ -2296,6 +2373,22 @@
           </div>
           @endforeach
         </div>
+        @if($testimonials->count() > 3)
+        {{-- Pager ringkas (lihat catatan CSS "Navigasi testimoni"); diikat ke carousel oleh script.js --}}
+        <div class="testimonial-pager" role="group" data-i18n-aria-label="testimonials.pagerLabel" aria-label="Navigasi testimoni">
+          <button type="button" class="tp-btn tp-prev" data-i18n-aria-label="testimonials.prev" aria-label="Testimoni sebelumnya">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="tp-status" aria-live="polite">
+            <span class="tp-current">01</span>
+            <span class="tp-track" aria-hidden="true"><span class="tp-bar" style="width: {{ round(100 / $testimonials->count(), 2) }}%"></span></span>
+            <span class="tp-total">{{ sprintf('%02d', $testimonials->count()) }}</span>
+          </div>
+          <button type="button" class="tp-btn tp-next" data-i18n-aria-label="testimonials.next" aria-label="Testimoni berikutnya">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        @endif
       </div>
     </section>
     @endif
@@ -2512,6 +2605,8 @@
               <li><a href="#about" data-i18n="footer.aboutUs">Tentang Kami</a></li>
               <li><a href="#services" data-i18n="footer.ourServices">Layanan Kami</a></li>
               <li><a href="{{ route('contact') }}" data-i18n="footer.contactUs">Hubungi Kami</a></li>
+              <li><a href="{{ route('legal.terms') }}" data-i18n="nav.terms">Ketentuan Layanan</a></li>
+              <li><a href="{{ route('legal.privacy') }}" data-i18n="nav.privacy">Kebijakan Privasi</a></li>
             </ul>
           </div>
 

@@ -74,6 +74,8 @@
             <li><a href="{{ route('about') }}" data-i18n="footer.aboutUs">Tentang Kami</a></li>
             <li><a href="{{ route('home') }}#services" data-i18n="footer.ourServices">Layanan Kami</a></li>
             <li><a href="{{ route('contact') }}" data-i18n="footer.contactUs">Hubungi Kami</a></li>
+            <li><a href="{{ route('legal.terms') }}" data-i18n="nav.terms">Ketentuan Layanan</a></li>
+            <li><a href="{{ route('legal.privacy') }}" data-i18n="nav.privacy">Kebijakan Privasi</a></li>
           </ul>
         </div>
 

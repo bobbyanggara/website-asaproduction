@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\CustomSystemPageController;
 use App\Http\Controllers\Admin\CustomSystemPortfolioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\LegalAppController;
+use App\Http\Controllers\Admin\LegalPageController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\PortfolioController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -37,6 +39,7 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomSystemController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PortfolioController as PublicPortfolioController;
 use App\Http\Controllers\WebsiteController;
@@ -114,6 +117,23 @@ Route::post('/blog/{post:slug}/like', [BlogController::class, 'like'])
 |--------------------------------------------------------------------------
 */
 Route::get('/portofolio', [PublicPortfolioController::class, 'index'])->name('portfolio.index');
+
+/*
+|--------------------------------------------------------------------------
+| Halaman legal (publik, isi dinamis dari Admin > Halaman Legal)
+|--------------------------------------------------------------------------
+*/
+Route::get('/ketentuan-layanan', [LegalController::class, 'terms'])->name('legal.terms');
+Route::get('/kebijakan-privasi', [LegalController::class, 'privacy'])->name('legal.privacy');
+// Dokumen legal per aplikasi, mis. /kalkulator-shopee-seller/kebijakan-privasi
+// (slug aplikasi yang bentrok dengan alamat situs ditolak, lihat LegalApp::RESERVED).
+Route::get('/{appSlug}/ketentuan-layanan', [LegalController::class, 'appTerms'])
+    ->where('appSlug', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('legal.app.terms');
+Route::get('/{appSlug}/kebijakan-privasi', [LegalController::class, 'appPrivacy'])
+    ->where('appSlug', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('legal.app.privacy');
+// Alamat lama (/legal/{app}/...) dialihkan permanen ke alamat baru.
+Route::get('/legal/{appSlug}/ketentuan-layanan', fn (string $appSlug) => redirect()->route('legal.app.terms', $appSlug, 301));
+Route::get('/legal/{appSlug}/kebijakan-privasi', fn (string $appSlug) => redirect()->route('legal.app.privacy', $appSlug, 301));
 
 /*
 |--------------------------------------------------------------------------
@@ -201,6 +221,32 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
             Route::put('{id}', [ProductItemController::class, 'update'])->whereNumber('id')->name('update');
             Route::delete('{id}', [ProductItemController::class, 'destroy'])->whereNumber('id')->name('destroy');
         });
+
+    // Halaman legal: pilih aplikasi dulu -> lihat dokumennya -> edit.
+    // Aplikasi bisa ditambah/diubah/dihapus; tiap aplikasi punya Ketentuan Layanan & Kebijakan Privasi sendiri.
+    Route::get('legal-pages', [LegalPageController::class, 'index'])->name('legal-pages.index');
+    Route::get('legal-pages/general', [LegalPageController::class, 'general'])->name('legal-pages.general');
+
+    // Halaman umum situs Asa Production (tanpa aplikasi).
+    Route::get('legal-pages/{slug}/edit', [LegalPageController::class, 'edit'])
+        ->whereIn('slug', \App\Models\LegalPage::SLUGS)->name('legal-pages.edit');
+    Route::put('legal-pages/{slug}', [LegalPageController::class, 'update'])
+        ->whereIn('slug', \App\Models\LegalPage::SLUGS)->name('legal-pages.update');
+
+    // Aplikasi: tambah, pengaturan, hapus.
+    Route::post('legal-pages/apps', [LegalAppController::class, 'store'])->name('legal-pages.apps.store');
+    Route::get('legal-pages/apps/{legalApp}', [LegalPageController::class, 'app'])
+        ->whereNumber('legalApp')->name('legal-pages.apps.show');
+    Route::put('legal-pages/apps/{legalApp}', [LegalAppController::class, 'update'])
+        ->whereNumber('legalApp')->name('legal-pages.apps.settings');
+    Route::delete('legal-pages/apps/{legalApp}', [LegalAppController::class, 'destroy'])
+        ->whereNumber('legalApp')->name('legal-pages.apps.destroy');
+
+    // Dokumen milik aplikasi.
+    Route::get('legal-pages/apps/{legalApp}/{slug}/edit', [LegalPageController::class, 'editApp'])
+        ->whereNumber('legalApp')->whereIn('slug', \App\Models\LegalPage::SLUGS)->name('legal-pages.apps.edit');
+    Route::put('legal-pages/apps/{legalApp}/{slug}', [LegalPageController::class, 'updateApp'])
+        ->whereNumber('legalApp')->whereIn('slug', \App\Models\LegalPage::SLUGS)->name('legal-pages.apps.update');
 
     Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::get('contact-messages/poll-status', [ContactMessageController::class, 'pollStatus'])->name('contact-messages.poll-status');

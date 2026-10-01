@@ -32,6 +32,17 @@ window.SITE_I18N = {
     'nav.whatsappCta': 'WhatsApp Kami',
     'nav.langChangeLabel': 'Ganti bahasa',
     'nav.langChooseLabel': 'Pilih bahasa',
+    'nav.terms': 'Ketentuan Layanan',
+    'nav.privacy': 'Kebijakan Privasi',
+
+    // ---- Halaman legal (Ketentuan Layanan & Kebijakan Privasi) ----
+    'legal.eyebrow': 'Legal',
+    'legal.updated': 'Terakhir diperbarui',
+    'legal.print': 'Cetak',
+    'legal.toc': 'Daftar Isi',
+    'legal.questionTitle': 'Masih punya pertanyaan?',
+    'legal.questionDesc': 'Tim kami siap membantu menjelaskan isi dokumen ini atau menanggapi permintaan terkait data pribadi Anda.',
+    'legal.contactBtn': 'Hubungi Kami',
 
     // ---- Chatbot widget (shared across all pages) ----
     'chatbot.windowLabel': 'Live chat',
@@ -61,6 +72,9 @@ window.SITE_I18N = {
     // ---- Home: testimonials ----
     'testimonials.title': 'Testimoni',
     'testimonials.subtitle': 'Apa kata mereka yang sudah menggunakan layanan kami',
+    'testimonials.pagerLabel': 'Navigasi testimoni',
+    'testimonials.prev': 'Testimoni sebelumnya',
+    'testimonials.next': 'Testimoni berikutnya',
 
     // ---- Home: blog preview ----
     'blog.title': 'Artikel Terbaru',
@@ -211,6 +225,17 @@ window.SITE_I18N = {
     'nav.whatsappCta': 'WhatsApp Us',
     'nav.langChangeLabel': 'Change language',
     'nav.langChooseLabel': 'Choose language',
+    'nav.terms': 'Terms of Service',
+    'nav.privacy': 'Privacy Policy',
+
+    // ---- Legal pages (Terms of Service & Privacy Policy) ----
+    'legal.eyebrow': 'Legal',
+    'legal.updated': 'Last updated',
+    'legal.print': 'Print',
+    'legal.toc': 'Table of Contents',
+    'legal.questionTitle': 'Still have questions?',
+    'legal.questionDesc': 'Our team is happy to explain this document or respond to requests regarding your personal data.',
+    'legal.contactBtn': 'Contact Us',
 
     // ---- Chatbot widget (shared across all pages) ----
     'chatbot.windowLabel': 'Live chat',
@@ -240,6 +265,9 @@ window.SITE_I18N = {
     // ---- Home: testimonials ----
     'testimonials.title': 'Testimonials',
     'testimonials.subtitle': 'What our clients say about working with us',
+    'testimonials.pagerLabel': 'Testimonial navigation',
+    'testimonials.prev': 'Previous testimonial',
+    'testimonials.next': 'Next testimonial',
 
     // ---- Home: blog preview ----
     'blog.title': 'Latest Articles',

@@ -1,0 +1,187 @@
+/*========================================================
+  Halaman legal (Ketentuan Layanan & Kebijakan Privasi)
+  resources/views/legal/show.blade.php
+  Memakai token warna yang sama dengan landing page:
+  --brand-dark, --brand-mid, --brand-light, --brand-accent.
+=========================================================*/
+body.legal-body{
+  background: #f4f7fc;
+  color: #3c4254;
+  font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ---------- Hero ---------- */
+.legal-hero{
+  position: relative;
+  padding: 138px 0 96px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(0,20,46,.72) 0%, rgba(0,34,76,.92) 100%),
+    url("../images/parallax.jpg") center center / cover no-repeat;
+  overflow: hidden;
+}
+.legal-hero::after{
+  content: "";
+  position: absolute; inset: auto 0 0 0; height: 90px;
+  background: linear-gradient(180deg, rgba(244,247,252,0) 0%, #f4f7fc 100%);
+  pointer-events: none;
+}
+.legal-hero .legal-container{ position: relative; z-index: 2; }
+.legal-container{ max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.legal-eyebrow{
+  display: inline-flex; align-items: center; gap: 8px;
+  text-transform: uppercase; letter-spacing: 2px; font-size: 12.5px; font-weight: 700;
+  color: var(--brand-accent); margin: 0 0 14px;
+}
+.legal-eyebrow::before{ content: ""; width: 28px; height: 2px; border-radius: 2px; background: var(--brand-accent); }
+.legal-hero h1{
+  color: #fff; text-transform: none; letter-spacing: normal;
+  font-family: 'League Spartan', sans-serif; font-weight: 800;
+  font-size: clamp(32px, 5vw, 52px); line-height: 1.12; margin: 0 0 16px;
+}
+.legal-hero_desc{ color: rgba(255,255,255,.82); font-size: 16.5px; line-height: 1.7; max-width: 680px; margin: 0 auto; text-align: center; }
+.legal-meta{ display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; margin-top: 26px; }
+.legal-chip{
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  color: #fff; font-size: 13.5px; line-height: 1; padding: 9px 15px; border-radius: 999px;
+  font-family: inherit; text-decoration: none;
+}
+.legal-chip svg{ flex: 0 0 auto; opacity: .85; }
+button.legal-chip{ cursor: pointer; transition: background .2s ease; }
+button.legal-chip:hover{ background: rgba(255,255,255,.2); }
+
+/* ---------- Pindah antar dokumen (tab) ---------- */
+.legal-tabs{
+  position: relative; z-index: 3;
+  display: flex; justify-content: center; margin-top: -34px; padding: 0 20px;
+}
+.legal-tabs_inner{
+  display: inline-flex; gap: 4px; padding: 5px; max-width: 100%;
+  background: #fff; border: 1px solid #e1e8f5; border-radius: 999px;
+  box-shadow: 0 14px 34px -16px rgba(0,34,76,.35);
+}
+.legal-tabs a{
+  display: inline-flex; align-items: center; justify-content: center; text-align: center;
+  padding: 11px 24px; border-radius: 999px; line-height: 1.2;
+  color: #5b6472; font-size: 14.5px; font-weight: 600; text-decoration: none;
+  transition: color .2s ease, background .2s ease;
+}
+.legal-tabs a:hover{ color: var(--brand-light); }
+.legal-tabs a.is-active{
+  color: #fff;
+  background: linear-gradient(180deg, var(--brand-accent), var(--brand-light));
+  box-shadow: 0 8px 18px -8px rgba(46,139,255,.7), inset 0 1px 0 rgba(255,255,255,.3);
+}
+
+/* ---------- Layout: daftar isi + isi ---------- */
+.legal-layout{
+  display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 34px;
+  max-width: 1100px; margin: 0 auto; padding: 44px 20px 30px; align-items: start;
+}
+.legal-toc{
+  position: sticky; top: 96px;
+  background: #fff; border: 1px solid #e1e8f5; border-radius: 18px; padding: 20px 14px 14px;
+  box-shadow: 0 1px 2px rgba(0,34,76,.04);
+  max-height: calc(100vh - 120px); overflow-y: auto;
+}
+.legal-toc_title{
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  background: none; border: none; padding: 0 8px 12px; margin: 0; cursor: default;
+  font-family: inherit; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #8a93a6;
+}
+.legal-toc_title svg{ display: none; transition: transform .2s ease; }
+.legal-toc_list{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.legal-toc_list a{
+  display: block; padding: 8px 10px; border-radius: 10px; border-left: 3px solid transparent;
+  color: #5b6472; font-size: 13.5px; line-height: 1.4; text-decoration: none;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.legal-toc_list a:hover{ background: #f3f6fc; color: var(--brand-light); }
+.legal-toc_list a.is-active{ background: rgba(46,139,255,.1); color: var(--brand-dark); font-weight: 600; border-left-color: var(--brand-accent); }
+
+.legal-card{
+  background: #fff; border: 1px solid #e1e8f5; border-radius: 22px;
+  padding: 46px 52px; box-shadow: 0 18px 44px -28px rgba(0,34,76,.25);
+  min-width: 0;
+}
+.legal-content{ font-size: 16.5px; line-height: 1.85; color: #3c4254; overflow-wrap: anywhere; }
+.legal-content > *:first-child{ margin-top: 0; }
+.legal-content h2{
+  font-family: 'League Spartan', sans-serif; text-transform: none; letter-spacing: normal;
+  font-size: clamp(21px, 2.6vw, 26px); line-height: 1.3; font-weight: 800; text-align: left;
+  color: var(--brand-dark); margin: 44px 0 16px; padding: 4px 0 4px 18px;
+  border-left: 4px solid var(--brand-accent); scroll-margin-top: 100px;
+}
+.legal-content h3{ font-size: 19px; color: var(--brand-mid); text-transform: none; letter-spacing: normal; font-weight: 700; margin: 28px 0 12px; scroll-margin-top: 100px; }
+.legal-content h4{ font-size: 16.5px; color: var(--brand-dark); text-transform: none; letter-spacing: normal; font-weight: 700; margin: 22px 0 10px; }
+.legal-content p{ margin: 0 0 18px; color: #3c4254; font-size: inherit; line-height: inherit; }
+.legal-content ul, .legal-content ol{ margin: 0 0 20px; padding-left: 24px; display: flex; flex-direction: column; gap: 8px; }
+.legal-content li{ line-height: 1.75; }
+.legal-content strong, .legal-content b{ color: var(--brand-dark); font-weight: 700; }
+.legal-content a{
+  color: var(--brand-light); font-weight: 600; text-decoration: underline;
+  text-decoration-color: rgba(0,81,181,.35); text-underline-offset: 2px; transition: color .2s ease;
+}
+.legal-content a:hover{ color: var(--brand-accent); }
+.legal-content blockquote{
+  margin: 26px 0; padding: 4px 22px; border-left: 4px solid var(--brand-accent);
+  background: #f6f8fb; border-radius: 0 12px 12px 0; color: #4a4d57;
+}
+.legal-content table{ width: 100%; border-collapse: collapse; margin: 22px 0; font-size: 15px; display: block; overflow-x: auto; }
+.legal-content th, .legal-content td{ border: 1px solid #e1e8f5; padding: 10px 14px; text-align: left; }
+.legal-content th{ background: #f3f6fc; color: var(--brand-dark); }
+.legal-content hr{ border: none; border-top: 1px solid #e9ecf2; margin: 34px 0; }
+.legal-content img{ max-width: 100%; height: auto; border-radius: 12px; }
+
+/* ---------- CTA bawah ---------- */
+.legal-cta{
+  max-width: 1100px; margin: 0 auto; padding: 0 20px 80px;
+}
+.legal-cta_box{
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+  padding: 30px 34px; border-radius: 22px; color: #fff;
+  background: linear-gradient(135deg, var(--brand-dark), var(--brand-light));
+  box-shadow: 0 22px 44px -24px rgba(0,34,76,.7);
+}
+.legal-cta_box h3{ color: #fff; text-transform: none; letter-spacing: normal; font-family: 'League Spartan', sans-serif; font-size: 22px; margin: 0 0 6px; }
+.legal-cta_box p{ color: rgba(255,255,255,.82); margin: 0; font-size: 15px; line-height: 1.6; max-width: 560px; }
+.legal-cta_btn{
+  display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto;
+  background: #fff; color: var(--brand-dark) !important; font-weight: 700; font-size: 14.5px;
+  padding: 13px 24px; border-radius: 999px; text-decoration: none;
+  box-shadow: 0 10px 22px -10px rgba(0,0,0,.45); transition: transform .18s ease, box-shadow .18s ease;
+}
+.legal-cta_btn:hover{ transform: translateY(-2px); box-shadow: 0 14px 26px -10px rgba(0,0,0,.5); }
+
+/* ---------- Tablet & mobile ---------- */
+@media (max-width: 991px){
+  .legal-layout{ grid-template-columns: 1fr; gap: 20px; padding-top: 34px; }
+  .legal-toc{ position: static; max-height: none; padding: 14px; }
+  .legal-toc_title{ padding: 2px 4px; cursor: pointer; }
+  .legal-toc_title svg{ display: block; }
+  .legal-toc_list{ margin-top: 10px; }
+  .legal-toc.is-collapsed .legal-toc_list{ display: none; }
+  .legal-toc.is-collapsed .legal-toc_title svg{ transform: rotate(-90deg); }
+  .legal-toc_list a.is-active{ border-left-color: transparent; }
+}
+@media (max-width: 767px){
+  .legal-hero{ padding: 112px 0 84px; }
+  .legal-card{ padding: 28px 22px; border-radius: 18px; }
+  .legal-content{ font-size: 15.5px; }
+  .legal-tabs_inner{ width: 100%; }
+  .legal-tabs a{ flex: 1 1 0; padding: 11px 12px; font-size: 13.5px; }
+  .legal-cta_box{ padding: 24px 22px; }
+}
+
+/* ---------- Cetak ---------- */
+@media print{
+  .site-nav, .legal-tabs, .legal-toc, .legal-cta, .legal-chip--print, footer, #chatbot-root, .legal-hero::after{ display: none !important; }
+  body.legal-body{ background: #fff; }
+  .legal-hero{ padding: 0 0 18px; background: none; color: #000; }
+  .legal-hero h1, .legal-hero_desc, .legal-chip{ color: #000; }
+  .legal-chip{ border: none; background: none; padding: 0 14px 0 0; }
+  .legal-layout{ display: block; padding: 0; }
+  .legal-card{ border: none; box-shadow: none; padding: 0; }
+}

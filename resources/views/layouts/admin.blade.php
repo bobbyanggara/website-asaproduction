@@ -348,6 +348,38 @@
       .content-area { padding: 1.25rem 1.1rem 2.5rem; }
       .user-chip .info { display: none; }
     }
+
+    /* ---------- Tombol "Tambah" modern + popup (dipakai di SEMUA halaman admin) ---------- */
+    .btn-add{
+      display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer; text-decoration: none;
+      padding: 6px 20px 6px 6px; border-radius: 999px; color: #fff; font-weight: 600; font-size: .9rem; line-height: 1;
+      background: linear-gradient(135deg, var(--brand-accent), var(--brand-light));
+      box-shadow: 0 10px 22px -10px rgba(0,81,181,.75), inset 0 1px 0 rgba(255,255,255,.3);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn-add:hover{ color: #fff; transform: translateY(-2px); box-shadow: 0 14px 26px -10px rgba(0,81,181,.85), inset 0 1px 0 rgba(255,255,255,.3); }
+    .btn-add:active{ transform: scale(.97); }
+    .btn-add .plus{ display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.2); font-size: 1.1rem; transition: transform .25s ease; }
+    .btn-add:hover .plus{ transform: rotate(90deg); }
+    .btn-add--sm{ padding: 4px 14px 4px 4px; font-size: .8rem; gap: 8px; }
+    .btn-add--sm .plus{ width: 26px; height: 26px; font-size: .9rem; }
+
+    dialog.app-dialog{ border: 0; border-radius: 20px; padding: 0; width: min(520px, calc(100% - 28px)); max-height: calc(100vh - 40px); overflow: auto; color: var(--ink); box-shadow: 0 30px 70px -20px rgba(0,20,50,.55); }
+    dialog.app-dialog[open]{ animation: appDialogIn .22s cubic-bezier(.22,1,.36,1); }
+    dialog.app-dialog::backdrop{ background: rgba(0,20,46,.5); backdrop-filter: blur(4px); }
+    @keyframes appDialogIn{ from{ opacity: 0; transform: translateY(10px) scale(.97); } to{ opacity: 1; transform: none; } }
+    .app-dialog_head{ display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--card-border); }
+    .app-dialog_head h6{ margin: 0; font-weight: 700; color: var(--brand-dark); }
+    .app-dialog_x{ border: 0; background: #f1f4fa; width: 32px; height: 32px; border-radius: 50%; line-height: 1; cursor: pointer; }
+    .app-dialog_x:hover{ background: #e3e9f5; }
+    .app-dialog_body{ padding: 20px 22px 22px; }
+    .app-dialog_form{ display: grid; gap: 14px; }
+    .app-dialog_confirm{ text-align: center; padding: 26px 24px 22px; }
+    .app-dialog_confirm .ic{ display: grid; place-items: center; width: 54px; height: 54px; margin: 0 auto 12px; border-radius: 50%; font-size: 1.5rem; background: #e8f1ff; color: var(--brand-light); }
+    .app-dialog_confirm.is-danger .ic{ background: #fdecec; color: #dc3545; }
+    .app-dialog_confirm h6{ font-weight: 700; color: var(--brand-dark); margin-bottom: 6px; }
+    .app-dialog_confirm p{ color: var(--ink-muted); font-size: .9rem; margin-bottom: 18px; white-space: pre-line; }
+    .app-dialog_confirm .actions{ display: flex; justify-content: center; gap: 10px; }
   </style>
   @stack('styles')
 </head>
@@ -401,6 +433,9 @@
       </a>
       <a href="{{ route('admin.faqs.index') }}" class="nav-link-item {{ request()->routeIs('admin.faqs.*') ? 'active' : '' }}">
         <i class="bi bi-question-circle-fill"></i> FAQ
+      </a>
+      <a href="{{ route('admin.legal-pages.index') }}" class="nav-link-item {{ request()->routeIs('admin.legal-pages.*') ? 'active' : '' }}">
+        <i class="bi bi-shield-check"></i> Halaman Legal
       </a>
 
       <div class="nav-section-label">Halaman Solusi</div>
@@ -621,6 +656,114 @@
     }
 
     setInterval(check, 15000);
+  })();
+</script>
+<script>
+  // ===== Popup & tombol modern untuk SEMUA halaman admin =====
+  (function () {
+    function openDlg(d) { if (d.showModal) { d.showModal(); } else { d.setAttribute('open', ''); } }
+
+    // 1) Buka/tutup popup: data-dialog-open="#id" / data-dialog-close; klik di luar kotak = tutup.
+    document.addEventListener('click', function (e) {
+      var opener = e.target.closest('[data-dialog-open]');
+      if (opener) {
+        e.preventDefault();
+        var d = document.querySelector(opener.getAttribute('data-dialog-open'));
+        if (d) openDlg(d);
+        return;
+      }
+      var closer = e.target.closest('[data-dialog-close]');
+      if (closer) { var dd = closer.closest('dialog'); if (dd) dd.close(); return; }
+      if (e.target.tagName === 'DIALOG' && e.target.classList.contains('app-dialog')) e.target.close();
+    });
+    document.querySelectorAll('dialog[data-open-on-load]').forEach(openDlg);
+
+    // 2) Semua tombol/tautan "Tambah ..." (atau menuju /create) otomatis bergaya modern.
+    var addRe = /^\s*\+?\s*(tambah|add|buat|new)\b/i;
+    document.querySelectorAll('.content-area a.btn, .content-area button.btn').forEach(function (el) {
+      if (el.closest('dialog') || el.closest('table') || el.hasAttribute('data-plain')) return;
+      if (el.tagName === 'BUTTON' && el.type === 'submit') return; // jangan ubah tombol kirim form
+      var label = el.textContent.replace(/\s+/g, ' ').trim();
+      var href = el.getAttribute('href') || '';
+      if (!(addRe.test(label) || /\/create\/?$/.test(href))) return;
+      var small = el.classList.contains('btn-sm');
+      el.className = 'btn-add' + (small ? ' btn-add--sm' : '');
+      el.innerHTML = '<span class="plus"><i class="bi bi-plus-lg"></i></span><span></span>';
+      el.lastChild.textContent = label.replace(/^\+\s*/, '');
+    });
+
+    // 3) Popup konfirmasi modern menggantikan window.confirm() bawaan browser.
+    var confirmDlg = null;
+    function ask(message) {
+      return new Promise(function (resolve) {
+        if (!confirmDlg) {
+          confirmDlg = document.createElement('dialog');
+          confirmDlg.className = 'app-dialog';
+          confirmDlg.style.width = 'min(400px, calc(100% - 28px))';
+          confirmDlg.innerHTML = '<div class="app-dialog_confirm"><div class="ic"><i class="bi"></i></div><h6></h6><p></p>' +
+            '<div class="actions"><button type="button" class="btn btn-outline-secondary" data-act="no">Batal</button>' +
+            '<button type="button" class="btn" data-act="yes"></button></div></div>';
+          document.body.appendChild(confirmDlg);
+        }
+        var danger = /hapus|delete|remove|buang/i.test(message);
+        var box = confirmDlg.firstChild;
+        box.classList.toggle('is-danger', danger);
+        box.querySelector('.ic i').className = 'bi ' + (danger ? 'bi-trash3-fill' : 'bi-question-circle-fill');
+        box.querySelector('h6').textContent = danger ? 'Hapus data ini?' : 'Konfirmasi';
+        box.querySelector('p').textContent = message;
+        var yes = box.querySelector('[data-act=yes]');
+        yes.className = 'btn ' + (danger ? 'btn-danger' : 'btn-dark');
+        yes.textContent = danger ? 'Ya, hapus' : 'Ya, lanjutkan';
+        var done = function (v) { confirmDlg.removeEventListener('close', onClose); confirmDlg.close(); resolve(v); };
+        var onClose = function () { resolve(false); };
+        confirmDlg.addEventListener('close', onClose, { once: true });
+        box.querySelector('[data-act=no]').onclick = function () { done(false); };
+        yes.onclick = function () { done(true); };
+        openDlg(confirmDlg);
+      });
+    }
+    window.adminConfirm = ask;
+
+    function pickMessage(el) {
+      var attr = el.getAttribute('data-confirm');
+      if (attr) return attr;
+      var code = el.getAttribute('onsubmit') || el.getAttribute('onclick') || '';
+      var m = code.match(/confirm\((['"])([\s\S]*?)\1\s*\)/);
+      return m ? m[2].replace(/\\(['"])/g, '$1') : null;
+    }
+
+    // Form dengan onsubmit="return confirm('...')" atau data-confirm="..."
+    document.querySelectorAll('form[onsubmit*="confirm("], form[data-confirm]').forEach(function (f) {
+      var msg = pickMessage(f);
+      if (!msg) return;
+      f.removeAttribute('onsubmit');
+      f.addEventListener('submit', function (e) {
+        if (f.__confirmed) { f.__confirmed = false; return; }
+        e.preventDefault();
+        var submitter = e.submitter;
+        ask(msg).then(function (ok) {
+          if (!ok) return;
+          f.__confirmed = true;
+          if (f.requestSubmit) { f.requestSubmit(submitter || undefined); } else { f.submit(); }
+        });
+      });
+    });
+
+    // Tombol dengan onclick="return confirm('...')" atau data-confirm="..." di dalam form
+    document.querySelectorAll('button[onclick*="confirm("], button[data-confirm]').forEach(function (b) {
+      var msg = pickMessage(b);
+      var f = b.form;
+      if (!msg || !f) return;
+      b.removeAttribute('onclick');
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        ask(msg).then(function (ok) {
+          if (!ok) return;
+          f.__confirmed = true;
+          if (f.requestSubmit) { f.requestSubmit(b); } else { f.submit(); }
+        });
+      });
+    });
   })();
 </script>
 @stack('scripts')

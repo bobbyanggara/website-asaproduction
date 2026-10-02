@@ -2,14 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\AppMobileBenefit;
-use App\Models\AppMobileFaq;
-use App\Models\AppMobilePage;
-use App\Models\AppMobilePortfolio;
-use App\Models\CustomSystemBenefit;
-use App\Models\CustomSystemFaq;
-use App\Models\CustomSystemPage;
-use App\Models\CustomSystemPortfolio;
 use App\Models\Faq;
 use App\Models\LegalPage;
 use App\Models\Portfolio;
@@ -19,12 +11,12 @@ use App\Models\ProductBenefit;
 use App\Models\ProductFaq;
 use App\Models\Service;
 use App\Models\Setting;
+use App\Models\Solution;
+use App\Models\SolutionBenefit;
+use App\Models\SolutionFaq;
+use App\Models\SolutionPortfolio;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
-use App\Models\WebsiteBenefit;
-use App\Models\WebsiteFaq;
-use App\Models\WebsitePage;
-use App\Models\WebsitePortfolio;
 
 /**
  * Daftar semua model yang punya terjemahan otomatis (trait AutoTranslates).
@@ -46,20 +38,10 @@ class TranslatableModels
             'post' => ['label' => 'Artikel Blog', 'class' => Post::class],
             'legal-page' => ['label' => 'Halaman Legal (Ketentuan Layanan & Kebijakan Privasi)', 'class' => LegalPage::class],
 
-            'website-page' => ['label' => 'Halaman Jasa Website', 'class' => WebsitePage::class],
-            'website-benefit' => ['label' => 'Keunggulan Website', 'class' => WebsiteBenefit::class],
-            'website-faq' => ['label' => 'FAQ Website', 'class' => WebsiteFaq::class],
-            'website-portfolio' => ['label' => 'Portofolio Website', 'class' => WebsitePortfolio::class],
-
-            'app-mobile-page' => ['label' => 'Halaman Jasa App Mobile', 'class' => AppMobilePage::class],
-            'app-mobile-benefit' => ['label' => 'Keunggulan App Mobile', 'class' => AppMobileBenefit::class],
-            'app-mobile-faq' => ['label' => 'FAQ App Mobile', 'class' => AppMobileFaq::class],
-            'app-mobile-portfolio' => ['label' => 'Portofolio App Mobile', 'class' => AppMobilePortfolio::class],
-
-            'custom-system-page' => ['label' => 'Halaman Jasa Sistem Kustom', 'class' => CustomSystemPage::class],
-            'custom-system-benefit' => ['label' => 'Keunggulan Sistem Kustom', 'class' => CustomSystemBenefit::class],
-            'custom-system-faq' => ['label' => 'FAQ Sistem Kustom', 'class' => CustomSystemFaq::class],
-            'custom-system-portfolio' => ['label' => 'Portofolio Sistem Kustom', 'class' => CustomSystemPortfolio::class],
+            'solution' => ['label' => 'Halaman Solusi', 'class' => Solution::class],
+            'solution-benefit' => ['label' => 'Keunggulan Solusi', 'class' => SolutionBenefit::class],
+            'solution-faq' => ['label' => 'FAQ Solusi', 'class' => SolutionFaq::class],
+            'solution-portfolio' => ['label' => 'Portofolio Solusi', 'class' => SolutionPortfolio::class],
 
             'product' => ['label' => 'Halaman Produk', 'class' => Product::class],
             'product-benefit' => ['label' => 'Keunggulan Produk', 'class' => ProductBenefit::class],

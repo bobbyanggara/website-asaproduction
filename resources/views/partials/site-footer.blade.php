@@ -62,9 +62,7 @@
         <div class="grid_2 footer-col footer-col--services">
           <h4 data-i18n="footer.servicesTitle">Layanan</h4>
           <ul class="footer-links">
-            <li><a href="{{ route('solusi.website') }}" data-i18n="nav.servicesWebsite">Jasa Pembuatan Website</a></li>
-            <li><a href="{{ route('solusi.app-mobile') }}" data-i18n="nav.servicesAppMobile">Jasa Pembuatan App Mobile</a></li>
-            <li><a href="{{ route('solusi.custom-system') }}" data-i18n="nav.servicesCustomSystem">Jasa Pembuatan Sistem Kustom</a></li>
+            @include('partials.footer-solutions')
           </ul>
         </div>
 

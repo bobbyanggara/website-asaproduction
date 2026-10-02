@@ -2,7 +2,7 @@
   Section "F.A.Q" — markup & style disamakan persis dengan section FAQ di
   landing page (resources/views/home.blade.php, class .faq-section/.faq-list/
   .faq-item), supaya konsisten di semua halaman /solusi/*. Perlu variabel
-  $faqs (Collection<WebsiteFaq|AppMobileFaq|CustomSystemFaq>).
+  $faqs (Collection<SolutionFaq>).
 --}}
 @if($faqs->count())
 <section class="well faq-section" id="faq">

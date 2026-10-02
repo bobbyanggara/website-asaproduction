@@ -2,23 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AppMobileBenefit;
-use App\Models\AppMobileFaq;
-use App\Models\AppMobilePage;
 use App\Models\Certificate;
-use App\Models\CustomSystemBenefit;
-use App\Models\CustomSystemFaq;
-use App\Models\CustomSystemPage;
 use App\Models\Faq;
 use App\Models\Partner;
 use App\Models\Portfolio;
 use App\Models\Service;
 use App\Models\Setting;
+use App\Models\Solution;
 use App\Models\TeamMember;
 use App\Models\Testimonial;
-use App\Models\WebsiteBenefit;
-use App\Models\WebsiteFaq;
-use App\Models\WebsitePage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -289,38 +281,23 @@ class ChatbotController extends Controller
     }
 
     /**
-     * Susun blok teks detail untuk salah satu dari 3 halaman "Solusi"
-     * (Website / Aplikasi Mobile / Sistem Kustom), yang masing-masing punya
-     * struktur data sama: page (teks section), benefit, service (kartu
-     * layanan khusus halaman itu), process step (tahapan kerja), stat
-     * (angka pencapaian), tech badge (teknologi dipakai), dan FAQ khusus.
-     *
-     * @param  class-string  $benefitModel
-     * @param  class-string  $serviceModel
-     * @param  class-string  $processStepModel
-     * @param  class-string  $statModel
-     * @param  class-string  $techBadgeModel
-     * @param  class-string  $faqModel
+     * Susun blok teks detail untuk satu halaman "Solusi" (tabel solutions):
+     * nama, judul & deskripsi hero, poin keunggulan, dan FAQ khusus halaman itu.
      */
-    private function describeSolutionPage(
-        string $heading,
-        $page,
-        string $benefitModel,
-        string $faqModel,
-    ): string {
-        $lines = ["\n=== SOLUSI: {$heading} ==="];
+    private function describeSolutionPage(Solution $solution): string
+    {
+        $lines = ["\n=== SOLUSI: ".mb_strtoupper($solution->name)." ==="];
 
-        if ($page->hero_title) {
-            $lines[] = "Judul halaman: {$page->hero_title}";
-        }
-        if ($page->hero_description) {
-            $lines[] = "Deskripsi singkat: {$page->hero_description}";
-        }
-        if ($page->why_us_description) {
-            $lines[] = "Kenapa pilih kami untuk layanan ini: {$page->why_us_description}";
+        if ($solution->hero_title) {
+            $lines[] = "Judul halaman: {$solution->hero_title}";
         }
 
-        $benefits = $benefitModel::active()->ordered()->get();
+        $description = $solution->hero_subtitle ?: $solution->nav_description;
+        if ($description) {
+            $lines[] = "Deskripsi singkat: {$description}";
+        }
+
+        $benefits = $solution->benefits()->where('is_active', true)->get();
         if ($benefits->count()) {
             $lines[] = 'Keunggulan/benefit:';
             foreach ($benefits as $b) {
@@ -328,23 +305,9 @@ class ChatbotController extends Controller
             }
         }
 
-        // Catatan: dulu di sini ada juga referensi ke model
-        // *Service/*ProcessStep/*Stat/*TechBadge per solusi (mis.
-        // WebsiteService, WebsiteProcessStep, dst). Model-model itu TIDAK
-        // PERNAH dibuat (tidak ada file app/Models-nya maupun migration-nya),
-        // sehingga PHP melempar exception "Failed to open stream" setiap kali
-        // chatbot dipanggil dan langsung mematikan seluruh endpoint /chat.
-        // Halaman Solusi yang asli (WebsiteController dkk) juga tidak pernah
-        // memakai konsep ini, jadi referensinya dihapus di sini supaya sesuai
-        // dengan data yang benar-benar ada di database.
-
-        if ($page->cta_description) {
-            $lines[] = "Ajakan penutup: {$page->cta_description}";
-        }
-
-        $faqs = $faqModel::active()->ordered()->get();
+        $faqs = $solution->faqs()->where('is_active', true)->get();
         if ($faqs->count()) {
-            $lines[] = "FAQ khusus {$heading}:";
+            $lines[] = "FAQ khusus {$solution->name}:";
             foreach ($faqs as $f) {
                 $lines[] = "T: {$f->question}\nJ: {$f->answer}";
             }
@@ -423,29 +386,12 @@ class ChatbotController extends Controller
                 }
             }
 
-            // Tiga halaman "Solusi" (Website, Aplikasi Mobile, Sistem Kustom)
-            // masing-masing punya detail lengkap sendiri: kenapa pilih kami,
-            // benefit, proses kerja, teknologi, statistik, dan FAQ khusus.
-            $lines[] = $this->describeSolutionPage(
-                'JASA PEMBUATAN WEBSITE',
-                WebsitePage::current(),
-                WebsiteBenefit::class,
-                WebsiteFaq::class,
-            );
-
-            $lines[] = $this->describeSolutionPage(
-                'JASA PEMBUATAN APLIKASI MOBILE (ANDROID & IOS)',
-                AppMobilePage::current(),
-                AppMobileBenefit::class,
-                AppMobileFaq::class,
-            );
-
-            $lines[] = $this->describeSolutionPage(
-                'JASA PEMBUATAN SISTEM KUSTOM',
-                CustomSystemPage::current(),
-                CustomSystemBenefit::class,
-                CustomSystemFaq::class,
-            );
+            // Halaman "Solusi" bersifat dinamis (dikelola di Admin > Semua Solusi):
+            // setiap halaman aktif punya detail sendiri berupa judul, deskripsi,
+            // keunggulan, dan FAQ khusus.
+            foreach (Solution::active()->ordered()->get() as $solution) {
+                $lines[] = $this->describeSolutionPage($solution);
+            }
 
             if ($portfolios->count()) {
                 $lines[] = "\n=== PORTOFOLIO / CONTOH PROJECT YANG PERNAH DIKERJAKAN ===";

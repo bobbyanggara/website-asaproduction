@@ -6,11 +6,9 @@
   <title>@yield('title', 'Dashboard') - Admin Asa Production</title>
   @php
     $__favicon = \App\Models\Setting::current()->favicon ?? null;
-    $solusiGroups = [
-      'app-mobile' => ['label' => 'Jasa App Mobile', 'icon' => 'bi-phone-fill'],
-      'website' => ['label' => 'Jasa Website', 'icon' => 'bi-globe2'],
-      'custom-system' => ['label' => 'Jasa Sistem Kustom', 'icon' => 'bi-diagram-3'],
-    ];
+    // Halaman "Solusi" — dinamis dari tabel solutions: halaman solusi baru yang
+    // ditambah admin otomatis muncul di sidebar ini.
+    $__sidebarSolutions = \App\Models\Solution::ordered()->get(['id', 'name', 'slug', 'is_active']);
     // Halaman "Produk" — dinamis dari tabel products: produk baru yang
     // ditambah admin otomatis muncul di sidebar ini.
     $__sidebarProducts = \App\Models\Product::ordered()->get(['id', 'name', 'slug', 'is_active']);
@@ -439,32 +437,40 @@
       </a>
 
       <div class="nav-section-label">Halaman Solusi</div>
+      <a href="{{ route('admin.solutions.index') }}" class="nav-link-item {{ request()->routeIs('admin.solutions.index') || request()->routeIs('admin.solutions.create') ? 'active' : '' }}">
+        <i class="bi bi-layers-fill"></i> Semua Solusi
+        <span class="badge-count" style="background:rgba(255,255,255,.14);">{{ $__sidebarSolutions->count() }}</span>
+      </a>
 
-      @foreach($solusiGroups as $prefix => $group)
+      @foreach($__sidebarSolutions as $__s)
         @php
-          $groupActive = request()->routeIs("admin.$prefix.*") || request()->routeIs("admin.$prefix") || request()->routeIs("admin.$prefix-*");
-          $collapseId = 'nav-solusi-'.$prefix;
+          $__solRoute = optional(request()->route('solution'))->id === $__s->id;
+          $groupActive = (request()->routeIs('admin.solutions.edit', 'admin.solutions.update') && $__solRoute)
+            || (request()->routeIs('admin.solution-items.*') && $__solRoute);
+          $collapseId = 'nav-solusi-'.$__s->id;
+          $__solType = request()->route('type');
         @endphp
         <a href="#{{ $collapseId }}" class="nav-link-item nav-group_toggle {{ $groupActive ? 'active' : '' }}"
            data-bs-toggle="collapse" role="button"
            aria-expanded="{{ $groupActive ? 'true' : 'false' }}" aria-controls="{{ $collapseId }}">
-          <i class="bi {{ $group['icon'] }}"></i> {{ $group['label'] }}
+          <i class="bi bi-window-stack"></i> {{ $__s->name }}
+          @unless($__s->is_active)<span class="badge-count" style="background:rgba(255,255,255,.14);">Draft</span>@endunless
           <i class="bi bi-chevron-down"></i>
         </a>
         <div class="collapse nav-group_sub {{ $groupActive ? 'show' : '' }}" id="{{ $collapseId }}">
-          <a href="{{ route("admin.$prefix.edit") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix.edit") || request()->routeIs("admin.$prefix.update") ? 'active' : '' }}">
+          <a href="{{ route('admin.solutions.edit', $__s) }}" class="nav-link-item {{ request()->routeIs('admin.solutions.edit', 'admin.solutions.update') && $__solRoute ? 'active' : '' }}">
             <i class="bi bi-file-earmark-text-fill"></i> Konten Halaman
           </a>
-          <a href="{{ route("admin.$prefix-benefits.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-benefits.*") ? 'active' : '' }}">
+          <a href="{{ route('admin.solution-items.index', [$__s, 'benefits']) }}" class="nav-link-item {{ request()->routeIs('admin.solution-items.*') && $__solType === 'benefits' && $__solRoute ? 'active' : '' }}">
             <i class="bi bi-award-fill"></i> Keunggulan
           </a>
-          <a href="{{ route("admin.$prefix-clients.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-clients.*") ? 'active' : '' }}">
+          <a href="{{ route('admin.solution-items.index', [$__s, 'clients']) }}" class="nav-link-item {{ request()->routeIs('admin.solution-items.*') && $__solType === 'clients' && $__solRoute ? 'active' : '' }}">
             <i class="bi bi-diagram-3-fill"></i> Klien
           </a>
-          <a href="{{ route("admin.$prefix-portfolios.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-portfolios.*") ? 'active' : '' }}">
+          <a href="{{ route('admin.solution-items.index', [$__s, 'portfolios']) }}" class="nav-link-item {{ request()->routeIs('admin.solution-items.*') && $__solType === 'portfolios' && $__solRoute ? 'active' : '' }}">
             <i class="bi bi-images"></i> Portofolio
           </a>
-          <a href="{{ route("admin.$prefix-faqs.index") }}" class="nav-link-item {{ request()->routeIs("admin.$prefix-faqs.*") ? 'active' : '' }}">
+          <a href="{{ route('admin.solution-items.index', [$__s, 'faqs']) }}" class="nav-link-item {{ request()->routeIs('admin.solution-items.*') && $__solType === 'faqs' && $__solRoute ? 'active' : '' }}">
             <i class="bi bi-question-circle-fill"></i> FAQ
           </a>
         </div>

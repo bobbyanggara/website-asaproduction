@@ -1,17 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\AppMobileBenefitController;
-use App\Http\Controllers\Admin\AppMobileClientController;
-use App\Http\Controllers\Admin\AppMobileFaqController;
-use App\Http\Controllers\Admin\AppMobilePageController;
-use App\Http\Controllers\Admin\AppMobilePortfolioController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\ContactMessageController;
-use App\Http\Controllers\Admin\CustomSystemBenefitController;
-use App\Http\Controllers\Admin\CustomSystemClientController;
-use App\Http\Controllers\Admin\CustomSystemFaqController;
-use App\Http\Controllers\Admin\CustomSystemPageController;
-use App\Http\Controllers\Admin\CustomSystemPortfolioController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\LegalAppController;
@@ -22,27 +12,22 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ProductItemController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\SolutionController as AdminSolutionController;
+use App\Http\Controllers\Admin\SolutionItemController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\TranslationController;
 use App\Http\Controllers\Admin\TestimonialController;
-use App\Http\Controllers\Admin\WebsiteBenefitController;
-use App\Http\Controllers\Admin\WebsiteClientController;
-use App\Http\Controllers\Admin\WebsiteFaqController;
-use App\Http\Controllers\Admin\WebsitePageController;
-use App\Http\Controllers\Admin\WebsitePortfolioController;
 use App\Http\Controllers\AboutController;
-use App\Http\Controllers\AppMobileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\CustomSystemController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SolutionController;
 use App\Http\Controllers\PortfolioController as PublicPortfolioController;
-use App\Http\Controllers\WebsiteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -61,24 +46,14 @@ Route::get('/tentang-asa-production', [AboutController::class, 'index'])->name('
 
 /*
 |--------------------------------------------------------------------------
-| Solusi: Jasa Pembuatan Aplikasi Mobile (halaman publik)
+| Solusi (halaman publik, dinamis)
 |--------------------------------------------------------------------------
+| Satu route untuk semua halaman solusi. Halaman baru yang ditambahkan lewat
+| Admin > Semua Solusi langsung bisa dibuka di /solusi/{slug} tanpa menambah
+| route/kode. Slug lama (jasa-pembuatan-website, jasa-pembuatan-app-mobile,
+| jasa-pembuatan-sistem-kustom) tetap sama, jadi URL lama tidak putus.
 */
-Route::get('/solusi/jasa-pembuatan-app-mobile', [AppMobileController::class, 'index'])->name('solusi.app-mobile');
-
-/*
-|--------------------------------------------------------------------------
-| Solusi: Jasa Pembuatan Website (halaman publik)
-|--------------------------------------------------------------------------
-*/
-Route::get('/solusi/jasa-pembuatan-website', [WebsiteController::class, 'index'])->name('solusi.website');
-
-/*
-|--------------------------------------------------------------------------
-| Solusi: Jasa Pembuatan Sistem Kustom (halaman publik)
-|--------------------------------------------------------------------------
-*/
-Route::get('/solusi/jasa-pembuatan-sistem-kustom', [CustomSystemController::class, 'index'])->name('solusi.custom-system');
+Route::get('/solusi/{solution:slug}', [SolutionController::class, 'show'])->name('solusi.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -183,29 +158,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(
     Route::resource('certificates', CertificateController::class)->except(['show']);
     Route::resource('faqs', FaqController::class)->except(['show']);
 
-    // Halaman "Jasa Pembuatan Aplikasi Mobile" (konten dinamis)
-    Route::get('app-mobile', [AppMobilePageController::class, 'edit'])->name('app-mobile.edit');
-    Route::put('app-mobile', [AppMobilePageController::class, 'update'])->name('app-mobile.update');
-    Route::resource('app-mobile-benefits', AppMobileBenefitController::class)->except(['show']);
-    Route::resource('app-mobile-clients', AppMobileClientController::class)->except(['show']);
-    Route::resource('app-mobile-portfolios', AppMobilePortfolioController::class)->except(['show']);
-    Route::resource('app-mobile-faqs', AppMobileFaqController::class)->except(['show']);
-
-    // Halaman "Jasa Pembuatan Website" (konten dinamis)
-    Route::get('website', [WebsitePageController::class, 'edit'])->name('website.edit');
-    Route::put('website', [WebsitePageController::class, 'update'])->name('website.update');
-    Route::resource('website-benefits', WebsiteBenefitController::class)->except(['show']);
-    Route::resource('website-clients', WebsiteClientController::class)->except(['show']);
-    Route::resource('website-portfolios', WebsitePortfolioController::class)->except(['show']);
-    Route::resource('website-faqs', WebsiteFaqController::class)->except(['show']);
-
-    // Halaman "Jasa Pembuatan Sistem Kustom" (konten dinamis)
-    Route::get('custom-system', [CustomSystemPageController::class, 'edit'])->name('custom-system.edit');
-    Route::put('custom-system', [CustomSystemPageController::class, 'update'])->name('custom-system.update');
-    Route::resource('custom-system-benefits', CustomSystemBenefitController::class)->except(['show']);
-    Route::resource('custom-system-clients', CustomSystemClientController::class)->except(['show']);
-    Route::resource('custom-system-portfolios', CustomSystemPortfolioController::class)->except(['show']);
-    Route::resource('custom-system-faqs', CustomSystemFaqController::class)->except(['show']);
+    // Solusi (dinamis): tambah halaman solusi baru -> otomatis muncul di navbar,
+    // footer & punya halaman publik /solusi/{slug}. Keunggulan, Klien, Portofolio,
+    // dan FAQ dikelola per halaman solusi.
+    Route::resource('solutions', AdminSolutionController::class)->except(['show']);
+    Route::prefix('solutions/{solution}/{type}')
+        ->whereIn('type', ['benefits', 'clients', 'portfolios', 'faqs'])
+        ->name('solution-items.')
+        ->group(function () {
+            Route::get('/', [SolutionItemController::class, 'index'])->name('index');
+            Route::get('create', [SolutionItemController::class, 'create'])->name('create');
+            Route::post('/', [SolutionItemController::class, 'store'])->name('store');
+            Route::get('{id}/edit', [SolutionItemController::class, 'edit'])->whereNumber('id')->name('edit');
+            Route::put('{id}', [SolutionItemController::class, 'update'])->whereNumber('id')->name('update');
+            Route::delete('{id}', [SolutionItemController::class, 'destroy'])->whereNumber('id')->name('destroy');
+        });
 
     // Produk (dinamis): tambah produk baru -> otomatis muncul di navbar & punya
     // halaman publik /produk/{slug}. Keunggulan, Klien, dan FAQ dikelola per produk.

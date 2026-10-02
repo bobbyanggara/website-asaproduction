@@ -1636,38 +1636,7 @@
 
       <ul class="site-nav_menu" id="navMenu">
         @include('partials.nav-products')
-        <li class="has-dropdown">
-          <button type="button" class="dropdown-toggle"><span data-i18n="nav.servicesToggle">Solusi</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
-          <ul class="dropdown-menu dropdown-menu--services">
-            <li>
-              <a href="{{ route('solusi.website') }}">
-                <span class="dropdown-menu_icon"><i class="fa fa-desktop" aria-hidden="true"></i></span>
-                <span class="dropdown-menu_text">
-                  <span class="dropdown-menu_title" data-i18n="nav.servicesWebsite">Jasa Pembuatan Website</span>
-                  <span class="dropdown-menu_subtitle" data-i18n="nav.servicesWebsiteDesc">Website profesional & responsif sesuai kebutuhan bisnis Anda</span>
-                </span>
-              </a>
-            </li>
-            <li>
-              <a href="{{ route('solusi.app-mobile') }}">
-                <span class="dropdown-menu_icon"><i class="fa fa-mobile" aria-hidden="true"></i></span>
-                <span class="dropdown-menu_text">
-                  <span class="dropdown-menu_title" data-i18n="nav.servicesAppMobile">Jasa Pembuatan App Mobile</span>
-                  <span class="dropdown-menu_subtitle" data-i18n="nav.servicesAppMobileDesc">Aplikasi Android & iOS yang disesuaikan dengan kebutuhan bisnis</span>
-                </span>
-              </a>
-            </li>
-            <li>
-              <a href="{{ route('solusi.custom-system') }}">
-                <span class="dropdown-menu_icon"><i class="fa fa-cogs" aria-hidden="true"></i></span>
-                <span class="dropdown-menu_text">
-                  <span class="dropdown-menu_title" data-i18n="nav.servicesCustomSystem">Jasa Pembuatan Sistem Kustom</span>
-                  <span class="dropdown-menu_subtitle" data-i18n="nav.servicesCustomSystemDesc">Sistem/software kustom untuk mengotomasi proses bisnis Anda</span>
-                </span>
-              </a>
-            </li>
-          </ul>
-        </li>
+        @include('partials.nav-solutions')
         <li class="has-dropdown">
           <button type="button" class="dropdown-toggle"><span data-i18n="nav.infoToggle">Info</span> <i class="fa fa-chevron-down" aria-hidden="true"></i></button>
           <ul class="dropdown-menu">
@@ -2593,9 +2562,7 @@
           <div class="grid_2 footer-col footer-col--services">
             <h4 data-i18n="footer.servicesTitle">Layanan</h4>
             <ul class="footer-links">
-              <li><a href="{{ route('solusi.website') }}" data-i18n="nav.servicesWebsite">Jasa Pembuatan Website</a></li>
-              <li><a href="{{ route('solusi.app-mobile') }}" data-i18n="nav.servicesAppMobile">Jasa Pembuatan App Mobile</a></li>
-              <li><a href="{{ route('solusi.custom-system') }}" data-i18n="nav.servicesCustomSystem">Jasa Pembuatan Sistem Kustom</a></li>
+              @include('partials.footer-solutions')
             </ul>
           </div>
 

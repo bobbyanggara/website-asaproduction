@@ -135,6 +135,34 @@
     </div>
   </div>
 
+  {{-- ===== Tombol Download Aplikasi ===== --}}
+  <div class="card shadow-sm mb-3">
+    <div class="card-header fw-semibold">Tombol Download Aplikasi</div>
+    <div class="card-body row g-3">
+      <div class="col-12">
+        <div class="form-text mt-0">Pilih tombol mana yang tampil di hero halaman produk: salah satu, keduanya, atau tidak sama sekali. Tombol hanya tampil kalau dicentang dan link-nya terisi.</div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-check mb-2">
+          <input type="checkbox" name="show_android_button" value="1" class="form-check-input" id="show_android_button" {{ old('show_android_button', $item->show_android_button) ? 'checked' : '' }}>
+          <label class="form-check-label fw-semibold" for="show_android_button"><i class="bi bi-android2 me-1"></i>Tampilkan tombol "Download for Android"</label>
+        </div>
+        <input type="url" name="android_url" id="android_url" class="form-control" value="{{ old('android_url', $item->android_url) }}" maxlength="500" placeholder="https://play.google.com/store/apps/details?id=...">
+        <div class="form-text">Link Google Play, atau link download APK.</div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-check mb-2">
+          <input type="checkbox" name="show_ios_button" value="1" class="form-check-input" id="show_ios_button" {{ old('show_ios_button', $item->show_ios_button) ? 'checked' : '' }}>
+          <label class="form-check-label fw-semibold" for="show_ios_button"><i class="bi bi-apple me-1"></i>Tampilkan tombol "Download for iOS"</label>
+        </div>
+        <input type="url" name="ios_url" id="ios_url" class="form-control" value="{{ old('ios_url', $item->ios_url) }}" maxlength="500" placeholder="https://apps.apple.com/app/...">
+        <div class="form-text">Link App Store atau TestFlight.</div>
+      </div>
+    </div>
+  </div>
+
   {{-- ===== SEO ===== --}}
   <div class="card shadow-sm mb-3">
     <div class="card-header fw-semibold">SEO</div>
@@ -165,3 +193,20 @@
   </div>
 </form>
 @endsection
+
+@push('scripts')
+<script>
+  // Kolom link ikut aktif/nonaktif mengikuti centang tombolnya, supaya jelas
+  // bahwa link hanya dipakai kalau tombolnya ditampilkan. Nilai tetap tersimpan.
+  (function () {
+    [['show_android_button', 'android_url'], ['show_ios_button', 'ios_url']].forEach(function (pair) {
+      var box = document.getElementById(pair[0]);
+      var input = document.getElementById(pair[1]);
+      if (!box || !input) return;
+      var sync = function () { input.required = box.checked; input.classList.toggle('bg-light', !box.checked); };
+      box.addEventListener('change', sync);
+      sync();
+    });
+  })();
+</script>
+@endpush

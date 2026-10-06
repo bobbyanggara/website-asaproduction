@@ -43,6 +43,124 @@
       margin: 14px auto;
       background: linear-gradient(90deg, var(--brand-accent, #2E8BFF), var(--brand-light, #0051B5));
     }
+
+    /* =========================================================
+       TOMBOL DOWNLOAD APLIKASI (Android / iOS) di hero produk.
+       Gaya "store badge": ikon + caption kecil + nama platform.
+       Diatur dari Admin > Produk. */
+    .product-hero_actions{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+    .btn-store{
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 176px;
+      padding: 10px 22px 10px 16px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #1d2b4a 0%, #0c1426 100%);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 1px 0 rgba(255,255,255,.12) inset, 0 8px 20px rgba(12,20,38,.28);
+      color: #fff;
+      text-decoration: none;
+      text-transform: none;
+      letter-spacing: normal;
+      transition: transform .2s ease, box-shadow .25s ease, border-color .25s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    /* lapisan biru tema website, muncul halus saat hover/fokus */
+    .btn-store::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--brand-accent, #2E8BFF) 0%, var(--brand-light, #0051B5) 100%);
+      opacity: 0;
+      transition: opacity .25s ease;
+      pointer-events: none;
+    }
+    .btn-store_icon,
+    .btn-store_text{ position: relative; z-index: 1; }
+    /* kilau tipis yang menyapu saat hover */
+    .btn-store::after{
+      content: "";
+      position: absolute;
+      top: 0; left: -75%;
+      width: 50%; height: 100%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: skewX(-20deg);
+      transition: left .6s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .btn-store:hover,
+    .btn-store:focus{
+      color: #fff;
+      text-decoration: none;
+      transform: translateY(-3px);
+      border-color: var(--brand-accent, #2E8BFF);
+      box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 14px 28px rgba(0,81,181,.4);
+    }
+    .btn-store:hover::before,
+    .btn-store:focus::before{ opacity: 1; }
+    /* ikon Android jadi putih saat latar biru supaya tetap kontras */
+    .btn-store_android .btn-store_icon{ transition: color .25s ease; }
+    .btn-store_android:hover .btn-store_icon,
+    .btn-store_android:focus .btn-store_icon{ color: #fff; }
+    .btn-store:hover::after{ left: 130%; }
+    .btn-store:active{
+      transform: translateY(-1px);
+      box-shadow: 0 1px 0 rgba(255,255,255,.12) inset, 0 6px 14px rgba(12,20,38,.3);
+    }
+    .btn-store:focus-visible{
+      outline: 3px solid var(--brand-accent, #2E8BFF);
+      outline-offset: 3px;
+    }
+    .btn-store_icon{
+      flex: 0 0 auto;
+      width: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-store_icon .fa{ font-size: 34px; line-height: 1; }
+    .btn-store_android .btn-store_icon{ color: #3DDC84; }
+    .btn-store_ios .btn-store_icon{ color: #fff; }
+    .btn-store_text{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      line-height: 1.1;
+      text-align: left;
+    }
+    .btn-store_caption{
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      opacity: .78;
+    }
+    .btn-store_name{
+      margin-top: 3px;
+      font-family: 'League Spartan', sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+    @media (max-width: 767px){
+      .product-hero_actions{ justify-content: center; }
+    }
+    @media (max-width: 480px){
+      .btn-store{ flex: 1 1 100%; justify-content: center; max-width: 320px; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .btn-store, .btn-store::before, .btn-store::after{ transition: none; }
+      .btn-store:hover, .btn-store:focus{ transform: none; }
+    }
   </style>
 
   <script src="{{ asset('js/jquery.js') }}"></script>
@@ -71,12 +189,32 @@
           @if($product->hero_subtitle ?: $product->nav_description)
           <p class="hero-fade-in_item">@bipair($product->hero_subtitle ?: $product->nav_description, $product->hero_subtitle ? $product->hero_subtitle_en : $product->nav_description_en, ['nl2br' => true])</p>
           @endif
-          <a href="https://wa.me/{{ $setting->whatsapp_number }}?text={{ urlencode($setting->whatsapp_message) }}" target="_blank" rel="noopener" class="btn btn-whatsapp solusi-hero_cta hero-fade-in_item">
-            <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" style="vertical-align:middle;flex-shrink:0;">
-              <path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.7 4.607 1.906 6.475L4 29l7.72-1.867A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818a9.77 9.77 0 0 1-4.98-1.363l-.357-.212-4.583 1.108 1.127-4.47-.233-.367A9.78 9.78 0 0 1 6.182 15c0-5.415 4.404-9.818 9.819-9.818S25.818 9.585 25.818 15 21.415 24.818 16.001 24.818zm5.396-7.34c-.296-.148-1.75-.864-2.021-.963-.271-.099-.469-.148-.667.148-.198.296-.766.963-.939 1.161-.173.198-.346.222-.642.074-.296-.148-1.249-.46-2.379-1.467-.879-.784-1.472-1.753-1.645-2.049-.173-.296-.018-.456.13-.604.134-.133.296-.346.444-.519.148-.173.198-.297.296-.494.099-.198.05-.371-.025-.519-.074-.148-.667-1.607-.914-2.202-.24-.577-.485-.499-.667-.508l-.568-.01c-.198 0-.519.074-.79.371-.271.297-1.037 1.014-1.037 2.472s1.062 2.868 1.21 3.066c.148.198 2.089 3.19 5.062 4.474.707.305 1.259.487 1.689.623.71.226 1.355.194 1.866.118.569-.085 1.75-.716 1.997-1.407.247-.692.247-1.284.173-1.407-.074-.123-.271-.198-.568-.346z"/>
-            </svg>
-            <span data-i18n="nav.whatsappCta">WhatsApp Kami</span>
-          </a>
+          <div class="product-hero_actions hero-fade-in_item">
+            @if($product->showsAndroidButton())
+            <a href="{{ $product->android_url }}" target="_blank" rel="noopener" class="btn-store btn-store_android" aria-label="Download for Android">
+              <span class="btn-store_icon"><i class="fa fa-android" aria-hidden="true"></i></span>
+              <span class="btn-store_text">
+                <span class="btn-store_caption" data-i18n="product.downloadFor">Unduh untuk</span>
+                <span class="btn-store_name">Android</span>
+              </span>
+            </a>
+            @endif
+            @if($product->showsIosButton())
+            <a href="{{ $product->ios_url }}" target="_blank" rel="noopener" class="btn-store btn-store_ios" aria-label="Download for iOS">
+              <span class="btn-store_icon"><i class="fa fa-apple" aria-hidden="true"></i></span>
+              <span class="btn-store_text">
+                <span class="btn-store_caption" data-i18n="product.downloadFor">Unduh untuk</span>
+                <span class="btn-store_name">iOS</span>
+              </span>
+            </a>
+            @endif
+            <a href="https://wa.me/{{ $setting->whatsapp_number }}?text={{ urlencode($setting->whatsapp_message) }}" target="_blank" rel="noopener" class="btn btn-whatsapp solusi-hero_cta">
+              <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" style="vertical-align:middle;flex-shrink:0;">
+                <path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.386.7 4.607 1.906 6.475L4 29l7.72-1.867A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818a9.77 9.77 0 0 1-4.98-1.363l-.357-.212-4.583 1.108 1.127-4.47-.233-.367A9.78 9.78 0 0 1 6.182 15c0-5.415 4.404-9.818 9.819-9.818S25.818 9.585 25.818 15 21.415 24.818 16.001 24.818zm5.396-7.34c-.296-.148-1.75-.864-2.021-.963-.271-.099-.469-.148-.667.148-.198.296-.766.963-.939 1.161-.173.198-.346.222-.642.074-.296-.148-1.249-.46-2.379-1.467-.879-.784-1.472-1.753-1.645-2.049-.173-.296-.018-.456.13-.604.134-.133.296-.346.444-.519.148-.173.198-.297.296-.494.099-.198.05-.371-.025-.519-.074-.148-.667-1.607-.914-2.202-.24-.577-.485-.499-.667-.508l-.568-.01c-.198 0-.519.074-.79.371-.271.297-1.037 1.014-1.037 2.472s1.062 2.868 1.21 3.066c.148.198 2.089 3.19 5.062 4.474.707.305 1.259.487 1.689.623.71.226 1.355.194 1.866.118.569-.085 1.75-.716 1.997-1.407.247-.692.247-1.284.173-1.407-.074-.123-.271-.198-.568-.346z"/>
+              </svg>
+              <span data-i18n="nav.whatsappCta">WhatsApp Kami</span>
+            </a>
+          </div>
         </div>
         @if($page->hero_image)
         <div class="solusi-hero_media hero-fade-in_item" style="animation-delay:.7s;">

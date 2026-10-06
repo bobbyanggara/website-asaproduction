@@ -98,15 +98,31 @@ class ProductController extends Controller
             'preview_caption' => ['nullable', 'string'],
             'meta_description' => ['nullable', 'string', 'max:255'],
             'order_index' => ['nullable', 'integer'],
+            'android_url' => [
+                'nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\//i',
+                Rule::requiredIf($request->boolean('show_android_button')),
+            ],
+            'ios_url' => [
+                'nullable', 'string', 'max:500', 'url', 'regex:/^https?:\/\//i',
+                Rule::requiredIf($request->boolean('show_ios_button')),
+            ],
             'hero_image' => ['nullable', 'image', 'max:2048'],
             'preview_media' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,webp,mp4,webm', 'max:20480'],
         ], [
             'slug.regex' => 'Slug hanya boleh huruf kecil, angka, dan tanda hubung (contoh: kasir-asa).',
             'slug.unique' => 'Slug ini sudah dipakai produk lain.',
+            'android_url.required' => 'Link Android wajib diisi kalau tombol Android ditampilkan.',
+            'android_url.url' => 'Link Android harus berupa URL lengkap, contoh: https://play.google.com/store/apps/details?id=...',
+            'android_url.regex' => 'Link Android harus diawali http:// atau https://.',
+            'ios_url.required' => 'Link iOS wajib diisi kalau tombol iOS ditampilkan.',
+            'ios_url.url' => 'Link iOS harus berupa URL lengkap, contoh: https://apps.apple.com/app/...',
+            'ios_url.regex' => 'Link iOS harus diawali http:// atau https://.',
             'nav_icon.regex' => 'Ikon harus berupa kelas font-awesome, contoh: fa-cube.',
         ]);
 
         $data['is_active'] = $request->boolean('is_active');
+        $data['show_android_button'] = $request->boolean('show_android_button');
+        $data['show_ios_button'] = $request->boolean('show_ios_button');
         $data['order_index'] = $data['order_index'] ?? 0;
 
         return $data;

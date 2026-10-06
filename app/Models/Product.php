@@ -19,6 +19,8 @@ class Product extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'show_android_button' => 'boolean',
+        'show_ios_button' => 'boolean',
     ];
 
     /** Kunci cache untuk daftar produk di navbar. */
@@ -78,6 +80,18 @@ class Product extends Model
         });
 
         return collect($rows)->map(fn (array $row) => (new static)->forceFill($row));
+    }
+
+    /** Tombol Android tampil hanya kalau dicentang admin DAN link-nya terisi. */
+    public function showsAndroidButton(): bool
+    {
+        return $this->show_android_button && filled($this->android_url);
+    }
+
+    /** Tombol iOS tampil hanya kalau dicentang admin DAN link-nya terisi. */
+    public function showsIosButton(): bool
+    {
+        return $this->show_ios_button && filled($this->ios_url);
     }
 
     /** Ikon dengan fallback, supaya produk tanpa ikon tetap punya ikon di navbar. */
